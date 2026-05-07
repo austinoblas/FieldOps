@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FieldOps — Field Marketing Platform</title>
+
+<!-- Icons + Supabase -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+/* ── Reset & Variables ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #ffffff;
+  --bg2:       #f7f7f5;
+  --bg3:       #f0efeb;
+  --border:    rgba(0,0,0,0.10);
+  --border2:   rgba(0,0,0,0.20);
+  --text:      #1a1a18;
+  --text2:     #6b6b67;
+  --text3:     #9e9e9a;
+  --teal:      #1D9E75;
+  --teal-dk:   #0F6E56;
+  --teal-bg:   #E1F5EE;
+  --blue:      #378ADD;
+  --blue-dk:   #185FA5;
+  --blue-bg:   #E6F1FB;
+  --amber:     #EF9F27;
+  --amber-dk:  #633806;
+  --amber-bg:  #FAEEDA;
+  --red:       #E24B4A;
+  --red-dk:    #791F1F;
+  --red-bg:    #FCEBEB;
+  --shadow:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+  --radius:    8px;
+  --radius-lg: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:       #1c1c1a;
+    --bg2:      #242422;
+    --bg3:      #2c2c2a;
+    --border:   rgba(255,255,255,0.10);
+    --border2:  rgba(255,255,255,0.20);
+    --text:     #ededeb;
+    --text2:    #9e9e9a;
+    --text3:    #6b6b67;
+    --teal-bg:  #04342C;
+    --blue-bg:  #042C53;
+    --amber-bg: #412402;
+    --red-bg:   #501313;
+  }
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg3);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ── Shell Layout ──────────────────────────────────────────────── */
+#shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── Sidebar ───────────────────────────────────────────────────── */
+#sidebar {
+  width: 216px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.brand {
+  padding: 18px 16px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-icon {
+  width: 32px; height: 32px;
+  background: var(--teal);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.brand-icon i { color: #fff; font-size: 16px; }
+.brand-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.brand-sub  { font-size: 10px; color: var(--text2); }
+
+#nav { flex: 1; padding: 8px 0; overflow-y: auto; }
+
+.nav-section {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--text3);
+  padding: 12px 16px 4px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 12px; margin: 1px 8px;
+  border-radius: var(--radius);
+  cursor: pointer; font-size: 13px;
+  color: var(--text2);
+  transition: background .12s, color .12s;
+  user-select: none;
+}
+.nav-item i { font-size: 16px; flex-shrink: 0; }
+.nav-item:hover { background: var(--bg); color: var(--text); }
+.nav-item.active { background: var(--bg); color: var(--teal-dk); font-weight: 600; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--red-bg); color: var(--red-dk);
+  font-size: 10px; font-weight: 700;
+  padding: 1px 6px; border-radius: 10px;
+}
+
+.sidebar-user {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+
+/* ── Main area ─────────────────────────────────────────────────── */
+#main { flex: 1; overflow-y: auto; background: var(--bg3); min-width: 0; }
+
+/* ── Top bar ───────────────────────────────────────────────────── */
+.topbar {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 10;
+}
+.topbar-title { font-size: 15px; font-weight: 700; }
+.topbar-sub   { font-size: 12px; color: var(--text2); margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+/* ── Page ──────────────────────────────────────────────────────── */
+.page { padding: 24px 28px; }
+
+/* ── Buttons ───────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: var(--bg); color: var(--text);
+  font-size: 13px; font-family: inherit;
+  cursor: pointer; font-weight: 500;
+  transition: background .12s, opacity .12s;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--bg2); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn i { font-size: 15px; }
+
+.btn-primary { background: var(--teal); color: #fff; border-color: var(--teal); }
+.btn-primary:hover { background: var(--teal-dk); }
+
+.btn-danger  { background: var(--red-bg); color: var(--red-dk); border-color: transparent; }
+.btn-sm      { padding: 5px 10px; font-size: 12px; }
+.btn-sm i    { font-size: 13px; }
+.btn-icon    { padding: 6px 8px; }
+
+/* ── Tabs ──────────────────────────────────────────────────────── */
+.tabs { display: flex; gap: 3px; margin-bottom: 20px; flex-wrap: wrap; }
+.tab {
+  padding: 6px 13px; border-radius: var(--radius);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none;
+  background: transparent; color: var(--text2);
+  font-family: inherit; transition: background .12s;
+}
+.tab:hover  { background: var(--bg2); }
+.tab.active { background: var(--bg2); color: var(--text); }
+
+/* ── Cards ─────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title { font-size: 14px; font-weight: 700; }
+
+/* ── KPI Grid ───────────────────────────────────────────────────── */
+.kpi-grid { display: grid; gap: 12px; margin-bottom: 20px; }
+.kpi-4 { grid-template-columns: repeat(4, 1fr); }
+.kpi-3 { grid-template-columns: repeat(3, 1fr); }
+
+.kpi {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.kpi-label { font-size: 11px; color: var(--text2); font-weight: 600; display: flex; align-items: center; gap: 5px; margin-bottom: 6px; }
+.kpi-label i { font-size: 14px; }
+.kpi-value { font-size: 28px; font-weight: 700; line-height: 1; }
+.kpi-sub   { font-size: 11px; color: var(--text2); margin-top: 5px; }
+
+/* ── Badges ─────────────────────────────────────────────────────── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+  white-space: nowrap;
+}
+.badge-ok     { background: var(--teal-bg);  color: var(--teal-dk); }
+.badge-warn   { background: var(--amber-bg); color: var(--amber-dk); }
+.badge-info   { background: var(--blue-bg);  color: var(--blue-dk); }
+.badge-danger { background: var(--red-bg);   color: var(--red-dk); }
+.badge-gray   { background: var(--bg2); color: var(--text2); border: 1px solid var(--border); }
+
+/* ── Section header ─────────────────────────────────────────────── */
+.sh { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.sh-title  { font-size: 20px; font-weight: 800; margin-bottom: 2px; }
+.sh-sub    { font-size: 13px; color: var(--text2); }
+.sh-right  { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+/* ── Avatar ─────────────────────────────────────────────────────── */
+.av {
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; flex-shrink: 0; line-height: 1;
+}
+
+/* ── Table ──────────────────────────────────────────────────────── */
+.tbl-wrap {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow);
+}
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  text-align: left; padding: 10px 14px;
+  font-size: 11px; font-weight: 700; color: var(--text2);
+  background: var(--bg2); border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+td {
+  padding: 11px 14px; border-bottom: 1px solid var(--border);
+  color: var(--text); vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg2); }
+.tbl-title {
+  padding: 14px 18px 12px;
+  font-size: 14px; font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ── Event rows ─────────────────────────────────────────────────── */
+.erow {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.erow:last-child { border-bottom: none; }
+
+/* ── Event card ─────────────────────────────────────────────────── */
+.event-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 14px 18px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow); margin-bottom: 8px;
+  transition: box-shadow .15s, border-color .15s;
+}
+.event-card:hover { box-shadow: var(--shadow-lg); border-color: var(--border2); }
+
+.event-icon {
+  width: 46px; height: 46px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 20px;
+}
+.event-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+.event-meta span { font-size: 11px; color: var(--text2); display: flex; align-items: center; gap: 4px; }
+
+/* ── Ambassador card ─────────────────────────────────────────────── */
+.amb-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px 18px;
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 12px;
+  transition: box-shadow .15s;
+}
+.amb-card:hover { box-shadow: var(--shadow-lg); }
+
+.amb-stats { display: flex; gap: 8px; }
+.amb-stat {
+  flex: 1; background: var(--bg2); border-radius: var(--radius);
+  padding: 9px; text-align: center;
+}
+.amb-stat-val { font-size: 17px; font-weight: 700; }
+.amb-stat-lbl { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+/* ── Report card ─────────────────────────────────────────────────── */
+.rep-card {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 16px 20px;
+  box-shadow: var(--shadow); margin-bottom: 10px;
+}
+.rep-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin: 12px 0;
+}
+.rep-stat {
+  background: var(--bg2); border-radius: var(--radius);
+  padding: 9px; text-align: center;
+}
+.rep-stat-val { font-size: 17px; font-weight: 700; }
+.rep-stat-lbl { font-size: 10px; color: var(--text2); }
+
+.quote-block {
+  background: var(--bg2);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 9px 12px;
+  font-size: 12px; color: var(--text2);
+  font-style: italic; margin-bottom: 10px;
+}
+
+/* ── Grids ──────────────────────────────────────────────────────── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* ── Star rating ─────────────────────────────────────────────────── */
+.star { color: #EF9F27; font-size: 12px; }
+
+/* ── Stat colors ─────────────────────────────────────────────────── */
+.stat-up   { color: var(--teal);  font-weight: 700; }
+.stat-warn { color: var(--amber); font-weight: 700; }
+.stat-dn   { color: var(--red);   font-weight: 700; }
+
+/* ── Modals ──────────────────────────────────────────────────────── */
+.modal-backdrop {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200; align-items: center; justify-content: center;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--bg); border-radius: var(--radius-lg);
+  padding: 24px 28px; width: 500px; max-width: 96vw;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.22); position: relative;
+  max-height: 90vh; overflow-y: auto;
+}
+.modal-title  { font-size: 16px; font-weight: 800; margin-bottom: 18px; }
+.modal-close  {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none; cursor: pointer;
+  color: var(--text2); font-size: 20px;
+}
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 6px; }
+
+/* ── Forms ───────────────────────────────────────────────────────── */
+.form-group   { margin-bottom: 14px; }
+.form-label   { font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 5px; display: block; }
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 8px 12px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  background: var(--bg); color: var(--text);
+  font-size: 13px; font-family: inherit; outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(29,158,117,0.12); }
+.form-textarea { min-height: 80px; resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-hint { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+/* ── Loading ─────────────────────────────────────────────────────── */
+.loading-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 300; align-items: center; justify-content: center;
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Toast ───────────────────────────────────────────────────────── */
+#toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--text); color: var(--bg);
+  padding: 10px 16px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  z-index: 400; opacity: 0;
+  transition: opacity .3s, transform .3s;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.ok   { background: var(--teal-dk); color: #fff; }
+#toast.err  { background: var(--red-dk);  color: #fff; }
+
+/* ── Empty state ──────────────────────────────────────────────────── */
+.empty {
+  text-align: center; padding: 48px 20px;
+  color: var(--text2); font-size: 13px;
+}
+.empty i { font-size: 40px; margin-bottom: 10px; display: block; color: var(--text3); }
+.empty strong { display: block; margin-bottom: 4px; font-size: 15px; color: var(--text); }
+
+/* ── Config screen ────────────────────────────────────────────────── */
+#config-screen {
+  position: fixed; inset: 0; background: var(--bg3);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500;
+}
+.config-card {
+  background: var(--bg); border-radius: var(--radius-lg);
+  padding: 36px 40px; width: 460px; max-width: 96vw;
+  box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+}
+.config-logo {
+  width: 44px; height: 44px; background: var(--teal);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+}
+.config-logo i { color: #fff; font-size: 22px; }
+
+/* ── Scrollbar ────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     CONFIG SCREEN  (shown until Supabase creds are saved)
+════════════════════════════════════════════════════════════ -->
+<div id="config-screen">
+  <div class="config-card">
+    <div class="config-logo"><i class="ti ti-map-pin"></i></div>
+    <h1 style="font-size:22px;font-weight:800;margin-bottom:4px;">FieldOps Setup</h1>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:24px;">
+      Enter your Supabase credentials to connect your team's database.
+      <a href="https://supabase.com" target="_blank" style="color:var(--teal);">Get free credentials →</a>
+    </p>
+
+    <div class="form-group">
+      <label class="form-label">Supabase Project URL</label>
+      <input id="cfg-url" class="form-input" placeholder="https://xxxxxxxxxxxx.supabase.co" />
+      <div class="form-hint">Found in Supabase → Settings → API</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Supabase Anon Public Key</label>
+      <input id="cfg-key" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." />
+      <div class="form-hint">The "anon public" key — safe to use in the browser</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input id="cfg-name" class="form-input" placeholder="e.g. Jamie Miller" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Your Role</label>
+      <input id="cfg-role" class="form-input" placeholder="e.g. Field Marketing Manager" />
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="saveConfig()">
+      <i class="ti ti-rocket"></i> Launch FieldOps
+    </button>
+    <p style="font-size:11px;color:var(--text3);margin-top:12px;text-align:center;">
+      Credentials are saved in your browser only — never sent anywhere else.
+    </p>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════════════════════ -->
+
+<!-- New Event -->
+<div class="modal-backdrop" id="modal-event">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-event')"><i class="ti ti-x"></i></button>
+    <div class="modal-title" id="modal-event-title">Schedule New Event</div>
+    <input type="hidden" id="evt-id" />
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Event Name *</label>
+        <input id="evt-name" class="form-input" placeholder="e.g. Whole Foods Demo" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Product *</label>
+        <input id="evt-product" class="form-input" placeholder="Product name" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Store Name</label>
+        <input id="evt-store" class="form-input" placeholder="Store name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Retailer</label>
+        <input id="evt-retailer" class="form-input" placeholder="e.g. Whole Foods" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        <input type="date" id="evt-date" class="form-input" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time</label>
+        <input id="evt-time" class="form-input" placeholder="12:00 – 4:00 PM" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ambassador</label>
+        <input id="evt-ambassador" class="form-input" placeholder="Ambassador name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Budget ($)</label>
+        <input type="number" id="evt-budget" class="form-input" placeholder="150" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea id="evt-notes" class="form-textarea" placeholder="Special instructions, endcap placement, etc."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-event')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEvent()"><i class="ti ti-check"></i> Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Ambassador -->
+<div class="modal-backdrop" id="modal-amb">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-amb')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Add Brand Ambassador</div>
+    <input type="hidden" id="amb-id" />
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input id="amb-name" class="form-input" placeholder="Full name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="amb-email" class="form-input" placeholder="email@example.com" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input id="amb-phone" class="form-input" placeholder="(480) 555-0000" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input id="amb-city" class="form-input" placeholder="Phoenix" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Hourly Rate ($)</label>
+        <input type="number" id="amb-rate" class="form-input" placeholder="20" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Retailer Specialty</label>
+        <select id="amb-specialty" class="form-select">
+          <option>Whole Foods</option>
+          <option>Sprouts</option>
+          <option>Kroger</option>
+          <option>Natural Grocers</option>
+          <option>Trader Joe's</option>
+          <option>Fresh Thyme</option>
+          <option>Multi-retailer</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        <select id="amb-status" class="form-select">
+          <option value="active">Active</option>
+          <option value="available">Available</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rating (0–5)</label>
+        <input type="number" id="amb-rating" class="form-input" step="0.1" min="0" max="5" placeholder="5.0" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-amb')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAmbassador()"><i class="ti ti-user-plus"></i> Save Ambassador</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Report -->
+<div class="modal-backdrop" id="modal-report">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-report')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Submit Post-Event Report</div>
+    <input type="hidden" id="rep-id" />
+    <div class="form-group">
+      <label class="form-label">Event Name *</label>
+      <input id="rep-event" class="form-input" placeholder="Event name" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ambassador</label>
+        <input id="rep-ambassador" class="form-input" placeholder="Your name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" id="rep-date" class="form-input" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Units Sold</label>
+        <input type="number" id="rep-units" class="form-input" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Samples Distributed</label>
+        <input type="number" id="rep-samples" class="form-input" placeholder="0" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Photos Taken</label>
+        <input type="number" id="rep-photos" class="form-input" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Estimated Sales Lift (%)</label>
+        <input type="number" id="rep-lift" class="form-input" placeholder="0" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Shopper Feedback & Notes</label>
+      <textarea id="rep-feedback" class="form-textarea" placeholder="Describe shopper reactions, common questions, sales performance..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-report')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReport()"><i class="ti ti-send"></i> Submit Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Store -->
+<div class="modal-backdrop" id="modal-store">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-store')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Add Store</div>
+    <input type="hidden" id="sto-id" />
+    <div class="form-group">
+      <label class="form-label">Store Name *</label>
+      <input id="sto-name" class="form-input" placeholder="e.g. Whole Foods Scottsdale" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Retailer</label>
+        <input id="sto-retailer" class="form-input" placeholder="e.g. Whole Foods" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+        <select id="sto-priority" class="form-select">
+          <option value="high">High</option>
+          <option value="medium" selected>Medium</option>
+          <option value="low">Low</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Address</label>
+      <input id="sto-address" class="form-input" placeholder="Street address, City, State ZIP" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Store Manager</label>
+        <input id="sto-manager" class="form-input" placeholder="Manager name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Manager Phone</label>
+        <input id="sto-phone" class="form-input" placeholder="(480) 555-0000" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-store')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStore()"><i class="ti ti-building-store"></i> Save Store</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Payment -->
+<div class="modal-backdrop" id="modal-payment">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-payment')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Log Ambassador Payment</div>
+    <input type="hidden" id="pay-id" />
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Ambassador *</label>
+        <input id="pay-ambassador" class="form-input" placeholder="Ambassador name" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Event</label>
+        <input id="pay-event" class="form-input" placeholder="Event name" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date</label>
+        <input type="date" id="pay-date" class="form-input" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hours Worked</label>
+        <input type="number" id="pay-hours" class="form-input" placeholder="4" step="0.5" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Hourly Rate ($)</label>
+        <input type="number" id="pay-rate" class="form-input" placeholder="20" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expenses ($)</label>
+        <input type="number" id="pay-expenses" class="form-input" placeholder="0" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('modal-payment')">Cancel</button>
+      <button class="btn btn-primary" onclick="savePayment()"><i class="ti ti-cash"></i> Save Payment</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ════════════════════════════════════════════════════════════
+     APP SHELL
+════════════════════════════════════════════════════════════ -->
+<div id="shell" style="display:none;">
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="brand">
+      <div class="brand-icon"><i class="ti ti-map-pin"></i></div>
+      <div>
+        <div class="brand-name">FieldOps</div>
+        <div class="brand-sub">Field Marketing</div>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="sidebar-user">
+      <div class="av" id="user-av" style="width:32px;height:32px;font-size:11px;background:#E1F5EE;color:#085041;">—</div>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--text);" id="user-name">—</div>
+        <div style="font-size:10px;color:var(--text2);" id="user-role">—</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div id="main"></div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   CONFIG & INIT
+═══════════════════════════════════════════════════════════ */
+let db = null;
+
+function saveConfig() {
+  const url  = document.getElementById('cfg-url').value.trim();
+  const key  = document.getElementById('cfg-key').value.trim();
+  const name = document.getElementById('cfg-name').value.trim();
+  const role = document.getElementById('cfg-role').value.trim();
+
+  if (!url || !key || !name) {
+    toast('Please fill in all required fields', 'err'); return;
+  }
+  if (!url.startsWith('https://')) {
+    toast('URL must start with https://', 'err'); return;
+  }
+
+  localStorage.setItem('fo_url',  url);
+  localStorage.setItem('fo_key',  key);
+  localStorage.setItem('fo_name', name);
+  localStorage.setItem('fo_role', role);
+
+  initApp();
+}
+
+function initApp() {
+  const url  = localStorage.getItem('fo_url');
+  const key  = localStorage.getItem('fo_key');
+  const name = localStorage.getItem('fo_name');
+  const role = localStorage.getItem('fo_role');
+
+  if (!url || !key) {
+    document.getElementById('config-screen').style.display = 'flex';
+    return;
+  }
+
+  try {
+    const { createClient } = supabase;
+    db = createClient(url, key);
+  } catch (e) {
+    toast('Invalid Supabase credentials', 'err');
+    localStorage.clear();
+    return;
+  }
+
+  document.getElementById('config-screen').style.display = 'none';
+  document.getElementById('shell').style.display = 'flex';
+
+  // Set user info
+  const ini = name.split(' ').map(w => w[0]).join('').toUpperCase();
+  document.getElementById('user-av').textContent  = ini;
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('user-role').textContent = role || 'Field Marketing';
+
+  renderNav();
+  loadAll();
+}
+
+// Run on load
+document.addEventListener('DOMContentLoaded', initApp);
+
+/* ═══════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════ */
+const S = {
+  events:      [],
+  ambassadors: [],
+  reports:     [],
+  payments:    [],
+  stores:      [],
+  surveys:     [],
+  view:        'dashboard',
+  filters: { e: 'all', a: 'all', r: 'all', p: 'all' },
+  charts:      {},
+};
+
+/* ═══════════════════════════════════════════════════════════
+   DATA LAYER
+═══════════════════════════════════════════════════════════ */
+async function loadAll() {
+  showLoading();
+  try {
+    const [ev, am, re, pa, st, su] = await Promise.all([
+      db.from('events').select('*').order('date', { ascending: false }),
+      db.from('ambassadors').select('*').order('name'),
+      db.from('reports').select('*').order('created_at', { ascending: false }),
+      db.from('payments').select('*').order('created_at', { ascending: false }),
+      db.from('stores').select('*').order('name'),
+      db.from('surveys').select('*').order('created_at', { ascending: false }),
+    ]);
+    S.events      = ev.data || [];
+    S.ambassadors = am.data || [];
+    S.reports     = re.data || [];
+    S.payments    = pa.data || [];
+    S.stores      = st.data || [];
+    S.surveys     = su.data || [];
+  } catch (e) {
+    toast('Could not load data. Check your Supabase connection.', 'err');
+  }
+  hideLoading();
+  renderNav();
+  renderMain();
+}
+
+// ── Events ──
+async function saveEvent() {
+  const id   = document.getElementById('evt-id').value;
+  const name = document.getElementById('evt-name').value.trim();
+  const date = document.getElementById('evt-date').value;
+  if (!name || !date) { toast('Name and date are required', 'err'); return; }
+
+  const row = {
+    name,
+    date,
+    time:        document.getElementById('evt-time').value.trim(),
+    store:       document.getElementById('evt-store').value.trim(),
+    retailer:    document.getElementById('evt-retailer').value.trim(),
+    ambassador:  document.getElementById('evt-ambassador').value.trim(),
+    budget:      parseFloat(document.getElementById('evt-budget').value) || 0,
+    notes:       document.getElementById('evt-notes').value.trim(),
+    status:      'upcoming',
+  };
+
+  showLoading();
+  const { error } = id
+    ? await db.from('events').update(row).eq('id', id)
+    : await db.from('events').insert(row);
+  hideLoading();
+
+  if (error) { toast('Error saving event: ' + error.message, 'err'); return; }
+  toast(id ? 'Event updated' : 'Event scheduled!', 'ok');
+  closeModal('modal-event');
+  await loadAll();
+}
+
+async function deleteEvent(id) {
+  if (!confirm('Delete this event?')) return;
+  showLoading();
+  const { error } = await db.from('events').delete().eq('id', id);
+  hideLoading();
+  if (error) { toast('Error: ' + error.message, 'err'); return; }
+  toast('Event deleted', 'ok');
+  await loadAll();
+}
+
+async function markEventComplete(id) {
+  showLoading();
+  await db.from('events').update({ status: 'completed' }).eq('id', id);
+  hideLoading();
+  toast('Event marked complete', 'ok');
+  await loadAll();
+}
+
+// ── Ambassadors ──
+async function saveAmbassador() {
+  const id   = document.getElementById('amb-id').value;
+  const name = document.getElementById('amb-name').value.trim();
+  if (!name) { toast('Name is required', 'err'); return; }
+
+  const row = {
+    name,
+    email:         document.getElementById('amb-email').value.trim(),
+    phone:         document.getElementById('amb-phone').value.trim(),
+    city:          document.getElementById('amb-city').value.trim(),
+    rate:          parseFloat(document.getElementById('amb-rate').value) || 0,
+    specialty:     document.getElementById('amb-specialty').value,
+    status:        document.getElementById('amb-status').value,
+    rating:        parseFloat(document.getElementById('amb-rating').value) || 5.0,
+    events_month:  0,
+    total_events:  0,
+  };
+
+  showLoading();
+  const { error } = id
+    ? await db.from('ambassadors').update(row).eq('id', id)
+    : await db.from('ambassadors').insert(row);
+  hideLoading();
+
+  if (error) { toast('Error: ' + error.message, 'err'); return; }
+  toast(id ? 'Ambassador updated' : 'Ambassador added!', 'ok');
+  closeModal('modal-amb');
+  await loadAll();
+}
+
+async function deleteAmbassador(id) {
+  if (!confirm('Remove this ambassador?')) return;
+  showLoading();
+  await db.from('ambassadors').delete().eq('id', id);
+  hideLoading();
+  toast('Ambassador removed', 'ok');
+  await loadAll();
+}
+
+// ── Reports ──
+async function saveReport() {
+  const id = document.getElementById('rep-id').value;
+  const evtName = document.getElementById('rep-event').value.trim();
+  if (!evtName) { toast('Event name is required', 'err'); return; }
+
+  const row = {
+    event_name:  evtName,
+    ambassador:  document.getElementById('rep-ambassador').value.trim(),
+    date:        document.getElementById('rep-date').value,
+    units_sold:  parseInt(document.getElementById('rep-units').value) || 0,
+    samples:     parseInt(document.getElementById('rep-samples').value) || 0,
+    photos:      parseInt(document.getElementById('rep-photos').value) || 0,
+    sales_lift:  parseFloat(document.getElementById('rep-lift').value) || 0,
+    feedback:    document.getElementById('rep-feedback').value.trim(),
+    status:      'pending',
+  };
+
+  showLoading();
+  const { error } = id
+    ? await db.from('reports').update(row).eq('id', id)
+    : await db.from('reports').insert(row);
+  hideLoading();
+
+  if (error) { toast('Error: ' + error.message, 'err'); return; }
+  toast('Report submitted!', 'ok');
+  closeModal('modal-report');
+  await loadAll();
+}
+
+async function approveReport(id) {
+  showLoading();
+  await db.from('reports').update({ status: 'approved' }).eq('id', id);
+  hideLoading();
+  toast('Report approved', 'ok');
+  await loadAll();
+}
+
+async function flagReport(id) {
+  showLoading();
+  await db.from('reports').update({ status: 'needs-revision' }).eq('id', id);
+  hideLoading();
+  toast('Report flagged for revision', 'ok');
+  await loadAll();
+}
+
+async function deleteReport(id) {
+  if (!confirm('Delete this report?')) return;
+  showLoading();
+  await db.from('reports').delete().eq('id', id);
+  hideLoading();
+  toast('Report deleted', 'ok');
+  await loadAll();
+}
+
+// ── Payments ──
+async function savePayment() {
+  const id  = document.getElementById('pay-id').value;
+  const amb = document.getElementById('pay-ambassador').value.trim();
+  if (!amb) { toast('Ambassador name is required', 'err'); return; }
+
+  const hours    = parseFloat(document.getElementById('pay-hours').value) || 0;
+  const rate     = parseFloat(document.getElementById('pay-rate').value) || 0;
+  const expenses = parseFloat(document.getElementById('pay-expenses').value) || 0;
+
+  const row = {
+    ambassador: amb,
+    event_name: document.getElementById('pay-event').value.trim(),
+    date:       document.getElementById('pay-date').value,
+    hours,
+    rate,
+    expenses,
+    total:      hours * rate + expenses,
+    status:     'pending',
+  };
+
+  showLoading();
+  const { error } = id
+    ? await db.from('payments').update(row).eq('id', id)
+    : await db.from('payments').insert(row);
+  hideLoading();
+
+  if (error) { toast('Error: ' + error.message, 'err'); return; }
+  toast(id ? 'Payment updated' : 'Payment logged!', 'ok');
+  closeModal('modal-payment');
+  await loadAll();
+}
+
+async function approvePayment(id) {
+  showLoading();
+  await db.from('payments').update({ status: 'approved' }).eq('id', id);
+  hideLoading();
+  toast('Payment approved', 'ok');
+  await loadAll();
+}
+
+async function markPaid(id) {
+  showLoading();
+  await db.from('payments').update({ status: 'paid' }).eq('id', id);
+  hideLoading();
+  toast('Payment marked as paid', 'ok');
+  await loadAll();
+}
+
+async function deletePayment(id) {
+  if (!confirm('Delete this payment record?')) return;
+  showLoading();
+  await db.from('payments').delete().eq('id', id);
+  hideLoading();
+  toast('Payment deleted', 'ok');
+  await loadAll();
+}
+
+// ── Stores ──
+async function saveStore() {
+  const id   = document.getElementById('sto-id').value;
+  const name = document.getElementById('sto-name').value.trim();
+  if (!name) { toast('Store name is required', 'err'); return; }
+
+  const row = {
+    name,
+    retailer:    document.getElementById('sto-retailer').value.trim(),
+    priority:    document.getElementById('sto-priority').value,
+    address:     document.getElementById('sto-address').value.trim(),
+    manager:     document.getElementById('sto-manager').value.trim(),
+    phone:       document.getElementById('sto-phone').value.trim(),
+    total_demos: 0,
+  };
+
+  showLoading();
+  const { error } = id
+    ? await db.from('stores').update(row).eq('id', id)
+    : await db.from('stores').insert(row);
+  hideLoading();
+
+  if (error) { toast('Error: ' + error.message, 'err'); return; }
+  toast(id ? 'Store updated' : 'Store added!', 'ok');
+  closeModal('modal-store');
+  await loadAll();
+}
+
+async function deleteStore(id) {
+  if (!confirm('Remove this store?')) return;
+  showLoading();
+  await db.from('stores').delete().eq('id', id);
+  hideLoading();
+  toast('Store removed', 'ok');
+  await loadAll();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAV CONFIG
+═══════════════════════════════════════════════════════════ */
+const NAV = [
+  { section: 'Overview' },
+  { id: 'dashboard',   label: 'Dashboard',       icon: 'ti-layout-dashboard' },
+  { section: 'Operations' },
+  { id: 'events',      label: 'Events',           icon: 'ti-calendar-event'  },
+  { id: 'ambassadors', label: 'Ambassadors',      icon: 'ti-users'           },
+  { id: 'stores',      label: 'Store Directory',  icon: 'ti-building-store'  },
+  { section: 'Reporting' },
+  { id: 'reports',     label: 'Event Reports',    icon: 'ti-file-description' },
+  { id: 'surveys',     label: 'Shopper Surveys',  icon: 'ti-clipboard-list'  },
+  { section: 'Finance' },
+  { id: 'payments',    label: 'Payments',         icon: 'ti-cash'            },
+  { id: 'analytics',   label: 'Analytics',        icon: 'ti-chart-bar'       },
+];
+
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════ */
+const AV_COLORS = [
+  ['#E1F5EE','#085041'], ['#E6F1FB','#0C447C'], ['#EEEDFE','#3C3489'],
+  ['#FAEEDA','#412402'], ['#FBEAF0','#72243E'], ['#EAF3DE','#27500A'],
+  ['#FAECE7','#712B13'], ['#FCEBEB','#791F1F'],
+];
+
+function ini(name = '') { return name.split(' ').map(w => w[0]).join('').toUpperCase(); }
+
+function av(name = '', idx = 0, sz = 38) {
+  const c  = AV_COLORS[idx % AV_COLORS.length];
+  const fs = Math.round(sz * 0.36);
+  return `<div class="av" style="width:${sz}px;height:${sz}px;background:${c[0]};color:${c[1]};font-size:${fs}px;">${ini(name)}</div>`;
+}
+
+function badge(s) {
+  const m = {
+    upcoming:        '<span class="badge badge-info">Upcoming</span>',
+    completed:       '<span class="badge badge-ok">Completed</span>',
+    cancelled:       '<span class="badge badge-danger">Cancelled</span>',
+    active:          '<span class="badge badge-ok">Active</span>',
+    available:       '<span class="badge badge-info">Available</span>',
+    inactive:        '<span class="badge badge-gray">Inactive</span>',
+    approved:        '<span class="badge badge-ok">Approved</span>',
+    pending:         '<span class="badge badge-warn">Pending</span>',
+    'needs-revision':'<span class="badge badge-danger">Needs Revision</span>',
+    paid:            '<span class="badge badge-ok">Paid</span>',
+    high:            '<span class="badge badge-danger">High</span>',
+    medium:          '<span class="badge badge-warn">Medium</span>',
+    low:             '<span class="badge badge-gray">Low</span>',
+  };
+  return m[s] || `<span class="badge badge-gray">${s}</span>`;
+}
+
+function stars(r) {
+  return `<span class="star">${'★'.repeat(Math.round(r || 0))}</span> <span style="color:var(--text2);font-size:11px;">${(r||0).toFixed(1)}</span>`;
+}
+
+function fmt$(n) { return '$' + (n || 0).toLocaleString(); }
+
+function emptyState(icon, title, msg) {
+  return `<div class="empty"><i class="ti ti-${icon}"></i><strong>${title}</strong>${msg}</div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════════════════ */
+function navigate(v) {
+  S.view = v;
+  renderNav();
+  renderMain();
+}
+
+function renderNav() {
+  const pend = S.reports.filter(r => r.status === 'pending' || r.status === 'needs-revision').length
+             + S.payments.filter(p => p.status === 'pending').length;
+
+  document.getElementById('nav').innerHTML = NAV.map(n => {
+    if (n.section) return `<div class="nav-section">${n.section}</div>`;
+    const nb = (n.id === 'reports' || n.id === 'payments') && pend > 0
+      ? `<span class="nav-badge">${pend}</span>` : '';
+    return `<a class="nav-item ${S.view === n.id ? 'active' : ''}" onclick="navigate('${n.id}')">
+      <i class="ti ${n.icon}"></i>${n.label}${nb}
+    </a>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   VIEWS
+═══════════════════════════════════════════════════════════ */
+
+// ── DASHBOARD ──────────────────────────────────────────────
+function dashboardView() {
+  const up    = S.events.filter(e => e.status === 'upcoming');
+  const done  = S.events.filter(e => e.status === 'completed' && e.sales_lift);
+  const avgL  = done.length ? Math.round(done.reduce((a, e) => a + e.sales_lift, 0) / done.length) : 0;
+  const units = S.events.filter(e => e.units_sold).reduce((a, e) => a + e.units_sold, 0);
+  const pend  = S.reports.filter(r => r.status !== 'approved').length
+              + S.payments.filter(p => p.status === 'pending').length;
+
+  const pendRep = S.reports.filter(r => r.status === 'pending' || r.status === 'needs-revision');
+  const pendPay = S.payments.filter(p => p.status === 'pending');
+  const today   = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Dashboard</div>
+    <div class="topbar-sub">${today}</div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn" onclick="navigate('analytics')"><i class="ti ti-chart-bar"></i> Analytics</button>
+    <button class="btn btn-primary" onclick="openModal('modal-event')"><i class="ti ti-plus"></i> Schedule Event</button>
+  </div>
+</div>
+<div class="page">
+
+  <div class="kpi-grid kpi-4">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-calendar-event"></i> Upcoming Events</div>
+      <div class="kpi-value">${up.length}</div>
+      <div class="kpi-sub">${up[0] ? 'Next: ' + up[0].date : 'None scheduled'}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-users"></i> Active Ambassadors</div>
+      <div class="kpi-value">${S.ambassadors.filter(a => a.status === 'active').length}</div>
+      <div class="kpi-sub">${S.ambassadors.filter(a => a.status === 'available').length} available to assign</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-trending-up"></i> Avg Sales Lift</div>
+      <div class="kpi-value stat-up">${avgL ? '+' + avgL + '%' : '—'}</div>
+      <div class="kpi-sub">${units} units sold total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-clock"></i> Pending Actions</div>
+      <div class="kpi-value ${pend > 0 ? 'stat-warn' : 'stat-up'}">${pend}</div>
+      <div class="kpi-sub">${pend > 0 ? 'Need your attention' : 'All caught up!'}</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px;">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Upcoming Events</span>
+        <button class="btn btn-sm" onclick="navigate('events')">View all</button>
+      </div>
+      ${up.length === 0 ? emptyState('calendar', 'No upcoming events', 'Schedule one to get started.') : ''}
+      ${up.slice(0, 6).map(e => `
+        <div class="erow">
+          <div style="width:36px;height:36px;border-radius:9px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ti ti-calendar" style="color:var(--blue-dk);font-size:17px;"></i>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}</div>
+            <div style="font-size:11px;color:var(--text2);">${e.date}${e.ambassador ? ' · ' + e.ambassador : ''}</div>
+          </div>
+          ${badge(e.status)}
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Pending Actions</span>
+        <button class="btn btn-sm" onclick="navigate('reports')">View reports</button>
+      </div>
+      ${pend === 0 ? emptyState('circle-check', 'All caught up!', 'Nothing needs your attention right now.') : ''}
+      ${pendRep.map(r => `
+        <div class="erow">
+          <div style="width:36px;height:36px;border-radius:9px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ti ti-file-description" style="color:var(--amber-dk);font-size:17px;"></i>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.event_name}</div>
+            <div style="font-size:11px;color:var(--text2);">${r.ambassador || ''} · Report ${r.status}</div>
+          </div>
+          ${badge(r.status)}
+        </div>
+      `).join('')}
+      ${pendPay.map(p => `
+        <div class="erow">
+          <div style="width:36px;height:36px;border-radius:9px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ti ti-cash" style="color:var(--amber-dk);font-size:17px;"></i>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:13px;font-weight:600;">${p.ambassador}</div>
+            <div style="font-size:11px;color:var(--text2);">Payment pending · ${p.event_name || ''}</div>
+          </div>
+          ${badge(p.status)}
+        </div>
+      `).join('')}
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <div class="tbl-title">
+      Recent Event Performance
+      <button class="btn btn-sm" onclick="navigate('analytics')"><i class="ti ti-chart-bar"></i> Full analytics</button>
+    </div>
+    ${S.events.filter(e => e.status === 'completed').length === 0
+      ? emptyState('calendar-stats', 'No completed events yet', 'Complete an event and submit a report to see performance data.')
+      : `<table>
+          <thead><tr>
+            <th>Event</th><th>Ambassador</th><th>Retailer</th>
+            <th>Date</th><th>Units Sold</th><th>Sales Lift</th>
+          </tr></thead>
+          <tbody>
+            ${S.events.filter(e => e.status === 'completed').slice(0, 8).map(e => `
+              <tr>
+                <td style="font-weight:600;">${e.name}</td>
+                <td>${e.ambassador || '—'}</td>
+                <td><span class="badge badge-gray">${e.retailer || '—'}</span></td>
+                <td style="color:var(--text2);">${e.date}</td>
+                <td>${e.units_sold || '—'}</td>
+                <td>${e.sales_lift ? `<span class="stat-up">+${e.sales_lift}%</span>` : '—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`}
+  </div>
+</div>`;
+}
+
+// ── EVENTS ─────────────────────────────────────────────────
+function eventsView() {
+  const f = S.filters.e;
+  const filtered = f === 'all' ? S.events : S.events.filter(e => e.status === f);
+  const counts   = {
+    all: S.events.length,
+    upcoming:  S.events.filter(e => e.status === 'upcoming').length,
+    completed: S.events.filter(e => e.status === 'completed').length,
+  };
+
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Events</div>
+    <div class="topbar-sub">${S.events.length} total events</div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="openNewEvent()"><i class="ti ti-plus"></i> New Event</button>
+  </div>
+</div>
+<div class="page">
+  <div class="tabs">
+    ${['all','upcoming','completed'].map(fv =>
+      `<button class="tab ${f===fv?'active':''}" onclick="sf('e','${fv}')">
+        ${fv === 'all' ? 'All' : fv.charAt(0).toUpperCase()+fv.slice(1)} (${counts[fv] || 0})
+      </button>`
+    ).join('')}
+  </div>
+
+  ${filtered.length === 0 ? emptyState('calendar-event', 'No events found', 'Try a different filter or schedule a new event.') : ''}
+  ${filtered.map(e => `
+    <div class="event-card">
+      <div class="event-icon" style="background:${e.status==='upcoming'?'var(--blue-bg)':'var(--teal-bg)'};">
+        <i class="ti ti-calendar-event" style="color:${e.status==='upcoming'?'var(--blue-dk)':'var(--teal-dk)'}"></i>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+          <span style="font-size:14px;font-weight:700;">${e.name}</span>
+          ${badge(e.status)}
+        </div>
+        <div class="event-meta">
+          <span><i class="ti ti-calendar"></i> ${e.date}</span>
+          ${e.time ? `<span><i class="ti ti-clock"></i> ${e.time}</span>` : ''}
+          ${e.ambassador ? `<span><i class="ti ti-user"></i> ${e.ambassador}</span>` : ''}
+          ${e.retailer ? `<span><i class="ti ti-building-store"></i> ${e.retailer}</span>` : ''}
+          ${e.product ? `<span><i class="ti ti-package"></i> ${e.product}</span>` : ''}
+          ${e.budget ? `<span><i class="ti ti-coin"></i> ${fmt$(e.budget)}</span>` : ''}
+        </div>
+        ${e.notes ? `<div style="font-size:11px;color:var(--text2);margin-top:5px;font-style:italic;">${e.notes}</div>` : ''}
+      </div>
+      <div style="text-align:right;flex-shrink:0;padding-left:12px;">
+        ${e.units_sold
+          ? `<div style="font-size:20px;font-weight:800;color:var(--teal);">+${e.sales_lift || 0}%</div>
+             <div style="font-size:11px;color:var(--text2);">${e.units_sold} units sold</div>`
+          : ''}
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        ${e.status === 'upcoming' ? `<button class="btn btn-sm btn-primary" onclick="markEventComplete(${e.id})"><i class="ti ti-check"></i> Complete</button>` : ''}
+        <button class="btn btn-sm btn-icon" title="Edit" onclick="editEvent(${e.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-sm btn-icon btn-danger" title="Delete" onclick="deleteEvent(${e.id})"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>
+  `).join('')}
+</div>`;
+}
+
+// ── AMBASSADORS ────────────────────────────────────────────
+function ambassadorsView() {
+  const f      = S.filters.a;
+  const filtered = f === 'all' ? S.ambassadors : S.ambassadors.filter(a => a.status === f);
+
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Brand Ambassadors</div>
+    <div class="topbar-sub">${S.ambassadors.length} ambassadors on roster</div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="openNewAmb()"><i class="ti ti-user-plus"></i> Add Ambassador</button>
+  </div>
+</div>
+<div class="page">
+  <div class="tabs">
+    ${['all','active','available','inactive'].map(fv =>
+      `<button class="tab ${f===fv?'active':''}" onclick="sf('a','${fv}')">${fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`
+    ).join('')}
+  </div>
+
+  ${filtered.length === 0 ? emptyState('users', 'No ambassadors found', 'Add your first brand ambassador to get started.') : ''}
+  <div class="grid-2">
+    ${filtered.map((a, i) => `
+      <div class="amb-card">
+        <div style="display:flex;align-items:center;gap:12px;">
+          ${av(a.name, i, 46)}
+          <div style="flex:1;">
+            <div style="font-size:14px;font-weight:700;">${a.name}</div>
+            <div style="font-size:12px;color:var(--text2);">${a.city || ''} ${a.rate ? '· $' + a.rate + '/hr' : ''}</div>
+            <div style="margin-top:3px;">${stars(a.rating)}</div>
+          </div>
+          ${badge(a.status)}
+        </div>
+        <div class="amb-stats">
+          <div class="amb-stat">
+            <div class="amb-stat-val">${a.events_month || 0}</div>
+            <div class="amb-stat-lbl">This month</div>
+          </div>
+          <div class="amb-stat">
+            <div class="amb-stat-val">${a.total_events || 0}</div>
+            <div class="amb-stat-lbl">Total events</div>
+          </div>
+          <div class="amb-stat">
+            <div class="amb-stat-val">${(a.rating || 0).toFixed(1)}</div>
+            <div class="amb-stat-lbl">Rating</div>
+          </div>
+        </div>
+        ${a.specialty ? `<div style="font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px;"><i class="ti ti-star" style="font-size:13px;"></i> ${a.specialty}</div>` : ''}
+        <div style="font-size:11px;color:var(--text2);">
+          ${a.email ? `<div><i class="ti ti-mail" style="font-size:12px;"></i> ${a.email}</div>` : ''}
+          ${a.phone ? `<div><i class="ti ti-phone" style="font-size:12px;"></i> ${a.phone}</div>` : ''}
+        </div>
+        <div style="display:flex;gap:8px;">
+          ${a.email ? `<a class="btn btn-sm" style="flex:1;justify-content:center;text-decoration:none;" href="mailto:${a.email}"><i class="ti ti-mail"></i> Email</a>` : ''}
+          <button class="btn btn-sm" style="flex:1;justify-content:center;" onclick="openModal('modal-event')"><i class="ti ti-calendar-plus"></i> Assign</button>
+          <button class="btn btn-sm btn-icon" onclick="editAmb(${a.id})"><i class="ti ti-edit"></i></button>
+          <button class="btn btn-sm btn-icon btn-danger" onclick="deleteAmbassador(${a.id})"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+    `).join('')}
+  </div>
+</div>`;
+}
+
+// ── REPORTS ────────────────────────────────────────────────
+function reportsView() {
+  const f        = S.filters.r;
+  const filtered = f === 'all' ? S.reports : S.reports.filter(r => r.status === f);
+
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Post-Event Reports</div>
+    <div class="topbar-sub">${S.reports.length} reports submitted</div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="openNewReport()"><i class="ti ti-file-plus"></i> Submit Report</button>
+  </div>
+</div>
+<div class="page">
+  <div class="tabs">
+    ${['all','approved','pending','needs-revision'].map(fv =>
+      `<button class="tab ${f===fv?'active':''}" onclick="sf('r','${fv}')">${fv==='needs-revision'?'Needs Revision':fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`
+    ).join('')}
+  </div>
+
+  ${filtered.length === 0 ? emptyState('file-description', 'No reports found', 'Submit a post-event report after each demo.') : ''}
+  ${filtered.map((r, i) => `
+    <div class="rep-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          ${av(r.ambassador || '?', i, 40)}
+          <div>
+            <div style="font-size:14px;font-weight:700;">${r.event_name}</div>
+            <div style="font-size:12px;color:var(--text2);">${r.ambassador || ''} · ${r.date || ''}</div>
+          </div>
+        </div>
+        ${badge(r.status)}
+      </div>
+      <div class="rep-stats">
+        <div class="rep-stat"><div class="rep-stat-val">${r.units_sold || 0}</div><div class="rep-stat-lbl">Units sold</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${r.samples || 0}</div><div class="rep-stat-lbl">Samples</div></div>
+        <div class="rep-stat"><div class="rep-stat-val stat-up">+${r.sales_lift || 0}%</div><div class="rep-stat-lbl">Sales lift</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${r.photos || 0}</div><div class="rep-stat-lbl">Photos</div></div>
+      </div>
+      ${r.feedback ? `<div class="quote-block">"${r.feedback}"</div>` : ''}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${r.status === 'pending' ? `
+          <button class="btn btn-primary btn-sm" onclick="approveReport(${r.id})"><i class="ti ti-check"></i> Approve</button>
+          <button class="btn btn-sm btn-danger" onclick="flagReport(${r.id})"><i class="ti ti-flag"></i> Request Changes</button>
+        ` : ''}
+        ${r.status === 'needs-revision' ? `
+          <button class="btn btn-primary btn-sm" onclick="approveReport(${r.id})"><i class="ti ti-check"></i> Approve</button>
+        ` : ''}
+        <button class="btn btn-sm btn-icon btn-danger" onclick="deleteReport(${r.id})"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>
+  `).join('')}
+</div>`;
+}
+
+// ── PAYMENTS ───────────────────────────────────────────────
+function paymentsView() {
+  const f        = S.filters.p;
+  const filtered = f === 'all' ? S.payments : S.payments.filter(p => p.status === f);
+  const totPend  = S.payments.filter(p => p.status === 'pending').reduce((a, p) => a + (p.total || 0), 0);
+  const totApprv = S.payments.filter(p => p.status === 'approved').reduce((a, p) => a + (p.total || 0), 0);
+  const totPaid  = S.payments.filter(p => p.status === 'paid').reduce((a, p) => a + (p.total || 0), 0);
+
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Payments & Approvals</div>
+    <div class="topbar-sub">${fmt$(totPend)} pending · ${fmt$(totApprv)} approved</div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="openNewPayment()"><i class="ti ti-plus"></i> Log Payment</button>
+  </div>
+</div>
+<div class="page">
+  <div class="kpi-grid kpi-3">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-clock"></i> Pending Approval</div>
+      <div class="kpi-value ${totPend > 0 ? 'stat-warn' : ''}">${fmt$(totPend)}</div>
+      <div class="kpi-sub">${S.payments.filter(p => p.status === 'pending').length} payment(s)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-circle-check"></i> Approved / To Pay</div>
+      <div class="kpi-value">${fmt$(totApprv)}</div>
+      <div class="kpi-sub">${S.payments.filter(p => p.status === 'approved').length} payment(s)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-cash"></i> Paid This Period</div>
+      <div class="kpi-value stat-up">${fmt$(totPaid)}</div>
+      <div class="kpi-sub">${[...new Set(S.payments.filter(p => p.status === 'paid').map(p => p.ambassador))].length} ambassadors</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    ${['all','pending','approved','paid'].map(fv =>
+      `<button class="tab ${f===fv?'active':''}" onclick="sf('p','${fv}')">${fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`
+    ).join('')}
+  </div>
+
+  <div class="tbl-wrap">
+    ${filtered.length === 0
+      ? emptyState('cash', 'No payments found', 'Log ambassador payments after each event.')
+      : `<table>
+          <thead><tr>
+            <th>Ambassador</th><th>Event</th><th>Date</th>
+            <th>Hours</th><th>Rate</th><th>Expenses</th><th>Total</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody>
+            ${filtered.map((p, i) => `
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px;">${av(p.ambassador, i, 28)}<span style="font-weight:600;">${p.ambassador}</span></div></td>
+                <td style="color:var(--text2);font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.event_name || '—'}</td>
+                <td style="color:var(--text2);">${p.date || '—'}</td>
+                <td>${p.hours || 0}h</td>
+                <td>${fmt$(p.rate)}/hr</td>
+                <td>${fmt$(p.expenses)}</td>
+                <td style="font-weight:700;">${fmt$(p.total)}</td>
+                <td>${badge(p.status)}</td>
+                <td>
+                  <div style="display:flex;gap:4px;">
+                    ${p.status === 'pending'  ? `<button class="btn btn-primary btn-sm" onclick="approvePayment(${p.id})">Approve</button>` : ''}
+                    ${p.status === 'approved' ? `<button class="btn btn-primary btn-sm" onclick="markPaid(${p.id})">Mark Paid</button>` : ''}
+                    <button class="btn btn-sm btn-icon btn-danger" onclick="deletePayment(${p.id})"><i class="ti ti-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`}
+  </div>
+</div>`;
+}
+
+// ── ANALYTICS ──────────────────────────────────────────────
+function analyticsView() {
+  const done  = S.events.filter(e => e.status === 'completed' && e.sales_lift);
+  const units = S.events.filter(e => e.units_sold).reduce((a, e) => a + e.units_sold, 0);
+  const avgL  = done.length ? Math.round(done.reduce((a, e) => a + e.sales_lift, 0) / done.length) : 0;
+
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Analytics & ROI</div>
+    <div class="topbar-sub">All-time performance</div>
+  </div>
+</div>
+<div class="page">
+  <div class="kpi-grid kpi-4">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-calendar-event"></i> Total Events</div>
+      <div class="kpi-value">${S.events.length}</div>
+      <div class="kpi-sub">${S.events.filter(e=>e.status==='upcoming').length} upcoming</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-shopping-cart"></i> Units Sold</div>
+      <div class="kpi-value">${units}</div>
+      <div class="kpi-sub">Across all events</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-trending-up"></i> Avg Sales Lift</div>
+      <div class="kpi-value stat-up">${avgL ? '+' + avgL + '%' : '—'}</div>
+      <div class="kpi-sub">vs non-demo baseline</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-users"></i> Total Ambassadors</div>
+      <div class="kpi-value">${S.ambassadors.length}</div>
+      <div class="kpi-sub">${S.ambassadors.filter(a=>a.status==='active').length} active</div>
+    </div>
+  </div>
+
+  ${S.events.filter(e=>e.status==='completed').length < 2
+    ? emptyState('chart-bar', 'Not enough data yet', 'Complete more events and submit reports to see charts populate.')
+    : `<div class="grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Sales Lift by Event</span>
+          </div>
+          <div style="position:relative;height:200px;">
+            <canvas id="liftChart" role="img" aria-label="Sales lift by event">Sales lift data.</canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Events by Retailer</span>
+          </div>
+          <div style="position:relative;height:200px;">
+            <canvas id="retChart" role="img" aria-label="Events by retailer">Retailer breakdown.</canvas>
+          </div>
+        </div>
+      </div>`}
+
+  <div class="tbl-wrap">
+    <div class="tbl-title">Ambassador Performance</div>
+    ${S.ambassadors.length === 0
+      ? emptyState('users', 'No ambassadors yet', 'Add ambassadors to track their performance.')
+      : `<table>
+          <thead><tr><th>Ambassador</th><th>Events (Month)</th><th>Total Events</th><th>Rating</th><th>Specialty</th><th>Rate</th><th>Status</th></tr></thead>
+          <tbody>
+            ${S.ambassadors.map((a,i) => `
+              <tr>
+                <td><div style="display:flex;align-items:center;gap:8px;">${av(a.name,i,28)}<span style="font-weight:600;">${a.name}</span></div></td>
+                <td style="font-weight:600;">${a.events_month || 0}</td>
+                <td>${a.total_events || 0}</td>
+                <td>${stars(a.rating)}</td>
+                <td><span class="badge badge-gray">${a.specialty || '—'}</span></td>
+                <td>${a.rate ? fmt$(a.rate) : '—'}</td>
+                <td>${badge(a.status)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`}
+  </div>
+</div>`;
+}
+
+// ── SURVEYS ────────────────────────────────────────────────
+function surveysView() {
+  const total   = S.surveys.reduce((a, s) => a + (s.responses || 0), 0);
+  const avgRate = S.surveys.length
+    ? (S.surveys.reduce((a, s) => a + (s.rating || 0), 0) / S.surveys.length).toFixed(1)
+    : '—';
+
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Shopper Surveys</div>
+    <div class="topbar-sub">${total} total responses collected</div>
+  </div>
+</div>
+<div class="page">
+  <div class="kpi-grid kpi-3">
+    <div class="kpi"><div class="kpi-label"><i class="ti ti-users"></i> Total Responses</div><div class="kpi-value">${total}</div></div>
+    <div class="kpi"><div class="kpi-label"><i class="ti ti-star"></i> Avg Rating</div><div class="kpi-value">${avgRate}<span style="font-size:16px;color:var(--text2);"> /5</span></div></div>
+    <div class="kpi"><div class="kpi-label"><i class="ti ti-clipboard-list"></i> Surveys</div><div class="kpi-value">${S.surveys.length}</div></div>
+  </div>
+
+  ${S.surveys.length === 0
+    ? emptyState('clipboard-list', 'No surveys yet', 'Survey data will appear here once you collect shopper feedback.')
+    : S.surveys.map(s => `
+        <div class="rep-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div>
+              <div style="font-size:14px;font-weight:700;">${s.event_name}</div>
+              <div style="font-size:12px;color:var(--text2);">${s.date || ''} · ${s.responses || 0} responses</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:22px;font-weight:800;">${(s.rating||0).toFixed(1)}<span style="font-size:13px;font-weight:400;color:var(--text2);">/5</span></div>
+              <div class="star" style="font-size:14px;">${'★'.repeat(Math.round(s.rating || 0))}</div>
+            </div>
+          </div>
+          ${s.top_feedback ? `<div class="quote-block"><i class="ti ti-quote" style="font-size:13px;"></i> "${s.top_feedback}"</div>` : ''}
+        </div>
+      `).join('')}
+</div>`;
+}
+
+// ── STORES ─────────────────────────────────────────────────
+function storesView() {
+  return `
+<div class="topbar">
+  <div>
+    <div class="topbar-title">Store Directory</div>
+    <div class="topbar-sub">${S.stores.length} stores in territory</div>
+  </div>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="openNewStore()"><i class="ti ti-plus"></i> Add Store</button>
+  </div>
+</div>
+<div class="page">
+  <div class="kpi-grid kpi-3">
+    <div class="kpi"><div class="kpi-label"><i class="ti ti-building-store"></i> Total Stores</div><div class="kpi-value">${S.stores.length}</div></div>
+    <div class="kpi"><div class="kpi-label"><i class="ti ti-flag"></i> High Priority</div><div class="kpi-value">${S.stores.filter(s=>s.priority==='high').length}</div></div>
+    <div class="kpi"><div class="kpi-label"><i class="ti ti-calendar"></i> Avg Demos/Store</div><div class="kpi-value">${S.stores.length ? (S.stores.reduce((a,s)=>a+(s.total_demos||0),0)/S.stores.length).toFixed(1) : '—'}</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    ${S.stores.length === 0
+      ? emptyState('building-store', 'No stores yet', 'Add your retail locations to start scheduling demos.')
+      : `<table>
+          <thead><tr><th>Store Name</th><th>Retailer</th><th>Manager</th><th>Last Demo</th><th>Demos</th><th>Priority</th><th>Actions</th></tr></thead>
+          <tbody>
+            ${S.stores.map(s => `
+              <tr>
+                <td>
+                  <div style="font-weight:600;">${s.name}</div>
+                  <div style="font-size:11px;color:var(--text2);">${s.address || ''}</div>
+                </td>
+                <td>${s.retailer || '—'}</td>
+                <td>
+                  <div>${s.manager || '—'}</div>
+                  <div style="font-size:11px;color:var(--text2);">${s.phone || ''}</div>
+                </td>
+                <td style="color:var(--text2);">${s.last_demo || '—'}</td>
+                <td style="font-weight:700;">${s.total_demos || 0}</td>
+                <td>${badge(s.priority)}</td>
+                <td>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-primary btn-sm" onclick="openModal('modal-event')"><i class="ti ti-calendar-plus"></i> Schedule</button>
+                    <button class="btn btn-sm btn-icon" onclick="editStore(${s.id})"><i class="ti ti-edit"></i></button>
+                    <button class="btn btn-sm btn-icon btn-danger" onclick="deleteStore(${s.id})"><i class="ti ti-trash"></i></button>
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`}
+  </div>
+</div>`;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CHARTS
+═══════════════════════════════════════════════════════════ */
+function initCharts() {
+  Object.values(S.charts).forEach(c => c.destroy());
+  S.charts = {};
+
+  const dark  = matchMedia('(prefers-color-scheme: dark)').matches;
+  const grid  = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  const ticks = dark ? '#777' : '#888';
+  const done  = S.events.filter(e => e.status === 'completed' && e.sales_lift);
+
+  const lEl = document.getElementById('liftChart');
+  if (lEl && done.length) {
+    S.charts.lift = new Chart(lEl, {
+      type: 'bar',
+      data: {
+        labels: done.map(e => e.retailer || e.name.split(' ')[0]),
+        datasets: [{ label: 'Sales Lift %', data: done.map(e => e.sales_lift),
+          backgroundColor: '#1D9E75', borderRadius: 5 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: ticks, font: { size: 11 }, maxRotation: 30 } },
+          y: { grid: { color: grid }, ticks: { color: ticks, callback: v => '+' + v + '%' } }
+        }
+      }
+    });
+  }
+
+  const rEl = document.getElementById('retChart');
+  if (rEl && S.events.length) {
+    const ret = {};
+    S.events.forEach(e => { if (e.retailer) ret[e.retailer] = (ret[e.retailer] || 0) + 1; });
+    if (Object.keys(ret).length) {
+      S.charts.ret = new Chart(rEl, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(ret),
+          datasets: [{ data: Object.values(ret),
+            backgroundColor: ['#1D9E75','#378ADD','#D4537E','#EF9F27','#7F77DD','#E24B4A'],
+            borderWidth: 0 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '60%',
+          plugins: { legend: { position: 'right', labels: { font: { size: 11 }, color: ticks, padding: 12 } } }
+        }
+      });
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════════ */
+const VIEWS = {
+  dashboard:   dashboardView,
+  events:      eventsView,
+  ambassadors: ambassadorsView,
+  reports:     reportsView,
+  payments:    paymentsView,
+  analytics:   analyticsView,
+  surveys:     surveysView,
+  stores:      storesView,
+};
+
+function renderMain() {
+  document.getElementById('main').innerHTML = VIEWS[S.view]();
+  if (S.view === 'analytics') setTimeout(initCharts, 60);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════════════════════ */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Click backdrop to close
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('modal-backdrop')) e.target.classList.remove('open');
+});
+
+function clearForm(ids) { ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; }); }
+
+function openNewEvent() {
+  document.getElementById('modal-event-title').textContent = 'Schedule New Event';
+  clearForm(['evt-id','evt-name','evt-product','evt-store','evt-retailer','evt-date','evt-time','evt-ambassador','evt-budget','evt-notes']);
+  openModal('modal-event');
+}
+
+function editEvent(id) {
+  const e = S.events.find(ev => ev.id === id);
+  if (!e) return;
+  document.getElementById('modal-event-title').textContent = 'Edit Event';
+  document.getElementById('evt-id').value          = e.id;
+  document.getElementById('evt-name').value        = e.name || '';
+  document.getElementById('evt-product').value     = e.product || '';
+  document.getElementById('evt-store').value       = e.store || '';
+  document.getElementById('evt-retailer').value    = e.retailer || '';
+  document.getElementById('evt-date').value        = e.date || '';
+  document.getElementById('evt-time').value        = e.time || '';
+  document.getElementById('evt-ambassador').value  = e.ambassador || '';
+  document.getElementById('evt-budget').value      = e.budget || '';
+  document.getElementById('evt-notes').value       = e.notes || '';
+  openModal('modal-event');
+}
+
+function openNewAmb() {
+  clearForm(['amb-id','amb-name','amb-email','amb-phone','amb-city','amb-rate','amb-rating']);
+  openModal('modal-amb');
+}
+
+function editAmb(id) {
+  const a = S.ambassadors.find(x => x.id === id);
+  if (!a) return;
+  document.getElementById('amb-id').value        = a.id;
+  document.getElementById('amb-name').value      = a.name || '';
+  document.getElementById('amb-email').value     = a.email || '';
+  document.getElementById('amb-phone').value     = a.phone || '';
+  document.getElementById('amb-city').value      = a.city || '';
+  document.getElementById('amb-rate').value      = a.rate || '';
+  document.getElementById('amb-specialty').value = a.specialty || 'Whole Foods';
+  document.getElementById('amb-status').value    = a.status || 'active';
+  document.getElementById('amb-rating').value    = a.rating || 5.0;
+  openModal('modal-amb');
+}
+
+function openNewReport() {
+  clearForm(['rep-id','rep-event','rep-ambassador','rep-date','rep-units','rep-samples','rep-photos','rep-lift','rep-feedback']);
+  openModal('modal-report');
+}
+
+function openNewStore() {
+  clearForm(['sto-id','sto-name','sto-retailer','sto-address','sto-manager','sto-phone']);
+  document.getElementById('sto-priority').value = 'medium';
+  openModal('modal-store');
+}
+
+function editStore(id) {
+  const s = S.stores.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('sto-id').value       = s.id;
+  document.getElementById('sto-name').value     = s.name || '';
+  document.getElementById('sto-retailer').value = s.retailer || '';
+  document.getElementById('sto-priority').value = s.priority || 'medium';
+  document.getElementById('sto-address').value  = s.address || '';
+  document.getElementById('sto-manager').value  = s.manager || '';
+  document.getElementById('sto-phone').value    = s.phone || '';
+  openModal('modal-store');
+}
+
+function openNewPayment() {
+  clearForm(['pay-id','pay-ambassador','pay-event','pay-date','pay-hours','pay-rate','pay-expenses']);
+  openModal('modal-payment');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOADING + TOAST
+═══════════════════════════════════════════════════════════ */
+function showLoading() { document.getElementById('loading').classList.add('show'); }
+function hideLoading() { document.getElementById('loading').classList.remove('show'); }
+
+let toastTimer;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = 'show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FILTER
+═══════════════════════════════════════════════════════════ */
+function sf(type, val) {
+  S.filters[type] = val;
+  renderMain();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESET CONFIG (for troubleshooting)
+═══════════════════════════════════════════════════════════ */
+function resetConfig() {
+  if (confirm('Reset Supabase credentials? The page will reload.')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+</script>
+</body>
+</html>
