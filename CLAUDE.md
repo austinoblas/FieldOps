@@ -1,74 +1,50 @@
-# FieldOps — Claude Code Brain
+# CLAUDE.md — FieldOps
+> Read this at the start of every session.
 
-## Project overview
+## Project
+- App: FieldOps — Field Marketing Platform
+- Stack: Vanilla HTML/CSS/JS (single-file), Supabase, Chart.js, Tabler Icons
+- Hosting: GitHub Pages
+- Files: index.html (entire app), schema.sql (run once in Supabase), README.md
 
-Single-page HTML + JS field marketing management app. No build step, no framework — everything lives in `index.html`. Backend is a Supabase (PostgreSQL) project. Hosted on GitHub Pages.
+## Rules
+1. Never mass-edit more than 2 major sections without showing a plan first
+2. Always use str_replace / targeted edits — never rewrite the full file
+3. Test dark mode for any CSS change
+4. Preserve the existing CSS variable system
+5. No new CDN dependencies without approval
+6. Schema changes require ALTER TABLE SQL — never just edit schema.sql
+7. If a task needs 4+ file changes, write a plan first and wait for approval
 
-## Files
+## Conventions
+- State lives in S = { events, ambassadors, reports, payments, stores, surveys, view, filters, charts }
+- Views return HTML strings rendered via document.getElementById("main").innerHTML
+- Every view: [viewName]View() — e.g. dashboardView(), eventsView()
+- Supabase calls: always showLoading() / hideLoading() + check { error }
+- Toast: toast("message", "ok" | "err")
+- Commits: feat:, fix:, chore:, style:, refactor:, docs:
 
-```
-FieldOps/
-├── index.html   — entire app: HTML, CSS, JS in one file
-├── schema.sql   — run once in Supabase SQL Editor to create tables + seed data
-├── README.md    — setup guide for non-technical users
-└── vault/       — decisions, error logs, patterns, session notes, schema snapshots
-```
+## Supabase Tables
+events       id, name, store, retailer, date, time, status, ambassador, product, budget, notes, units_sold, samples, sales_lift
+ambassadors  id, name, email, phone, status, events_month, total_events, rating, specialty, rate, city
+reports      id, event_name, ambassador, date, status, units_sold, samples, feedback, photos, sales_lift
+payments     id, ambassador, event_name, date, hours, rate, expenses, total, status
+stores       id, name, retailer, address, manager, phone, priority, last_demo, total_demos
+surveys      id, event_name, responses, rating, top_feedback, date
 
-## Stack
+## Current Focus
+- [ ] Update this each session
 
-| Layer | Technology |
-|---|---|
-| Frontend | Vanilla JS, Tabler Icons (CDN) |
-| Backend | Supabase (PostgreSQL + RLS) |
-| Auth | None — credentials stored in localStorage |
-| Hosting | GitHub Pages |
-| CDN deps | `@supabase/supabase-js@2`, `@tabler/icons-webfont@2.44.0` |
+## Session Log
+| Date | What happened | Files changed |
+|------|---------------|---------------|
+| -    | Project setup | CLAUDE.md     |
 
-## Database tables
-
-| Table | Purpose |
-|---|---|
-| `events` | Demo events — schedule, status, results |
-| `ambassadors` | Brand ambassador roster, ratings, pay rates |
-| `reports` | Post-event reports with approval workflow |
-| `payments` | Ambassador pay tracking (pending → approved → paid) |
-| `stores` | Retailer location directory |
-| `surveys` | Shopper feedback per event |
-
-All tables use RLS with a permissive `"Public access"` policy (no auth layer).
-
-## App modules
-
-Dashboard · Events · Ambassadors · Reports · Payments · Analytics · Surveys · Store Directory
-
-## Git workflow (always follow)
-
-1. **Branch** — `git checkout -b <type>/<short-description>` before any change
-2. **Commit atomically** — one logical change per commit, present-tense message
-3. **Push + PR** — `git push -u origin <branch>` then `gh pr create`
-4. Never commit directly to `main`
-
-Branch naming: `feat/`, `fix/`, `refactor/`, `docs/`, `setup/`
-
-## Supabase notes
-
-- Credentials are entered by each user at first launch and stored in `localStorage`
-- `resetConfig()` in the browser console clears stored credentials
-- RLS is enabled on all tables; current policy allows full public access
-
-## Vault
-
-`vault/` is a structured knowledge store for this project:
-
-- `decisions/` — architectural and product decisions (ADRs)
-- `errors/` — bugs encountered and how they were fixed
-- `patterns/` — reusable code snippets and UI patterns specific to this app
-- `sessions/` — session summaries of significant work
-- `schema/` — point-in-time schema snapshots
-
-## Development notes
-
-- No local dev server needed — open `index.html` directly in a browser
-- All JS is inline; search for `// ──` section headers to navigate
-- Dark mode supported via `prefers-color-scheme` CSS media query
-- CSS variables defined in `:root` — use them for any new UI work
+## Backlog
+| Idea | Priority |
+|------|----------|
+| Supabase Auth | High |
+| Photo uploads on reports | Medium |
+| CSV export for payments | Medium |
+| Mobile sidebar | Medium |
+| Search/filter bar | Medium |
