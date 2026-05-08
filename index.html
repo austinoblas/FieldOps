@@ -787,25 +787,30 @@ function hardReset(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   AUTH INIT — onAuthStateChange drives all session state.
-   INITIAL_SESSION fires on page load; SIGNED_IN fires after
-   signInWithPassword. No separate getSession() needed.
+   AUTH INIT
+   1. getSession() handles page load / refresh / saved passwords.
+   2. onAuthStateChange handles SIGNED_IN (after login form)
+      and SIGNED_OUT. TOKEN_REFRESHED is intentionally ignored
+      to prevent reload loops.
 ═══════════════════════════════════════════════════════════ */
 async function initApp(){
+  // Step 1 — restore existing session immediately on page load
+  const{data:{session},error}=await db.auth.getSession();
+  if(session){
+    await loadUserAndStart(session);
+  } else {
+    showScreen('auth');
+  }
+
+  // Step 2 — respond to future sign-in / sign-out events
   db.auth.onAuthStateChange(async(event,session)=>{
     if(event==='SIGNED_OUT'){
       S.appStarted=false; S.currentUser=null; S.role=null;
       showScreen('auth');
       return;
     }
-    // INITIAL_SESSION = page load with existing stored session
-    // SIGNED_IN = user just logged in via signInWithPassword
-    if((event==='INITIAL_SESSION'||event==='SIGNED_IN')&&!S.appStarted){
-      if(session){
-        await loadUserAndStart(session);
-      } else {
-        showScreen('auth');
-      }
+    if(event==='SIGNED_IN'&&!S.appStarted){
+      await loadUserAndStart(session);
     }
   });
 }
