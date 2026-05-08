@@ -877,10 +877,11 @@ async function signIn(){
   errEl.classList.remove('show');
   if(!email||!password){showErr(errEl,'Email and password are required.');return;}
   showLoading();
-  const{error}=await db.auth.signInWithPassword({email,password});
+  const{data,error}=await db.auth.signInWithPassword({email,password});
   hideLoading();
   if(error){showErr(errEl,error.message);return;}
-  // onAuthStateChange SIGNED_IN handles the rest
+  // Call directly — don't rely on onAuthStateChange firing
+  if(data&&data.session){ S.appStarted=false; await loadUserAndStart(data.session); }
 }
 
 async function signUp(){
