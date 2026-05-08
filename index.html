@@ -749,17 +749,32 @@ tbody tr:hover td{background:var(--bg2);}
 let db = null;
 
 async function saveConfig() {
-  const url = document.getElementById('cfg-url').value.trim();
-  const key = document.getElementById('cfg-key').value.trim();
-  const errEl = document.getElementById('cfg-err');
+  const url    = document.getElementById('cfg-url').value.trim();
+  const key    = document.getElementById('cfg-key').value.trim();
+  const errEl  = document.getElementById('cfg-err');
+  const btn    = document.querySelector('#config-screen .btn-primary');
   errEl.classList.remove('show');
 
   if (!url || !key) { showErr(errEl, 'Both fields are required.'); return; }
   if (!url.startsWith('https://')) { showErr(errEl, 'URL must start with https://'); return; }
 
-  localStorage.setItem('fo_url', url);
-  localStorage.setItem('fo_key', key);
-  initApp();
+  btn.disabled = true;
+  btn.innerHTML = '<span style="opacity:.6">Connecting…</span>';
+
+  try {
+    const client = supabase.createClient(url, key);
+    // Verify the connection is real before saving
+    const { error } = await client.auth.getSession();
+    if (error) throw error;
+    db = client;
+    localStorage.setItem('fo_url', url);
+    localStorage.setItem('fo_key', key);
+    await initApp();
+  } catch(e) {
+    showErr(errEl, 'Could not connect — check your URL and key and try again.');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-arrow-right"></i> Continue';
+  }
 }
 
 function resetConfig() {
@@ -780,28 +795,55 @@ async function initApp() {
   if (!url || !key) { showScreen('config'); return; }
 
   try {
-    db = supabase.createClient(url, key);
+    if (!db) db = supabase.createClient(url, key);
   } catch (e) {
     showScreen('config');
     return;
   }
 
-  // Listen for auth state changes
+  // ── Auth state listener ──────────────────────────────────
+  // Handles only post-init changes: sign-in from the login form
+  // and sign-out. TOKEN_REFRESHED is intentionally ignored to
+  // prevent the reload loop that causes lag and forced sign-out.
   db.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_OUT' || !session) { showScreen('auth'); return; }
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+    if (event === 'SIGNED_OUT') {
+      S.appStarted = false;
+      showScreen('auth');
+      return;
+    }
+    // SIGNED_IN fires after the user submits the login form.
+    // Guard against double-fire with getSession() below.
+    if (event === 'SIGNED_IN' && !S.appStarted) {
       await loadUserAndStart(session);
     }
   });
 
-  const { data: { session } } = await db.auth.getSession();
-  if (!session) { showScreen('auth'); return; }
+  // ── Initial session check (page load / refresh) ──────────
+  const { data: { session }, error } = await db.auth.getSession();
+  if (error || !session) { showScreen('auth'); return; }
   await loadUserAndStart(session);
 }
 
 async function loadUserAndStart(session) {
-  const { data: profile } = await db.from('profiles').select('*').eq('id', session.user.id).single();
-  if (!profile || !profile.name) { showScreen('profile'); return; }
+  // Guard: only start once per session to prevent double-render
+  if (S.appStarted) return;
+  S.appStarted = true;
+
+  const { data: profile, error } = await db
+    .from('profiles').select('*').eq('id', session.user.id).single();
+
+  if (error || !profile) {
+    // Profile row may not exist yet right after signup —
+    // show the profile completion screen
+    showScreen('profile');
+    return;
+  }
+
+  if (!profile.name) {
+    showScreen('profile');
+    return;
+  }
+
   S.currentUser = { ...session.user, ...profile };
   S.role = profile.role || 'ambassador';
   startApp();
@@ -889,9 +931,10 @@ async function signUp() {
 }
 
 async function signOut() {
-  await db.auth.signOut();
+  S.appStarted = false;
   S.currentUser = null;
   S.role = null;
+  await db.auth.signOut();
   showScreen('auth');
 }
 
@@ -965,6 +1008,7 @@ const S = {
   view:'dashboard',
   currentUser: null,
   role: null,
+  appStarted: false,
   filters:{ e:'all', a:'all', r:'all', p:'all' },
   charts:{},
 };
