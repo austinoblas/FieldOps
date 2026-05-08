@@ -749,29 +749,45 @@ tbody tr:hover td{background:var(--bg2);}
 let db = null;
 
 async function saveConfig() {
-  const url    = document.getElementById('cfg-url').value.trim();
-  const key    = document.getElementById('cfg-key').value.trim();
-  const errEl  = document.getElementById('cfg-err');
-  const btn    = document.querySelector('#config-screen .btn-primary');
+  const url   = document.getElementById('cfg-url').value.trim();
+  const key   = document.getElementById('cfg-key').value.trim();
+  const errEl = document.getElementById('cfg-err');
+  const btn   = document.querySelector('#config-screen .btn-primary');
   errEl.classList.remove('show');
 
   if (!url || !key) { showErr(errEl, 'Both fields are required.'); return; }
   if (!url.startsWith('https://')) { showErr(errEl, 'URL must start with https://'); return; }
 
+  // Detect new publishable key format — not compatible with this library version
+  if (key.startsWith('sb_')) {
+    showErr(errEl,
+      'Please use the anon/public JWT key (starts with eyJ...), not the Publishable key. ' +
+      'Go to Supabase -> Settings -> API -> Project API Keys -> anon public.'
+    );
+    return;
+  }
+  if (!key.startsWith('eyJ')) {
+    showErr(errEl, 'Key format not recognised — it should start with eyJ... Find it in Supabase -> Settings -> API -> anon public.');
+    return;
+  }
+
   btn.disabled = true;
-  btn.innerHTML = '<span style="opacity:.6">Connecting…</span>';
+  btn.innerHTML = '<span style="opacity:.6">Connecting...</span>';
 
   try {
     const client = supabase.createClient(url, key);
-    // Verify the connection is real before saving
-    const { error } = await client.auth.getSession();
+    // Race the session check against an 8-second timeout
+    const timeout = new Promise((_, rej) =>
+      setTimeout(() => rej(new Error('Connection timed out — check your Project URL.')), 8000)
+    );
+    const { error } = await Promise.race([client.auth.getSession(), timeout]);
     if (error) throw error;
     db = client;
     localStorage.setItem('fo_url', url);
     localStorage.setItem('fo_key', key);
     await initApp();
   } catch(e) {
-    showErr(errEl, 'Could not connect — check your URL and key and try again.');
+    showErr(errEl, e.message || 'Could not connect — double-check your URL and anon key.');
     btn.disabled = false;
     btn.innerHTML = '<i class="ti ti-arrow-right"></i> Continue';
   }
