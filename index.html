@@ -1,92 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>FieldOps</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:#fff;--bg2:#f7f7f5;--bg3:#f0efeb;
-  --border:rgba(0,0,0,.10);--border2:rgba(0,0,0,.20);
-  --text:#1a1a18;--text2:#6b6b67;--text3:#9e9e9a;
-  --teal:#1D9E75;--teal-dk:#0F6E56;--teal-bg:#E1F5EE;
-  --blue:#378ADD;--blue-dk:#185FA5;--blue-bg:#E6F1FB;
-  --amber:#EF9F27;--amber-dk:#633806;--amber-bg:#FAEEDA;
-  --red:#E24B4A;--red-dk:#791F1F;--red-bg:#FCEBEB;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
-  --shadow-lg:0 4px 16px rgba(0,0,0,.12);
-  --radius:8px;--radius-lg:12px;
+  /* Core palette */
+  --bg:#ffffff;
+  --bg2:#f8f8f6;
+  --bg3:#f2f1ee;
+  --border:rgba(0,0,0,.08);
+  --border2:rgba(0,0,0,.16);
+  --text:#18181b;
+  --text2:#71717a;
+  --text3:#a1a1aa;
+
+  /* Brand */
+  --teal:#16a37f;
+  --teal-dk:#0d7a5f;
+  --teal-lt:#e6f7f2;
+  --teal-mid:#b2e8d8;
+
+  /* Semantic */
+  --blue:#3b82f6;
+  --blue-dk:#1d4ed8;
+  --blue-bg:#eff6ff;
+  --amber:#f59e0b;
+  --amber-dk:#92400e;
+  --amber-bg:#fffbeb;
+  --red:#ef4444;
+  --red-dk:#991b1b;
+  --red-bg:#fef2f2;
+  --purple:#8b5cf6;
+  --purple-dk:#5b21b6;
+  --purple-bg:#f5f3ff;
+
+  /* Sidebar */
+  --sb-bg:#16181d;
+  --sb-text:rgba(255,255,255,.7);
+  --sb-text-active:#ffffff;
+  --sb-hover:rgba(255,255,255,.06);
+  --sb-active:rgba(22,163,127,.18);
+  --sb-section:rgba(255,255,255,.25);
+  --sb-border:rgba(255,255,255,.07);
+
+  /* Elevation */
+  --shadow-xs:0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 1px 4px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.10),0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.14),0 2px 8px rgba(0,0,0,.06);
+  --shadow-xl:0 20px 60px rgba(0,0,0,.18);
+
+  --radius:8px;
+  --radius-lg:12px;
+  --radius-xl:16px;
 }
+
 @media(prefers-color-scheme:dark){
   :root{
-    --bg:#1c1c1a;--bg2:#242422;--bg3:#2c2c2a;
-    --border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.20);
-    --text:#ededeb;--text2:#9e9e9a;--text3:#6b6b67;
-    --teal-bg:#04342C;--blue-bg:#042C53;--amber-bg:#412402;--red-bg:#501313;
+    --bg:#18181b;--bg2:#1f1f23;--bg3:#27272a;
+    --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.14);
+    --text:#fafafa;--text2:#a1a1aa;--text3:#52525b;
+    --teal-lt:#062b22;--blue-bg:#1e293b;--amber-bg:#292215;--red-bg:#2d1515;--purple-bg:#1e1730;
+    --sb-bg:#0f1012;
   }
 }
 
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',system-ui,sans-serif;background:var(--bg3);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;}
 
 /* ── SHELL ── */
 #shell{display:flex;height:100vh;overflow:hidden;}
-#sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+#sidebar{width:228px;background:var(--sb-bg);display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid var(--sb-border);}
 #main{flex:1;overflow-y:auto;background:var(--bg3);min-width:0;}
 
 /* ── BRAND ── */
-.brand{padding:18px 16px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
-.brand-icon{width:32px;height:32px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.brand-icon i{color:#fff;font-size:16px;}
-.brand-name{font-size:14px;font-weight:700;color:var(--text);}
-.brand-sub{font-size:10px;color:var(--text2);}
+.brand{padding:20px 18px 16px;border-bottom:1px solid var(--sb-border);display:flex;align-items:center;gap:11px;}
+.brand-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--teal),var(--teal-dk));border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(22,163,127,.4);}
+.brand-icon i{color:#fff;font-size:17px;}
+.brand-name{font-size:14px;font-weight:800;color:#fff;letter-spacing:-.01em;}
+.brand-sub{font-size:10px;color:var(--sb-section);letter-spacing:.04em;text-transform:uppercase;}
 
 /* ── NAV ── */
-#nav{flex:1;padding:8px 0;overflow-y:auto;}
-.nav-section{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);padding:12px 16px 4px;}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;margin:1px 8px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--text2);transition:background .12s,color .12s;user-select:none;}
-.nav-item i{font-size:16px;flex-shrink:0;}
-.nav-item:hover{background:var(--bg);color:var(--text);}
-.nav-item.active{background:var(--bg);color:var(--teal-dk);font-weight:600;}
-.nav-badge{margin-left:auto;background:var(--red-bg);color:var(--red-dk);font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;}
+#nav{flex:1;padding:10px 10px;overflow-y:auto;}
+.nav-section{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--sb-section);padding:14px 8px 4px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;font-size:13px;color:var(--sb-text);transition:background .12s,color .12s;user-select:none;font-weight:500;}
+.nav-item i{font-size:17px;flex-shrink:0;opacity:.7;}
+.nav-item:hover{background:var(--sb-hover);color:var(--sb-text-active);}
+.nav-item:hover i{opacity:1;}
+.nav-item.active{background:var(--sb-active);color:var(--teal);font-weight:600;}
+.nav-item.active i{opacity:1;color:var(--teal);}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;min-width:18px;text-align:center;}
 
-.sidebar-user{padding:12px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+/* ── SIDEBAR USER ── */
+.sidebar-user{padding:14px 16px;border-top:1px solid var(--sb-border);display:flex;align-items:center;gap:10px;}
+.sidebar-user-name{font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sidebar-user-role{font-size:10px;color:var(--sb-section);}
 
 /* ── TOPBAR ── */
-.topbar{background:var(--bg);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.topbar-title{font-size:15px;font-weight:700;}
+.topbar{background:var(--bg);border-bottom:1px solid var(--border);padding:0 28px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:var(--shadow-xs);}
+.topbar-title{font-size:16px;font-weight:800;letter-spacing:-.02em;}
 .topbar-sub{font-size:12px;color:var(--text2);margin-top:1px;}
-.topbar-right{display:flex;align-items:center;gap:10px;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
 
 /* ── PAGE ── */
 .page{padding:24px 28px;}
 
 /* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;font-weight:500;transition:background .12s;white-space:nowrap;}
-.btn:hover{background:var(--bg2);}
-.btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;font-weight:600;transition:all .15s;white-space:nowrap;text-decoration:none;box-shadow:var(--shadow-xs);}
+.btn:hover{background:var(--bg2);box-shadow:var(--shadow);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
 .btn i{font-size:15px;}
-.btn-primary{background:var(--teal);color:#fff;border-color:var(--teal);}
-.btn-primary:hover{background:var(--teal-dk);}
-.btn-danger{background:var(--red-bg);color:var(--red-dk);border-color:transparent;}
+.btn-primary{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 1px 4px rgba(22,163,127,.3);}
+.btn-primary:hover{background:var(--teal-dk);border-color:var(--teal-dk);box-shadow:0 2px 8px rgba(22,163,127,.35);}
+.btn-export{background:var(--bg);color:var(--text2);border-color:var(--border2);}
+.btn-export:hover{background:var(--bg2);color:var(--text);}
+.btn-danger{background:var(--red-bg);color:var(--red-dk);border-color:transparent;box-shadow:none;}
+.btn-danger:hover{background:#fecaca;box-shadow:none;}
 .btn-sm{padding:5px 10px;font-size:12px;}
 .btn-sm i{font-size:13px;}
 .btn-icon{padding:6px 8px;}
-.btn-ghost{background:none;border-color:transparent;color:var(--text2);}
-.btn-ghost:hover{background:var(--bg2);color:var(--text);}
+.btn-ghost{background:none;border-color:transparent;color:var(--sb-text);box-shadow:none;}
+.btn-ghost:hover{background:var(--sb-hover);color:var(--sb-text-active);box-shadow:none;}
 
 /* ── TABS ── */
-.tabs{display:flex;gap:3px;margin-bottom:20px;flex-wrap:wrap;}
-.tab{padding:6px 13px;border-radius:var(--radius);font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:inherit;transition:background .12s;}
-.tab:hover{background:var(--bg2);}
-.tab.active{background:var(--bg2);color:var(--text);}
+.tabs{display:flex;gap:2px;margin-bottom:20px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:4px;width:fit-content;}
+.tab{padding:6px 14px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--text2);font-family:inherit;transition:all .12s;}
+.tab:hover{color:var(--text);}
+.tab.active{background:var(--bg3);color:var(--text);box-shadow:var(--shadow-xs);}
 
 /* ── CARDS ── */
-.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow);}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px 22px;box-shadow:var(--shadow);}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .card-title{font-size:14px;font-weight:700;}
 
@@ -95,20 +144,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .kpi-4{grid-template-columns:repeat(4,1fr);}
 .kpi-3{grid-template-columns:repeat(3,1fr);}
 .kpi-2{grid-template-columns:repeat(2,1fr);}
-.kpi{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);}
-.kpi-label{font-size:11px;color:var(--text2);font-weight:600;display:flex;align-items:center;gap:5px;margin-bottom:6px;}
-.kpi-label i{font-size:14px;}
-.kpi-value{font-size:28px;font-weight:700;line-height:1;}
-.kpi-sub{font-size:11px;color:var(--text2);margin-top:5px;}
+.kpi{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--blue));border-radius:var(--radius-lg) var(--radius-lg) 0 0;}
+.kpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.kpi-icon i{font-size:18px;}
+.kpi-label{font-size:11px;color:var(--text2);font-weight:700;letter-spacing:.03em;text-transform:uppercase;margin-bottom:6px;}
+.kpi-value{font-size:30px;font-weight:800;line-height:1;letter-spacing:-.02em;}
+.kpi-sub{font-size:11px;color:var(--text2);margin-top:6px;}
 
 /* ── BADGES ── */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
-.badge-ok{background:var(--teal-bg);color:var(--teal-dk);}
+.badge-ok{background:var(--teal-lt);color:var(--teal-dk);}
 .badge-warn{background:var(--amber-bg);color:var(--amber-dk);}
 .badge-info{background:var(--blue-bg);color:var(--blue-dk);}
 .badge-danger{background:var(--red-bg);color:var(--red-dk);}
-.badge-gray{background:var(--bg2);color:var(--text2);border:1px solid var(--border);}
-.badge-purple{background:#EEEDFE;color:#3C3489;}
+.badge-gray{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+.badge-purple{background:var(--purple-bg);color:var(--purple-dk);}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
 
 /* ── SH ── */
 .sh{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;}
@@ -120,105 +172,107 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 /* ── TABLE ── */
 .tbl-wrap{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);}
 table{width:100%;border-collapse:collapse;font-size:13px;}
-th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:var(--text2);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap;}
-td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+th{text-align:left;padding:11px 16px;font-size:11px;font-weight:700;color:var(--text2);background:var(--bg2);border-bottom:1px solid var(--border);white-space:nowrap;letter-spacing:.03em;text-transform:uppercase;}
+td{padding:12px 16px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tbody tr:hover td{background:var(--bg2);}
-.tbl-title{padding:14px 18px 12px;font-size:14px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.tbl-title{padding:16px 20px 14px;font-size:14px;font-weight:700;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 
 /* ── EVENT ROW ── */
 .erow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
 .erow:last-child{border-bottom:none;}
 
 /* ── EVENT CARD ── */
-.event-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);margin-bottom:8px;transition:box-shadow .15s,border-color .15s;}
-.event-card:hover{box-shadow:var(--shadow-lg);border-color:var(--border2);}
-.event-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;}
-.event-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:4px;}
+.event-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow);margin-bottom:8px;transition:box-shadow .15s,border-color .15s;}
+.event-card:hover{box-shadow:var(--shadow-md);border-color:var(--border2);}
+.event-icon{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;}
+.event-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:5px;}
 .event-meta span{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:4px;}
 
 /* ── AMB CARD ── */
-.amb-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s;}
-.amb-card:hover{box-shadow:var(--shadow-lg);}
+.amb-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;transition:box-shadow .15s,border-color .15s;}
+.amb-card:hover{box-shadow:var(--shadow-md);border-color:var(--border2);}
 .amb-stats{display:flex;gap:8px;}
-.amb-stat{flex:1;background:var(--bg2);border-radius:var(--radius);padding:9px;text-align:center;}
-.amb-stat-val{font-size:17px;font-weight:700;}
-.amb-stat-lbl{font-size:10px;color:var(--text2);margin-top:1px;}
+.amb-stat{flex:1;background:var(--bg2);border-radius:var(--radius);padding:10px;text-align:center;border:1px solid var(--border);}
+.amb-stat-val{font-size:18px;font-weight:800;letter-spacing:-.02em;}
+.amb-stat-lbl{font-size:10px;color:var(--text2);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
 
 /* ── REP CARD ── */
-.rep-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow);margin-bottom:10px;}
-.rep-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0;}
-.rep-stat{background:var(--bg2);border-radius:var(--radius);padding:9px;text-align:center;}
-.rep-stat-val{font-size:17px;font-weight:700;}
-.rep-stat-lbl{font-size:10px;color:var(--text2);}
-.quote-block{background:var(--bg2);border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding:9px 12px;font-size:12px;color:var(--text2);font-style:italic;margin-bottom:10px;}
+.rep-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;box-shadow:var(--shadow);margin-bottom:10px;transition:box-shadow .15s;}
+.rep-card:hover{box-shadow:var(--shadow-md);}
+.rep-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;}
+.rep-stat{background:var(--bg2);border-radius:var(--radius);padding:10px;text-align:center;border:1px solid var(--border);}
+.rep-stat-val{font-size:18px;font-weight:800;letter-spacing:-.02em;}
+.rep-stat-lbl{font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:2px;}
+.quote-block{background:var(--bg2);border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding:10px 14px;font-size:12px;color:var(--text2);font-style:italic;margin-bottom:12px;}
 
 /* ── GRIDS ── */
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
 
 /* ── MISC ── */
-.star{color:#EF9F27;font-size:12px;}
+.star{color:var(--amber);font-size:12px;}
 .stat-up{color:var(--teal);font-weight:700;}
 .stat-warn{color:var(--amber);font-weight:700;}
 .stat-dn{color:var(--red);font-weight:700;}
 
 /* ── MODAL ── */
-.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;}
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
 .modal-backdrop.open{display:flex;}
-.modal{background:var(--bg);border-radius:var(--radius-lg);padding:24px 28px;width:500px;max-width:96vw;box-shadow:0 8px 40px rgba(0,0,0,.22);position:relative;max-height:90vh;overflow-y:auto;}
-.modal-title{font-size:16px;font-weight:800;margin-bottom:18px;}
-.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:var(--text2);font-size:20px;}
-.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;}
+.modal{background:var(--bg);border-radius:var(--radius-xl);padding:28px 30px;width:520px;max-width:96vw;box-shadow:var(--shadow-xl);position:relative;max-height:90vh;overflow-y:auto;border:1px solid var(--border);}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:20px;letter-spacing:-.02em;padding-right:32px;}
+.modal-close{position:absolute;top:18px;right:18px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;color:var(--text2);font-size:14px;padding:4px 7px;line-height:1;display:flex;align-items:center;transition:background .12s;}
+.modal-close:hover{background:var(--bg2);}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:8px;padding-top:16px;border-top:1px solid var(--border);}
 
 /* ── FORMS ── */
-.form-group{margin-bottom:14px;}
-.form-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block;}
-.form-input,.form-select,.form-textarea{width:100%;padding:8px 12px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(29,158,117,.12);}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;display:block;letter-spacing:.02em;}
+.form-input,.form-select,.form-textarea{width:100%;padding:9px 13px;border:1.5px solid var(--border2);border-radius:var(--radius);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s,box-shadow .15s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(22,163,127,.12);}
 .form-textarea{min-height:80px;resize:vertical;}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.form-hint{font-size:11px;color:var(--text2);margin-top:3px;}
-.form-err{font-size:12px;color:var(--red-dk);margin-top:4px;background:var(--red-bg);padding:8px 10px;border-radius:var(--radius);display:none;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-hint{font-size:11px;color:var(--text2);margin-top:4px;}
+.form-err{font-size:12px;color:var(--red-dk);margin-bottom:12px;background:var(--red-bg);padding:9px 12px;border-radius:var(--radius);display:none;border:1px solid rgba(239,68,68,.2);}
 .form-err.show{display:block;}
 
 /* ── LOADING ── */
-.loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;align-items:center;justify-content:center;}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(2px);}
 .loading-overlay.show{display:flex;}
 .spinner{width:40px;height:40px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── TOAST ── */
-#toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);z-index:400;opacity:0;transition:opacity .3s,transform .3s;transform:translateY(8px);pointer-events:none;}
-#toast.show{opacity:1;transform:translateY(0);}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(12px);background:var(--text);color:var(--bg);padding:11px 20px;border-radius:var(--radius-lg);font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);z-index:400;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #toast.ok{background:var(--teal-dk);color:#fff;}
 #toast.err{background:var(--red-dk);color:#fff;}
 
 /* ── EMPTY ── */
-.empty{text-align:center;padding:48px 20px;color:var(--text2);font-size:13px;}
-.empty i{font-size:40px;margin-bottom:10px;display:block;color:var(--text3);}
-.empty strong{display:block;margin-bottom:4px;font-size:15px;color:var(--text);}
+.empty{text-align:center;padding:52px 20px;color:var(--text2);font-size:13px;}
+.empty i{font-size:44px;margin-bottom:12px;display:block;color:var(--text3);}
+.empty strong{display:block;margin-bottom:5px;font-size:15px;color:var(--text);font-weight:700;}
 
-/* ── FULL SCREEN CARDS (config, auth, profile) ── */
-.fullscreen{position:fixed;inset:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;z-index:500;}
-.fs-card{background:var(--bg);border-radius:var(--radius-lg);padding:36px 40px;width:460px;max-width:96vw;box-shadow:var(--shadow-lg);border:1px solid var(--border);}
-.fs-logo{width:44px;height:44px;background:var(--teal);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
-.fs-logo i{color:#fff;font-size:22px;}
-.fs-title{font-size:22px;font-weight:800;margin-bottom:4px;}
-.fs-sub{font-size:13px;color:var(--text2);margin-bottom:24px;}
+/* ── FULLSCREEN (auth, profile) ── */
+.fullscreen{position:fixed;inset:0;background:linear-gradient(135deg,#0d1117 0%,#16181d 50%,#0d2b22 100%);display:flex;align-items:center;justify-content:center;z-index:500;}
+.fs-card{background:var(--bg);border-radius:var(--radius-xl);padding:40px 44px;width:460px;max-width:96vw;box-shadow:var(--shadow-xl);border:1px solid var(--border);}
+.fs-logo{width:48px;height:48px;background:linear-gradient(135deg,var(--teal),var(--teal-dk));border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 4px 14px rgba(22,163,127,.4);}
+.fs-logo i{color:#fff;font-size:24px;}
+.fs-title{font-size:24px;font-weight:800;margin-bottom:4px;letter-spacing:-.03em;}
+.fs-sub{font-size:13px;color:var(--text2);margin-bottom:26px;line-height:1.5;}
 
 /* ── AUTH TABS ── */
-.auth-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;}
-.auth-tab{flex:1;text-align:center;padding:10px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s;}
-.auth-tab.active{color:var(--teal-dk);border-bottom-color:var(--teal);}
+.auth-tabs{display:flex;gap:0;background:var(--bg3);border-radius:var(--radius);padding:4px;margin-bottom:24px;}
+.auth-tab{flex:1;text-align:center;padding:9px;font-size:13px;font-weight:600;cursor:pointer;color:var(--text2);border-radius:6px;transition:all .15s;}
+.auth-tab.active{background:var(--bg);color:var(--text);box-shadow:var(--shadow-xs);}
 
-/* ── PROFILE NOTICE ── */
-.notice{background:var(--blue-bg);border:1px solid rgba(55,138,221,.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--blue-dk);margin-bottom:16px;display:flex;align-items:flex-start;gap:8px;}
+/* ── NOTICE ── */
+.notice{background:var(--blue-bg);border:1px solid rgba(59,130,246,.15);border-radius:var(--radius);padding:11px 14px;font-size:12px;color:var(--blue-dk);margin-bottom:18px;display:flex;align-items:flex-start;gap:9px;}
 .notice i{font-size:15px;flex-shrink:0;margin-top:1px;}
 
 /* ── AMBASSADOR SCHEDULE ── */
-.amb-event-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:10px;box-shadow:var(--shadow);transition:box-shadow .15s;}
-.amb-event-card:hover{box-shadow:var(--shadow-lg);}
+.amb-event-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:10px;box-shadow:var(--shadow);transition:box-shadow .15s,border-color .15s;}
+.amb-event-card:hover{box-shadow:var(--shadow-md);}
 .amb-event-card.needs-confirm{border-left:3px solid var(--amber);}
 .amb-event-card.confirmed{border-left:3px solid var(--teal);}
 .amb-event-card.pending{border-left:3px solid var(--blue);}
@@ -228,17 +282,20 @@ tbody tr:hover td{background:var(--bg2);}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+/* ── SECTION LABEL ── */
+.section-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;}
 </style>
 </head>
 <body>
 
-
-<!-- ══════════════════════════════════════════════════════════
-     SCREEN 2 — LOGIN / SIGN UP
-══════════════════════════════════════════════════════════ -->
+<!-- AUTH SCREEN -->
 <div id="auth-screen" class="fullscreen">
   <div class="fs-card">
     <div class="fs-logo"><i class="ti ti-map-pin"></i></div>
+    <h1 class="fs-title">FieldOps</h1>
+    <p class="fs-sub">Field Marketing Platform — sign in to continue.</p>
     <div class="auth-tabs">
       <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Log In</div>
       <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</div>
@@ -248,18 +305,19 @@ tbody tr:hover td{background:var(--bg2);}
     <div id="login-form">
       <div class="form-group">
         <label class="form-label">Email</label>
-        <input id="login-email" class="form-input" type="email" placeholder="you@example.com" />
+        <input id="login-email" class="form-input" type="email" autocomplete="email" placeholder="you@example.com"/>
       </div>
       <div class="form-group">
         <label class="form-label">Password</label>
-        <input id="login-password" class="form-input" type="password" placeholder="Your password" />
+        <input id="login-password" class="form-input" type="password" autocomplete="current-password" placeholder="Your password"
+          onkeydown="if(event.key==='Enter')signIn()"/>
       </div>
       <div id="login-err" class="form-err"></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="signIn()">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px 16px;font-size:14px;" onclick="signIn()">
         <i class="ti ti-login"></i> Log In
       </button>
-      <p style="font-size:11px;color:var(--text2);text-align:center;margin-top:12px;">
-        Don't have an account? <span style="color:var(--teal);cursor:pointer;" onclick="switchAuthTab('signup')">Sign up →</span>
+      <p style="font-size:11px;color:var(--text2);text-align:center;margin-top:14px;">
+        No account? <span style="color:var(--teal);cursor:pointer;font-weight:600;" onclick="switchAuthTab('signup')">Sign up →</span>
       </p>
     </div>
 
@@ -268,12 +326,12 @@ tbody tr:hover td{background:var(--bg2);}
       <div class="notice"><i class="ti ti-info-circle"></i> Your manager will have shared which role to select.</div>
       <div class="form-group">
         <label class="form-label">Full Name</label>
-        <input id="su-name" class="form-input" placeholder="First and last name" />
+        <input id="su-name" class="form-input" autocomplete="name" placeholder="First and last name"/>
       </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input id="su-email" class="form-input" type="email" placeholder="you@example.com" />
+          <input id="su-email" class="form-input" type="email" autocomplete="email" placeholder="you@example.com"/>
         </div>
         <div class="form-group">
           <label class="form-label">Role</label>
@@ -286,31 +344,29 @@ tbody tr:hover td{background:var(--bg2);}
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Password</label>
-          <input id="su-password" class="form-input" type="password" placeholder="Min 6 characters" />
+          <input id="su-password" class="form-input" type="password" autocomplete="new-password" placeholder="Min 6 characters"/>
         </div>
         <div class="form-group">
           <label class="form-label">Confirm Password</label>
-          <input id="su-confirm" class="form-input" type="password" placeholder="Repeat password" />
+          <input id="su-confirm" class="form-input" type="password" autocomplete="new-password" placeholder="Repeat password"/>
         </div>
       </div>
       <div id="signup-err" class="form-err"></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="signUp()">
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:10px 16px;font-size:14px;" onclick="signUp()">
         <i class="ti ti-user-plus"></i> Create Account
       </button>
-      <p style="font-size:11px;color:var(--text2);text-align:center;margin-top:12px;">
-        Already have an account? <span style="color:var(--teal);cursor:pointer;" onclick="switchAuthTab('login')">Log in →</span>
+      <p style="font-size:11px;color:var(--text2);text-align:center;margin-top:14px;">
+        Have an account? <span style="color:var(--teal);cursor:pointer;font-weight:600;" onclick="switchAuthTab('login')">Log in →</span>
       </p>
     </div>
 
-    <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:16px;">
-      Having trouble? <span style="color:var(--teal);cursor:pointer;" onclick="resetConfig()">Clear session &amp; reload</span>
+    <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:18px;">
+      Having trouble? <span style="color:var(--teal);cursor:pointer;" onclick="hardReset()">Clear session &amp; reload</span>
     </p>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     SCREEN 3 — COMPLETE YOUR PROFILE
-══════════════════════════════════════════════════════════ -->
+<!-- PROFILE SETUP SCREEN -->
 <div id="profile-screen" class="fullscreen" style="display:none;">
   <div class="fs-card">
     <div class="fs-logo"><i class="ti ti-user-circle"></i></div>
@@ -319,16 +375,16 @@ tbody tr:hover td{background:var(--bg2);}
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Full Name *</label>
-        <input id="prof-name" class="form-input" placeholder="First and last name" />
+        <input id="prof-name" class="form-input" autocomplete="name" placeholder="First and last name"/>
       </div>
       <div class="form-group">
         <label class="form-label">Phone</label>
-        <input id="prof-phone" class="form-input" placeholder="(480) 555-0000" />
+        <input id="prof-phone" class="form-input" autocomplete="tel" placeholder="(480) 555-0000"/>
       </div>
     </div>
     <div class="form-group">
       <label class="form-label">Home Address</label>
-      <input id="prof-address" class="form-input" placeholder="Street, City, State ZIP" />
+      <input id="prof-address" class="form-input" autocomplete="street-address" placeholder="Street, City, State ZIP"/>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -349,56 +405,56 @@ tbody tr:hover td{background:var(--bg2);}
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     MODALS
-══════════════════════════════════════════════════════════ -->
+<!-- ══ MODALS ══ -->
 
 <!-- Event (manager) -->
 <div class="modal-backdrop" id="modal-event">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-event')"><i class="ti ti-x"></i></button>
     <div class="modal-title" id="modal-event-title">Schedule New Event</div>
-    <input type="hidden" id="evt-id" />
+    <input type="hidden" id="evt-id"/>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Store Name *</label>
-        <input id="evt-store" class="form-input" placeholder="e.g. Whole Foods Scottsdale" oninput="autofillStoreAddress('evt')" list="evt-store-list" />
+        <input id="evt-store" class="form-input" placeholder="e.g. Whole Foods Scottsdale"
+          oninput="autofillStoreAddress('evt')" list="evt-store-list"/>
         <datalist id="evt-store-list"></datalist>
       </div>
       <div class="form-group">
         <label class="form-label">Store Address</label>
-        <input id="evt-store-address" class="form-input" placeholder="Street, City, State ZIP" />
+        <input id="evt-store-address" class="form-input" placeholder="Street, City, State ZIP"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Date *</label>
-        <input type="date" id="evt-date" class="form-input" />
+        <input type="date" id="evt-date" class="form-input"/>
       </div>
       <div class="form-group">
         <label class="form-label">Time</label>
-        <input id="evt-time" class="form-input" placeholder="12:00 – 4:00 PM" />
+        <input id="evt-time" class="form-input" placeholder="12:00 – 4:00 PM"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Product to Demo *</label>
-        <input id="evt-product" class="form-input" placeholder="Product name" />
+        <input id="evt-product" class="form-input" placeholder="Product name"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Hourly Rate ($)</label>
-        <input type="number" id="evt-rate" class="form-input" placeholder="20" step="0.50" />
+        <label class="form-label">Hourly Rate ($/hr)</label>
+        <input type="number" id="evt-rate" class="form-input" placeholder="20" step="0.5"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Ambassador</label>
-        <input id="evt-ambassador" class="form-input" placeholder="Ambassador name" oninput="autofillAmbRate('evt')" list="evt-amb-list" />
+        <input id="evt-ambassador" class="form-input" placeholder="Ambassador name"
+          oninput="autofillAmbRate('evt')" list="evt-amb-list"/>
         <datalist id="evt-amb-list"></datalist>
       </div>
       <div class="form-group">
         <label class="form-label">Notes</label>
-        <input id="evt-notes" class="form-input" placeholder="Special instructions, etc." />
+        <input id="evt-notes" class="form-input" placeholder="Special instructions, etc."/>
       </div>
     </div>
     <div class="modal-footer">
@@ -408,7 +464,7 @@ tbody tr:hover td{background:var(--bg2);}
   </div>
 </div>
 
-<!-- Event Request (ambassador) - UPDATED -->
+<!-- Event Request (ambassador) -->
 <div class="modal-backdrop" id="modal-request">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-request')"><i class="ti ti-x"></i></button>
@@ -417,34 +473,34 @@ tbody tr:hover td{background:var(--bg2);}
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Store Name *</label>
-        <input id="req-store" class="form-input" placeholder="Store name" oninput="autofillStoreAddress('req')" list="req-store-list" />
+        <input id="req-store" class="form-input" placeholder="Store name"
+          oninput="autofillStoreAddress('req')" list="req-store-list"/>
         <datalist id="req-store-list"></datalist>
       </div>
       <div class="form-group">
         <label class="form-label">Store Address</label>
-        <input id="req-store-address" class="form-input" placeholder="Street, City, State ZIP" />
+        <input id="req-store-address" class="form-input" placeholder="Street, City, State ZIP"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Preferred Date *</label>
-        <input type="date" id="req-date" class="form-input" />
+        <input type="date" id="req-date" class="form-input"/>
       </div>
       <div class="form-group">
         <label class="form-label">Preferred Time</label>
-        <input id="req-time" class="form-input" placeholder="12:00 – 4:00 PM" />
+        <input id="req-time" class="form-input" placeholder="12:00 – 4:00 PM"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Product to Demo *</label>
-        <input id="req-product" class="form-input" placeholder="Product name" />
+        <input id="req-product" class="form-input" placeholder="Product name"/>
       </div>
       <div class="form-group">
         <label class="form-label">Hourly Rate ($)</label>
         <input type="number" id="req-rate" class="form-input" readonly
-          style="background:var(--bg3);cursor:not-allowed;"
-          title="Set by your manager on your profile" />
+          style="background:var(--bg3);cursor:not-allowed;" title="Set by your manager on your profile"/>
       </div>
     </div>
     <div class="modal-footer">
@@ -458,32 +514,32 @@ tbody tr:hover td{background:var(--bg2);}
 <div class="modal-backdrop" id="modal-amb">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-amb')"><i class="ti ti-x"></i></button>
-    <div class="modal-title">Add Ambassador to Roster</div>
-    <input type="hidden" id="amb-id" />
+    <div class="modal-title">Ambassador Profile</div>
+    <input type="hidden" id="amb-id"/>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Full Name *</label>
-        <input id="amb-name" class="form-input" placeholder="Full name" />
+        <input id="amb-name" class="form-input" placeholder="Full name"/>
       </div>
       <div class="form-group">
         <label class="form-label">Email</label>
-        <input type="email" id="amb-email" class="form-input" placeholder="email@example.com" />
+        <input type="email" id="amb-email" class="form-input" placeholder="email@example.com"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Phone</label>
-        <input id="amb-phone" class="form-input" placeholder="(480) 555-0000" />
+        <input id="amb-phone" class="form-input" placeholder="(480) 555-0000"/>
       </div>
       <div class="form-group">
         <label class="form-label">City</label>
-        <input id="amb-city" class="form-input" placeholder="Phoenix" />
+        <input id="amb-city" class="form-input" placeholder="Phoenix"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Hourly Rate ($)</label>
-        <input type="number" id="amb-rate" class="form-input" placeholder="20" />
+        <input type="number" id="amb-rate" class="form-input" placeholder="20"/>
       </div>
       <div class="form-group">
         <label class="form-label">Retailer Specialty</label>
@@ -504,13 +560,13 @@ tbody tr:hover td{background:var(--bg2);}
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Rating (0–5)</label>
-        <input type="number" id="amb-rating" class="form-input" step="0.1" min="0" max="5" placeholder="5.0" />
+        <label class="form-label">Rating</label>
+        <input type="number" id="amb-rating" class="form-input" placeholder="5.0" min="0" max="5" step="0.1"/>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn" onclick="closeModal('modal-amb')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveAmbassador()"><i class="ti ti-user-plus"></i> Save</button>
+      <button class="btn btn-primary" onclick="saveAmbassador()"><i class="ti ti-check"></i> Save Ambassador</button>
     </div>
   </div>
 </div>
@@ -519,44 +575,44 @@ tbody tr:hover td{background:var(--bg2);}
 <div class="modal-backdrop" id="modal-report">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-report')"><i class="ti ti-x"></i></button>
-    <div class="modal-title">Submit Post-Event Report</div>
-    <input type="hidden" id="rep-id" />
-    <div class="form-group">
-      <label class="form-label">Event Name *</label>
-      <input id="rep-event" class="form-input" placeholder="Event name" />
+    <div class="modal-title">Submit Event Report</div>
+    <input type="hidden" id="rep-id"/>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Event Name *</label>
+        <input id="rep-event" class="form-input" placeholder="Event name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ambassador</label>
+        <input id="rep-ambassador" class="form-input" placeholder="Your name"/>
+      </div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Ambassador</label>
-        <input id="rep-ambassador" class="form-input" placeholder="Your name" />
+        <label class="form-label">Date</label>
+        <input type="date" id="rep-date" class="form-input"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Date</label>
-        <input type="date" id="rep-date" class="form-input" />
+        <label class="form-label">Photos Taken</label>
+        <input type="number" id="rep-photos" class="form-input" placeholder="0"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Units Sold</label>
-        <input type="number" id="rep-units" class="form-input" placeholder="0" />
+        <input type="number" id="rep-units" class="form-input" placeholder="0"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Samples Distributed</label>
-        <input type="number" id="rep-samples" class="form-input" placeholder="0" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Photos Taken</label>
-        <input type="number" id="rep-photos" class="form-input" placeholder="0" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Sales Lift (%)</label>
-        <input type="number" id="rep-lift" class="form-input" placeholder="0" />
+        <label class="form-label">Samples Given</label>
+        <input type="number" id="rep-samples" class="form-input" placeholder="0"/>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Shopper Feedback & Notes</label>
+      <label class="form-label">Sales Lift (%)</label>
+      <input type="number" id="rep-lift" class="form-input" placeholder="0"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Shopper Feedback &amp; Notes</label>
       <textarea id="rep-feedback" class="form-textarea" placeholder="Shopper reactions, questions, sales performance..."></textarea>
     </div>
     <div class="modal-footer">
@@ -571,15 +627,15 @@ tbody tr:hover td{background:var(--bg2);}
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-store')"><i class="ti ti-x"></i></button>
     <div class="modal-title">Add Store</div>
-    <input type="hidden" id="sto-id" />
+    <input type="hidden" id="sto-id"/>
     <div class="form-group">
       <label class="form-label">Store Name *</label>
-      <input id="sto-name" class="form-input" placeholder="e.g. Whole Foods Scottsdale" />
+      <input id="sto-name" class="form-input" placeholder="e.g. Whole Foods Scottsdale"/>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Retailer</label>
-        <input id="sto-retailer" class="form-input" placeholder="e.g. Whole Foods" />
+        <input id="sto-retailer" class="form-input" placeholder="e.g. Whole Foods"/>
       </div>
       <div class="form-group">
         <label class="form-label">Priority</label>
@@ -592,16 +648,16 @@ tbody tr:hover td{background:var(--bg2);}
     </div>
     <div class="form-group">
       <label class="form-label">Address</label>
-      <input id="sto-address" class="form-input" placeholder="Street, City, State ZIP" />
+      <input id="sto-address" class="form-input" placeholder="Street, City, State ZIP"/>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Store Manager</label>
-        <input id="sto-manager" class="form-input" placeholder="Manager name" />
+        <input id="sto-manager" class="form-input" placeholder="Manager name"/>
       </div>
       <div class="form-group">
         <label class="form-label">Manager Phone</label>
-        <input id="sto-phone" class="form-input" placeholder="(480) 555-0000" />
+        <input id="sto-phone" class="form-input" placeholder="(480) 555-0000"/>
       </div>
     </div>
     <div class="modal-footer">
@@ -616,35 +672,35 @@ tbody tr:hover td{background:var(--bg2);}
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-payment')"><i class="ti ti-x"></i></button>
     <div class="modal-title">Log Ambassador Payment</div>
-    <input type="hidden" id="pay-id" />
+    <input type="hidden" id="pay-id"/>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Ambassador *</label>
-        <input id="pay-ambassador" class="form-input" placeholder="Ambassador name" />
+        <input id="pay-ambassador" class="form-input" placeholder="Ambassador name"/>
       </div>
       <div class="form-group">
         <label class="form-label">Event</label>
-        <input id="pay-event" class="form-input" placeholder="Event name" />
+        <input id="pay-event" class="form-input" placeholder="Event name"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Date</label>
-        <input type="date" id="pay-date" class="form-input" />
+        <input type="date" id="pay-date" class="form-input"/>
       </div>
       <div class="form-group">
         <label class="form-label">Hours Worked</label>
-        <input type="number" id="pay-hours" class="form-input" placeholder="4" step="0.5" />
+        <input type="number" id="pay-hours" class="form-input" placeholder="4" step="0.5"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Hourly Rate ($)</label>
-        <input type="number" id="pay-rate" class="form-input" placeholder="20" />
+        <input type="number" id="pay-rate" class="form-input" placeholder="20"/>
       </div>
       <div class="form-group">
         <label class="form-label">Expenses ($)</label>
-        <input type="number" id="pay-expenses" class="form-input" placeholder="0" />
+        <input type="number" id="pay-expenses" class="form-input" placeholder="0"/>
       </div>
     </div>
     <div class="modal-footer">
@@ -654,7 +710,7 @@ tbody tr:hover td{background:var(--bg2);}
   </div>
 </div>
 
-<!-- Edit My Profile -->
+<!-- My Profile -->
 <div class="modal-backdrop" id="modal-myprofile">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-myprofile')"><i class="ti ti-x"></i></button>
@@ -662,16 +718,16 @@ tbody tr:hover td{background:var(--bg2);}
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Full Name</label>
-        <input id="mp-name" class="form-input" />
+        <input id="mp-name" class="form-input" autocomplete="name"/>
       </div>
       <div class="form-group">
         <label class="form-label">Phone</label>
-        <input id="mp-phone" class="form-input" />
+        <input id="mp-phone" class="form-input" autocomplete="tel"/>
       </div>
     </div>
     <div class="form-group">
       <label class="form-label">Home Address</label>
-      <input id="mp-address" class="form-input" />
+      <input id="mp-address" class="form-input" autocomplete="street-address"/>
     </div>
     <div class="form-group">
       <label class="form-label">Shirt Size</label>
@@ -688,14 +744,11 @@ tbody tr:hover td{background:var(--bg2);}
   </div>
 </div>
 
-<!-- Loading -->
+<!-- Loading + Toast -->
 <div class="loading-overlay" id="loading"><div class="spinner"></div></div>
-<!-- Toast -->
 <div id="toast"></div>
 
-<!-- ══════════════════════════════════════════════════════════
-     APP SHELL
-══════════════════════════════════════════════════════════ -->
+<!-- APP SHELL -->
 <div id="shell" style="display:none;">
   <aside id="sidebar">
     <div class="brand">
@@ -707,10 +760,10 @@ tbody tr:hover td{background:var(--bg2);}
     </div>
     <nav id="nav"></nav>
     <div class="sidebar-user">
-      <div class="av" id="user-av" style="width:32px;height:32px;font-size:11px;background:#E1F5EE;color:#085041;">—</div>
+      <div class="av" id="user-av" style="width:34px;height:34px;font-size:12px;background:var(--sb-active);color:var(--teal);">—</div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:12px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="user-name">—</div>
-        <div style="font-size:10px;color:var(--text2);" id="user-role-label">—</div>
+        <div class="sidebar-user-name" id="user-name">—</div>
+        <div class="sidebar-user-role" id="user-role-label">—</div>
       </div>
       <button class="btn btn-ghost btn-icon" onclick="openMyProfile()" title="Edit profile"><i class="ti ti-user-circle" style="font-size:18px;"></i></button>
       <button class="btn btn-ghost btn-icon" onclick="signOut()" title="Sign out"><i class="ti ti-logout" style="font-size:18px;"></i></button>
@@ -721,165 +774,131 @@ tbody tr:hover td{background:var(--bg2);}
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   CONFIG — credentials hardcoded, single client instance
+   CONFIG — single Supabase client for the lifetime of the page
 ═══════════════════════════════════════════════════════════ */
 const FO_URL = 'https://jlzgpcrrwkcutpqjntku.supabase.co';
 const FO_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsemdwY3Jyd2tjdXRwcWpudGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMDQ5NjUsImV4cCI6MjA5MzY4MDk2NX0.Bw5a4pDuzTm2q6GmLheIXGvBiPwXZF6-dbnI3k8fCG8';
-
-// Create exactly one GoTrueClient for the lifetime of the page.
-// Never call supabase.createClient() again anywhere else.
 const db = supabase.createClient(FO_URL, FO_KEY);
 
-function resetConfig() {
-  if (confirm('This will sign you out and reload the app.')) {
-    db.auth.signOut();
-    localStorage.clear();
-    location.reload();
+function hardReset(){
+  if(confirm('This will sign you out and clear local storage. Continue?')){
+    db.auth.signOut().finally(()=>{localStorage.clear();location.reload();});
   }
 }
 
 /* ═══════════════════════════════════════════════════════════
-   INIT
+   AUTH INIT — onAuthStateChange drives all session state.
+   INITIAL_SESSION fires on page load; SIGNED_IN fires after
+   signInWithPassword. No separate getSession() needed.
 ═══════════════════════════════════════════════════════════ */
-async function initApp() {
-  // ── Auth state listener ──────────────────────────────────
-  // Handles only post-init changes: sign-in from the login form
-  // and sign-out. TOKEN_REFRESHED is intentionally ignored to
-  // prevent the reload loop that causes lag and forced sign-out.
-  db.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_OUT') {
-      S.appStarted = false;
+async function initApp(){
+  db.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_OUT'){
+      S.appStarted=false; S.currentUser=null; S.role=null;
       showScreen('auth');
       return;
     }
-    // SIGNED_IN fires after the user submits the login form.
-    // Guard against double-fire with getSession() below.
-    if (event === 'SIGNED_IN' && !S.appStarted) {
-      await loadUserAndStart(session);
+    // INITIAL_SESSION = page load with existing stored session
+    // SIGNED_IN = user just logged in via signInWithPassword
+    if((event==='INITIAL_SESSION'||event==='SIGNED_IN')&&!S.appStarted){
+      if(session){
+        await loadUserAndStart(session);
+      } else {
+        showScreen('auth');
+      }
     }
   });
-
-  // ── Initial session check (page load / refresh) ──────────
-  const { data: { session }, error } = await db.auth.getSession();
-  if (error || !session) { showScreen('auth'); return; }
-  await loadUserAndStart(session);
 }
 
-async function loadUserAndStart(session) {
-  // Guard: only start once per session to prevent double-render
-  if (S.appStarted) return;
-  S.appStarted = true;
+async function loadUserAndStart(session){
+  if(S.appStarted) return;
+  S.appStarted=true;
 
-  const { data: profile, error } = await db
-    .from('profiles').select('*').eq('id', session.user.id).single();
+  const{data:profile,error}=await db.from('profiles').select('*').eq('id',session.user.id).single();
 
-  if (error || !profile) {
-    // Profile row may not exist yet right after signup —
-    // show the profile completion screen
+  if(error||!profile||!profile.name){
     showScreen('profile');
     return;
   }
 
-  if (!profile.name) {
-    showScreen('profile');
-    return;
-  }
-
-  S.currentUser = { ...session.user, ...profile };
-  S.role = profile.role || 'ambassador';
+  S.currentUser={...session.user,...profile};
+  S.role=profile.role||'ambassador';
   startApp();
 }
 
-function startApp() {
+function startApp(){
   showScreen('app');
-  const name = S.currentUser.name || S.currentUser.email;
-  const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
-  document.getElementById('user-av').textContent = initials;
-  document.getElementById('user-name').textContent = name;
-  document.getElementById('user-role-label').textContent = S.role === 'manager' ? 'Field Manager' : 'Brand Ambassador';
-  document.getElementById('sidebar-role-label').textContent = S.role === 'manager' ? 'Manager Portal' : 'Ambassador Portal';
-  S.view = S.role === 'manager' ? 'dashboard' : 'schedule';
+  const name=S.currentUser.name||S.currentUser.email;
+  const initials=name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('user-av').textContent=initials;
+  document.getElementById('user-name').textContent=name;
+  document.getElementById('user-role-label').textContent=S.role==='manager'?'Field Manager':'Brand Ambassador';
+  document.getElementById('sidebar-role-label').textContent=S.role==='manager'?'Manager Portal':'Ambassador Portal';
+  S.view=S.role==='manager'?'dashboard':'schedule';
   renderNav();
   loadAll();
 }
 
-function showScreen(name) {
-  ['auth-screen','profile-screen','shell'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = 'none';
+function showScreen(name){
+  ['auth-screen','profile-screen','shell'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display='none';
   });
-  const map = { auth:'auth-screen', profile:'profile-screen', app:'shell' };
-  const el = document.getElementById(map[name]);
-  if (el) el.style.display = 'flex';
+  const map={auth:'auth-screen',profile:'profile-screen',app:'shell'};
+  const el=document.getElementById(map[name]);
+  if(el)el.style.display=name==='app'?'flex':'flex';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  initApp().catch(err => {
-    console.error('FieldOps init error:', err);
-    showScreen('auth');
-  });
+document.addEventListener('DOMContentLoaded',()=>{
+  initApp().catch(err=>{console.error('FieldOps init error:',err);showScreen('auth');});
 });
 
 /* ═══════════════════════════════════════════════════════════
-   AUTH
+   AUTH FUNCTIONS
 ═══════════════════════════════════════════════════════════ */
-function switchAuthTab(tab) {
-  document.getElementById('login-form').style.display  = tab === 'login'  ? 'block' : 'none';
-  document.getElementById('signup-form').style.display = tab === 'signup' ? 'block' : 'none';
-  document.getElementById('tab-login').classList.toggle('active',  tab === 'login');
-  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+function switchAuthTab(tab){
+  document.getElementById('login-form').style.display=tab==='login'?'block':'none';
+  document.getElementById('signup-form').style.display=tab==='signup'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-signup').classList.toggle('active',tab==='signup');
   document.getElementById('login-err').classList.remove('show');
   document.getElementById('signup-err').classList.remove('show');
 }
 
-async function signIn() {
-  const email    = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  const errEl    = document.getElementById('login-err');
+async function signIn(){
+  const email=document.getElementById('login-email').value.trim();
+  const password=document.getElementById('login-password').value;
+  const errEl=document.getElementById('login-err');
   errEl.classList.remove('show');
-
-  if (!email || !password) { showErr(errEl, 'Email and password are required.'); return; }
-
+  if(!email||!password){showErr(errEl,'Email and password are required.');return;}
   showLoading();
-  const { error } = await db.auth.signInWithPassword({ email, password });
+  const{error}=await db.auth.signInWithPassword({email,password});
   hideLoading();
-
-  if (error) { showErr(errEl, error.message); return; }
-  // onAuthStateChange handles the rest
+  if(error){showErr(errEl,error.message);return;}
+  // onAuthStateChange SIGNED_IN handles the rest
 }
 
-async function signUp() {
-  const name     = document.getElementById('su-name').value.trim();
-  const email    = document.getElementById('su-email').value.trim();
-  const role     = document.getElementById('su-role').value;
-  const password = document.getElementById('su-password').value;
-  const confirm  = document.getElementById('su-confirm').value;
-  const errEl    = document.getElementById('signup-err');
+async function signUp(){
+  const name=document.getElementById('su-name').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const role=document.getElementById('su-role').value;
+  const password=document.getElementById('su-password').value;
+  const confirm=document.getElementById('su-confirm').value;
+  const errEl=document.getElementById('signup-err');
   errEl.classList.remove('show');
-
-  if (!name || !email || !password) { showErr(errEl, 'Name, email, and password are required.'); return; }
-  if (password.length < 6)          { showErr(errEl, 'Password must be at least 6 characters.'); return; }
-  if (password !== confirm)         { showErr(errEl, 'Passwords do not match.'); return; }
-
+  if(!name||!email||!password){showErr(errEl,'Name, email, and password are required.');return;}
+  if(password.length<6){showErr(errEl,'Password must be at least 6 characters.');return;}
+  if(password!==confirm){showErr(errEl,'Passwords do not match.');return;}
   showLoading();
-  const { error } = await db.auth.signUp({
-    email,
-    password,
-    options: { data: { name, role } }
-  });
+  const{error}=await db.auth.signUp({email,password,options:{data:{name,role}}});
   hideLoading();
-
-  if (error) { showErr(errEl, error.message); return; }
-
-  // After sign up, show profile screen (trigger creates basic profile, we'll update it)
-  toast('Account created! Complete your profile.', 'ok');
+  if(error){showErr(errEl,error.message);return;}
+  toast('Account created! Complete your profile.','ok');
   showScreen('profile');
 }
 
-async function signOut() {
-  S.appStarted = false;
-  S.currentUser = null;
-  S.role = null;
+async function signOut(){
+  S.appStarted=false; S.currentUser=null; S.role=null;
   await db.auth.signOut();
   showScreen('auth');
 }
@@ -887,527 +906,388 @@ async function signOut() {
 /* ═══════════════════════════════════════════════════════════
    PROFILE SETUP
 ═══════════════════════════════════════════════════════════ */
-async function completeProfile() {
-  const name   = document.getElementById('prof-name').value.trim();
-  const errEl  = document.getElementById('prof-err');
+async function completeProfile(){
+  const name=document.getElementById('prof-name').value.trim();
+  const errEl=document.getElementById('prof-err');
   errEl.classList.remove('show');
-
-  if (!name) { showErr(errEl, 'Full name is required.'); return; }
-
-  const { data: { session } } = await db.auth.getSession();
-  if (!session) { showScreen('auth'); return; }
-
-  const row = {
-    name,
-    phone:      document.getElementById('prof-phone').value.trim(),
-    address:    document.getElementById('prof-address').value.trim(),
-    shirt_size: document.getElementById('prof-shirt').value,
-  };
-
+  if(!name){showErr(errEl,'Full name is required.');return;}
+  const{data:{session}}=await db.auth.getSession();
+  if(!session){showScreen('auth');return;}
+  const row={name,phone:document.getElementById('prof-phone').value.trim(),address:document.getElementById('prof-address').value.trim(),shirt_size:document.getElementById('prof-shirt').value};
   showLoading();
-  const { error } = await db.from('profiles').update(row).eq('id', session.user.id);
+  const{error}=await db.from('profiles').update(row).eq('id',session.user.id);
   hideLoading();
-
-  if (error) { showErr(errEl, 'Could not save profile: ' + error.message); return; }
-
-  const { data: profile } = await db.from('profiles').select('*').eq('id', session.user.id).single();
-  S.currentUser = { ...session.user, ...profile };
-  S.role = profile.role || 'ambassador';
-  toast('Welcome to FieldOps!', 'ok');
+  if(error){showErr(errEl,'Could not save profile: '+error.message);return;}
+  const{data:profile}=await db.from('profiles').select('*').eq('id',session.user.id).single();
+  S.currentUser={...session.user,...profile};
+  S.role=profile.role||'ambassador';
+  toast('Welcome to FieldOps!','ok');
   startApp();
 }
 
-async function updateMyProfile() {
-  const row = {
-    name:       document.getElementById('mp-name').value.trim(),
-    phone:      document.getElementById('mp-phone').value.trim(),
-    address:    document.getElementById('mp-address').value.trim(),
-    shirt_size: document.getElementById('mp-shirt').value,
-  };
-  if (!row.name) { toast('Name is required', 'err'); return; }
-
+async function updateMyProfile(){
+  const row={name:document.getElementById('mp-name').value.trim(),phone:document.getElementById('mp-phone').value.trim(),address:document.getElementById('mp-address').value.trim(),shirt_size:document.getElementById('mp-shirt').value};
+  if(!row.name){toast('Name is required','err');return;}
   showLoading();
-  const { error } = await db.from('profiles').update(row).eq('id', S.currentUser.id);
+  const{error}=await db.from('profiles').update(row).eq('id',S.currentUser.id);
   hideLoading();
-
-  if (error) { toast('Could not save: ' + error.message, 'err'); return; }
-
-  S.currentUser = { ...S.currentUser, ...row };
-  document.getElementById('user-name').textContent = row.name;
-  toast('Profile updated!', 'ok');
+  if(error){toast('Could not save: '+error.message,'err');return;}
+  S.currentUser={...S.currentUser,...row};
+  document.getElementById('user-name').textContent=row.name;
+  toast('Profile updated!','ok');
   closeModal('modal-myprofile');
 }
 
-function openMyProfile() {
-  document.getElementById('mp-name').value    = S.currentUser.name || '';
-  document.getElementById('mp-phone').value   = S.currentUser.phone || '';
-  document.getElementById('mp-address').value = S.currentUser.address || '';
-  document.getElementById('mp-shirt').value   = S.currentUser.shirt_size || '';
+function openMyProfile(){
+  document.getElementById('mp-name').value=S.currentUser.name||'';
+  document.getElementById('mp-phone').value=S.currentUser.phone||'';
+  document.getElementById('mp-address').value=S.currentUser.address||'';
+  document.getElementById('mp-shirt').value=S.currentUser.shirt_size||'';
   openModal('modal-myprofile');
 }
 
 /* ═══════════════════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════════════════ */
-const S = {
-  events:[], ambassadors:[], reports:[], payments:[], stores:[], surveys:[], team:[],
-  view:'dashboard',
-  currentUser: null,
-  role: null,
-  appStarted: false,
-  filters:{ e:'all', a:'all', r:'all', p:'all' },
-  charts:{},
-};
+const S={events:[],ambassadors:[],reports:[],payments:[],stores:[],surveys:[],team:[],view:'dashboard',currentUser:null,role:null,appStarted:false,filters:{e:'all',a:'all',r:'all',p:'all'},charts:{}};
 
 /* ═══════════════════════════════════════════════════════════
    DATA LAYER
 ═══════════════════════════════════════════════════════════ */
-async function loadAll() {
+async function loadAll(){
   showLoading();
-  try {
-    if (S.role === 'manager') {
-      const [ev, am, re, pa, st, su, tm] = await Promise.all([
-        db.from('events').select('*').order('date', { ascending: false }),
+  try{
+    if(S.role==='manager'){
+      const[ev,am,re,pa,st,su,tm]=await Promise.all([
+        db.from('events').select('*').order('date',{ascending:false}),
         db.from('ambassadors').select('*').order('name'),
-        db.from('reports').select('*').order('created_at', { ascending: false }),
-        db.from('payments').select('*').order('created_at', { ascending: false }),
+        db.from('reports').select('*').order('created_at',{ascending:false}),
+        db.from('payments').select('*').order('created_at',{ascending:false}),
         db.from('stores').select('*').order('name'),
-        db.from('surveys').select('*').order('created_at', { ascending: false }),
+        db.from('surveys').select('*').order('created_at',{ascending:false}),
         db.from('profiles').select('*').order('name'),
       ]);
-      S.events      = ev.data || [];
-      S.ambassadors = am.data || [];
-      S.reports     = re.data || [];
-      S.payments    = pa.data || [];
-      S.stores      = st.data || [];
-      S.surveys     = su.data || [];
-      S.team        = tm.data || [];
-    } else {
-      // Ambassador: only their own data (RLS enforces this server-side too)
-      const myName = S.currentUser.name;
-      const [ev, re, pa] = await Promise.all([
-        db.from('events').select('*').order('date', { ascending: false }),
-        db.from('reports').select('*').order('created_at', { ascending: false }),
-        db.from('payments').select('*').order('created_at', { ascending: false }),
+      S.events=ev.data||[];S.ambassadors=am.data||[];S.reports=re.data||[];
+      S.payments=pa.data||[];S.stores=st.data||[];S.surveys=su.data||[];S.team=tm.data||[];
+    }else{
+      const[ev,re,pa,am]=await Promise.all([
+        db.from('events').select('*').order('date',{ascending:false}),
+        db.from('reports').select('*').order('created_at',{ascending:false}),
+        db.from('payments').select('*').order('created_at',{ascending:false}),
+        db.from('ambassadors').select('*').order('name'),
       ]);
-      S.events   = ev.data || [];
-      S.reports  = re.data || [];
-      S.payments = pa.data || [];
+      S.events=ev.data||[];S.reports=re.data||[];S.payments=pa.data||[];S.ambassadors=am.data||[];
     }
-  } catch (e) {
-    toast('Could not load data: ' + e.message, 'err');
-  }
+  }catch(e){toast('Could not load data: '+e.message,'err');}
   hideLoading();
   renderNav();
   renderMain();
 }
 
-/* ── EVENTS ── */
-async function saveEvent() {
-  const id    = document.getElementById('evt-id').value;
-  const store = document.getElementById('evt-store').value.trim();
-  const date  = document.getElementById('evt-date').value;
-  if (!store || !date) { toast('Store name and date are required', 'err'); return; }
-
-  const product   = document.getElementById('evt-product').value.trim();
-  const ambassador = document.getElementById('evt-ambassador').value.trim();
-  const autoName  = `${ambassador||store} – ${store} (${date})`;
-
-  const row = {
-    name:          id ? undefined : autoName,   // keep existing name on edit
-    date,
-    store,
-    store_address: document.getElementById('evt-store-address').value.trim(),
-    time:          document.getElementById('evt-time').value.trim(),
-    product:       product,
-    hourly_rate:   parseFloat(document.getElementById('evt-rate').value) || 0,
-    ambassador:    ambassador,
-    notes:         document.getElementById('evt-notes').value.trim(),
-    status:        'upcoming',
+/* ── EVENTS CRUD ── */
+async function saveEvent(){
+  const id=document.getElementById('evt-id').value;
+  const store=document.getElementById('evt-store').value.trim();
+  const date=document.getElementById('evt-date').value;
+  if(!store||!date){toast('Store name and date are required','err');return;}
+  const ambassador=document.getElementById('evt-ambassador').value.trim();
+  const row={
+    date,store,
+    store_address:document.getElementById('evt-store-address').value.trim(),
+    time:document.getElementById('evt-time').value.trim(),
+    product:document.getElementById('evt-product').value.trim(),
+    hourly_rate:parseFloat(document.getElementById('evt-rate').value)||0,
+    ambassador,
+    notes:document.getElementById('evt-notes').value.trim(),
+    status:'upcoming',
   };
-  if (!id) row.name = autoName;
-  else delete row.name;   // don't overwrite name on edits
-
+  if(!id) row.name=`${ambassador||store} – ${store} (${date})`;
   showLoading();
-  const { error } = id
-    ? await db.from('events').update(row).eq('id', id)
-    : await db.from('events').insert(row);
+  const{error}=id?await db.from('events').update(row).eq('id',id):await db.from('events').insert(row);
   hideLoading();
-
-  if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast(id ? 'Event updated' : 'Event scheduled!', 'ok');
+  if(error){toast('Error: '+error.message,'err');return;}
+  toast(id?'Event updated':'Event scheduled!','ok');
   closeModal('modal-event');
   await loadAll();
 }
 
-async function submitEventRequest() {
-  const store   = document.getElementById('req-store').value.trim();
-  const date    = document.getElementById('req-date').value;
-  const product = document.getElementById('req-product').value.trim();
-  if (!store || !date || !product) { toast('Store, date, and product are required', 'err'); return; }
-
-  const ambRecord = S.ambassadors.find(a => a.name === S.currentUser.name);
-  const rate = ambRecord ? ambRecord.rate : 0;
-
-  const name = `${S.currentUser.name} – ${store} (${date})`;
-  const row = {
-    name,
+async function submitEventRequest(){
+  const store=document.getElementById('req-store').value.trim();
+  const date=document.getElementById('req-date').value;
+  const product=document.getElementById('req-product').value.trim();
+  if(!store||!date||!product){toast('Store, date, and product are required','err');return;}
+  const ambRecord=S.ambassadors.find(a=>a.name===S.currentUser.name);
+  const row={
+    name:`${S.currentUser.name} – ${store} (${date})`,
     store,
-    store_address: document.getElementById('req-store-address').value.trim(),
-    date,
-    time:          document.getElementById('req-time').value.trim(),
-    product,
-    hourly_rate:   rate,
-    status:        'pending_approval',
-    ambassador:    S.currentUser.name,
-    ambassador_id: S.currentUser.id,
-    accepted:      true,
+    store_address:document.getElementById('req-store-address').value.trim(),
+    date,time:document.getElementById('req-time').value.trim(),
+    product,hourly_rate:ambRecord?ambRecord.rate:0,
+    status:'pending_approval',ambassador:S.currentUser.name,
+    ambassador_id:S.currentUser.id,accepted:true,
   };
-
   showLoading();
-  const { error } = await db.from('events').insert(row);
+  const{error}=await db.from('events').insert(row);
   hideLoading();
-
-  if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast('Request submitted! Your manager will review it.', 'ok');
+  if(error){toast('Error: '+error.message,'err');return;}
+  toast('Request submitted! Your manager will review it.','ok');
   closeModal('modal-request');
   await loadAll();
 }
 
-async function approveEvent(id) {
+async function approveEvent(id){showLoading();await db.from('events').update({status:'upcoming'}).eq('id',id);hideLoading();toast('Event approved!','ok');await loadAll();}
+async function acceptEvent(id){showLoading();await db.from('events').update({accepted:true}).eq('id',id);hideLoading();toast('Event confirmed!','ok');await loadAll();}
+async function declineEvent(id){if(!confirm('Decline this event?'))return;showLoading();await db.from('events').update({status:'cancelled'}).eq('id',id);hideLoading();toast('Event declined.','ok');await loadAll();}
+async function markEventComplete(id){showLoading();await db.from('events').update({status:'completed'}).eq('id',id);hideLoading();toast('Event marked complete','ok');await loadAll();}
+async function deleteEvent(id){if(!confirm('Delete this event?'))return;showLoading();await db.from('events').delete().eq('id',id);hideLoading();toast('Event deleted','ok');await loadAll();}
+
+/* ── AMBASSADORS CRUD ── */
+async function saveAmbassador(){
+  const id=document.getElementById('amb-id').value;
+  const name=document.getElementById('amb-name').value.trim();
+  if(!name){toast('Name is required','err');return;}
+  const row={name,email:document.getElementById('amb-email').value.trim(),phone:document.getElementById('amb-phone').value.trim(),city:document.getElementById('amb-city').value.trim(),rate:parseFloat(document.getElementById('amb-rate').value)||0,specialty:document.getElementById('amb-specialty').value,status:document.getElementById('amb-status').value,rating:parseFloat(document.getElementById('amb-rating').value)||5.0};
   showLoading();
-  await db.from('events').update({ status: 'upcoming' }).eq('id', id);
+  const{error}=id?await db.from('ambassadors').update(row).eq('id',id):await db.from('ambassadors').insert({...row,events_month:0,total_events:0});
   hideLoading();
-  toast('Event approved — ambassador has been notified.', 'ok');
-  await loadAll();
+  if(error){toast('Error: '+error.message,'err');return;}
+  toast(id?'Updated':'Ambassador added!','ok');closeModal('modal-amb');await loadAll();
+}
+async function deleteAmbassador(id){if(!confirm('Remove ambassador?'))return;showLoading();await db.from('ambassadors').delete().eq('id',id);hideLoading();toast('Removed','ok');await loadAll();}
+
+/* ── REPORTS CRUD ── */
+async function saveReport(){
+  const id=document.getElementById('rep-id').value;
+  const evtName=document.getElementById('rep-event').value.trim();
+  if(!evtName){toast('Event name is required','err');return;}
+  const row={event_name:evtName,ambassador:document.getElementById('rep-ambassador').value.trim()||S.currentUser.name,date:document.getElementById('rep-date').value,units_sold:parseInt(document.getElementById('rep-units').value)||0,samples:parseInt(document.getElementById('rep-samples').value)||0,photos:parseInt(document.getElementById('rep-photos').value)||0,sales_lift:parseFloat(document.getElementById('rep-lift').value)||0,feedback:document.getElementById('rep-feedback').value.trim(),status:'pending'};
+  showLoading();
+  const{error}=id?await db.from('reports').update(row).eq('id',id):await db.from('reports').insert(row);
+  hideLoading();
+  if(error){toast('Error: '+error.message,'err');return;}
+  toast('Report submitted!','ok');closeModal('modal-report');await loadAll();
+}
+async function approveReport(id){showLoading();await db.from('reports').update({status:'approved'}).eq('id',id);hideLoading();toast('Report approved','ok');await loadAll();}
+async function flagReport(id){showLoading();await db.from('reports').update({status:'needs-revision'}).eq('id',id);hideLoading();toast('Flagged for revision','ok');await loadAll();}
+async function deleteReport(id){if(!confirm('Delete report?'))return;showLoading();await db.from('reports').delete().eq('id',id);hideLoading();toast('Deleted','ok');await loadAll();}
+
+/* ── PAYMENTS CRUD ── */
+async function savePayment(){
+  const id=document.getElementById('pay-id').value;
+  const amb=document.getElementById('pay-ambassador').value.trim();
+  if(!amb){toast('Ambassador name required','err');return;}
+  const hours=parseFloat(document.getElementById('pay-hours').value)||0;
+  const rate=parseFloat(document.getElementById('pay-rate').value)||0;
+  const exp=parseFloat(document.getElementById('pay-expenses').value)||0;
+  const row={ambassador:amb,event_name:document.getElementById('pay-event').value.trim(),date:document.getElementById('pay-date').value,hours,rate,expenses:exp,total:hours*rate+exp,status:'pending'};
+  showLoading();
+  const{error}=id?await db.from('payments').update(row).eq('id',id):await db.from('payments').insert(row);
+  hideLoading();
+  if(error){toast('Error: '+error.message,'err');return;}
+  toast(id?'Updated':'Payment logged!','ok');closeModal('modal-payment');await loadAll();
+}
+async function approvePayment(id){showLoading();await db.from('payments').update({status:'approved'}).eq('id',id);hideLoading();toast('Payment approved','ok');await loadAll();}
+async function markPaid(id){showLoading();await db.from('payments').update({status:'paid'}).eq('id',id);hideLoading();toast('Marked as paid','ok');await loadAll();}
+async function deletePayment(id){if(!confirm('Delete payment record?'))return;showLoading();await db.from('payments').delete().eq('id',id);hideLoading();toast('Deleted','ok');await loadAll();}
+
+/* ── STORES CRUD ── */
+async function saveStore(){
+  const id=document.getElementById('sto-id').value;
+  const name=document.getElementById('sto-name').value.trim();
+  if(!name){toast('Store name required','err');return;}
+  const row={name,retailer:document.getElementById('sto-retailer').value.trim(),priority:document.getElementById('sto-priority').value,address:document.getElementById('sto-address').value.trim(),manager:document.getElementById('sto-manager').value.trim(),phone:document.getElementById('sto-phone').value.trim()};
+  showLoading();
+  const{error}=id?await db.from('stores').update(row).eq('id',id):await db.from('stores').insert({...row,total_demos:0});
+  hideLoading();
+  if(error){toast('Error: '+error.message,'err');return;}
+  toast(id?'Updated':'Store added!','ok');closeModal('modal-store');await loadAll();
+}
+async function deleteStore(id){if(!confirm('Remove store?'))return;showLoading();await db.from('stores').delete().eq('id',id);hideLoading();toast('Removed','ok');await loadAll();}
+async function changeRole(userId,newRole){showLoading();await db.from('profiles').update({role:newRole}).eq('id',userId);hideLoading();toast('Role updated','ok');await loadAll();}
+
+/* ═══════════════════════════════════════════════════════════
+   CSV EXPORT
+═══════════════════════════════════════════════════════════ */
+function exportCSV(data,filename,columns){
+  if(!data||data.length===0){toast('No data to export','err');return;}
+  const header=columns.map(c=>c.label);
+  const rows=data.map(row=>columns.map(c=>{
+    const val=row[c.key];
+    if(val===null||val===undefined)return'';
+    const s=String(val).replace(/"/g,'""');
+    return(s.includes(',')||s.includes('"')||s.includes('\n'))?`"${s}"`:s;
+  }));
+  const csv=[header,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('Exported '+data.length+' rows','ok');
 }
 
-async function acceptEvent(id) {
-  showLoading();
-  await db.from('events').update({ accepted: true }).eq('id', id);
-  hideLoading();
-  toast('Event confirmed! See you there.', 'ok');
-  await loadAll();
+function exportEventsCSV(){
+  exportCSV(S.events,'fieldops-events.csv',[
+    {key:'name',label:'Event Name'},{key:'store',label:'Store Name'},
+    {key:'store_address',label:'Store Address'},{key:'date',label:'Date'},
+    {key:'time',label:'Time'},{key:'status',label:'Status'},
+    {key:'ambassador',label:'Ambassador'},{key:'product',label:'Product to Demo'},
+    {key:'hourly_rate',label:'Hourly Rate'},{key:'units_sold',label:'Units Sold'},
+    {key:'samples',label:'Samples'},{key:'sales_lift',label:'Sales Lift %'},
+    {key:'notes',label:'Notes'},
+  ]);
+}
+function exportReportsCSV(){
+  exportCSV(S.reports,'fieldops-reports.csv',[
+    {key:'event_name',label:'Event'},{key:'ambassador',label:'Ambassador'},
+    {key:'date',label:'Date'},{key:'status',label:'Status'},
+    {key:'units_sold',label:'Units Sold'},{key:'samples',label:'Samples'},
+    {key:'sales_lift',label:'Sales Lift %'},{key:'feedback',label:'Feedback'},
+    {key:'photos',label:'Photos'},
+  ]);
+}
+function exportPaymentsCSV(){
+  exportCSV(S.payments,'fieldops-payroll.csv',[
+    {key:'ambassador',label:'Ambassador Name'},{key:'event_name',label:'Event'},
+    {key:'date',label:'Date'},{key:'hours',label:'Hours Worked'},
+    {key:'rate',label:'Hourly Rate'},{key:'expenses',label:'Expenses'},
+    {key:'total',label:'Total Amount'},{key:'status',label:'Payment Status'},
+  ]);
+}
+function exportAmbassadorsCSV(){
+  exportCSV(S.ambassadors,'fieldops-ambassadors.csv',[
+    {key:'name',label:'Name'},{key:'email',label:'Email'},
+    {key:'phone',label:'Phone'},{key:'city',label:'City'},
+    {key:'status',label:'Status'},{key:'rate',label:'Hourly Rate'},
+    {key:'specialty',label:'Specialty'},{key:'total_events',label:'Total Events'},
+    {key:'events_month',label:'Events This Month'},{key:'rating',label:'Rating'},
+  ]);
+}
+function exportSurveysCSV(){
+  exportCSV(S.surveys,'fieldops-surveys.csv',[
+    {key:'event_name',label:'Event'},{key:'date',label:'Date'},
+    {key:'responses',label:'Responses'},{key:'rating',label:'Avg Rating'},
+    {key:'top_feedback',label:'Top Feedback'},
+  ]);
 }
 
-async function declineEvent(id) {
-  if (!confirm('Decline this event? This will notify your manager.')) return;
-  showLoading();
-  await db.from('events').update({ status: 'cancelled' }).eq('id', id);
-  hideLoading();
-  toast('Event declined.', 'ok');
-  await loadAll();
+/* ═══════════════════════════════════════════════════════════
+   AUTOFILL HELPERS
+═══════════════════════════════════════════════════════════ */
+function autofillStoreAddress(prefix){
+  const nameEl=document.getElementById(prefix+'-store');
+  const addrEl=document.getElementById(prefix+'-store-address');
+  if(!nameEl||!addrEl)return;
+  const match=S.stores.find(s=>s.name.toLowerCase()===nameEl.value.toLowerCase());
+  if(match&&match.address)addrEl.value=match.address;
 }
-
-async function markEventComplete(id) {
-  showLoading();
-  await db.from('events').update({ status: 'completed' }).eq('id', id);
-  hideLoading();
-  toast('Event marked complete', 'ok');
-  await loadAll();
-}
-
-async function deleteEvent(id) {
-  if (!confirm('Delete this event?')) return;
-  showLoading();
-  await db.from('events').delete().eq('id', id);
-  hideLoading();
-  toast('Event deleted', 'ok');
-  await loadAll();
-}
-
-/* ── AMBASSADORS (roster) ── */
-async function saveAmbassador() {
-  const id   = document.getElementById('amb-id').value;
-  const name = document.getElementById('amb-name').value.trim();
-  if (!name) { toast('Name is required', 'err'); return; }
-  const row = {
-    name,
-    email:        document.getElementById('amb-email').value.trim(),
-    phone:        document.getElementById('amb-phone').value.trim(),
-    city:         document.getElementById('amb-city').value.trim(),
-    rate:         parseFloat(document.getElementById('amb-rate').value) || 0,
-    specialty:    document.getElementById('amb-specialty').value,
-    status:       document.getElementById('amb-status').value,
-    rating:       parseFloat(document.getElementById('amb-rating').value) || 5.0,
-    events_month: 0, total_events: 0,
-  };
-  showLoading();
-  const { error } = id
-    ? await db.from('ambassadors').update(row).eq('id', id)
-    : await db.from('ambassadors').insert(row);
-  hideLoading();
-  if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast(id ? 'Updated' : 'Ambassador added!', 'ok');
-  closeModal('modal-amb');
-  await loadAll();
-}
-
-async function deleteAmbassador(id) {
-  if (!confirm('Remove this ambassador from roster?')) return;
-  showLoading();
-  await db.from('ambassadors').delete().eq('id', id);
-  hideLoading();
-  toast('Removed', 'ok');
-  await loadAll();
-}
-
-/* ── REPORTS ── */
-async function saveReport() {
-  const id = document.getElementById('rep-id').value;
-  const evtName = document.getElementById('rep-event').value.trim();
-  if (!evtName) { toast('Event name is required', 'err'); return; }
-  const row = {
-    event_name: evtName,
-    ambassador: document.getElementById('rep-ambassador').value.trim() || S.currentUser.name,
-    date:       document.getElementById('rep-date').value,
-    units_sold: parseInt(document.getElementById('rep-units').value) || 0,
-    samples:    parseInt(document.getElementById('rep-samples').value) || 0,
-    photos:     parseInt(document.getElementById('rep-photos').value) || 0,
-    sales_lift: parseFloat(document.getElementById('rep-lift').value) || 0,
-    feedback:   document.getElementById('rep-feedback').value.trim(),
-    status:     'pending',
-  };
-  showLoading();
-  const { error } = id
-    ? await db.from('reports').update(row).eq('id', id)
-    : await db.from('reports').insert(row);
-  hideLoading();
-  if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast('Report submitted!', 'ok');
-  closeModal('modal-report');
-  await loadAll();
-}
-
-async function approveReport(id) {
-  showLoading();
-  await db.from('reports').update({ status: 'approved' }).eq('id', id);
-  hideLoading();
-  toast('Report approved', 'ok');
-  await loadAll();
-}
-
-async function flagReport(id) {
-  showLoading();
-  await db.from('reports').update({ status: 'needs-revision' }).eq('id', id);
-  hideLoading();
-  toast('Report flagged for revision', 'ok');
-  await loadAll();
-}
-
-async function deleteReport(id) {
-  if (!confirm('Delete this report?')) return;
-  showLoading();
-  await db.from('reports').delete().eq('id', id);
-  hideLoading();
-  toast('Report deleted', 'ok');
-  await loadAll();
-}
-
-/* ── PAYMENTS ── */
-async function savePayment() {
-  const id  = document.getElementById('pay-id').value;
-  const amb = document.getElementById('pay-ambassador').value.trim();
-  if (!amb) { toast('Ambassador name required', 'err'); return; }
-  const hours = parseFloat(document.getElementById('pay-hours').value) || 0;
-  const rate  = parseFloat(document.getElementById('pay-rate').value) || 0;
-  const exp   = parseFloat(document.getElementById('pay-expenses').value) || 0;
-  const row = {
-    ambassador: amb,
-    event_name: document.getElementById('pay-event').value.trim(),
-    date:       document.getElementById('pay-date').value,
-    hours, rate, expenses: exp,
-    total:  hours * rate + exp,
-    status: 'pending',
-  };
-  showLoading();
-  const { error } = id
-    ? await db.from('payments').update(row).eq('id', id)
-    : await db.from('payments').insert(row);
-  hideLoading();
-  if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast(id ? 'Updated' : 'Payment logged!', 'ok');
-  closeModal('modal-payment');
-  await loadAll();
-}
-
-async function approvePayment(id) {
-  showLoading();
-  await db.from('payments').update({ status: 'approved' }).eq('id', id);
-  hideLoading();
-  toast('Payment approved', 'ok');
-  await loadAll();
-}
-
-async function markPaid(id) {
-  showLoading();
-  await db.from('payments').update({ status: 'paid' }).eq('id', id);
-  hideLoading();
-  toast('Marked as paid', 'ok');
-  await loadAll();
-}
-
-async function deletePayment(id) {
-  if (!confirm('Delete this payment record?')) return;
-  showLoading();
-  await db.from('payments').delete().eq('id', id);
-  hideLoading();
-  toast('Deleted', 'ok');
-  await loadAll();
-}
-
-/* ── STORES ── */
-async function saveStore() {
-  const id   = document.getElementById('sto-id').value;
-  const name = document.getElementById('sto-name').value.trim();
-  if (!name) { toast('Store name required', 'err'); return; }
-  const row = {
-    name,
-    retailer:    document.getElementById('sto-retailer').value.trim(),
-    priority:    document.getElementById('sto-priority').value,
-    address:     document.getElementById('sto-address').value.trim(),
-    manager:     document.getElementById('sto-manager').value.trim(),
-    phone:       document.getElementById('sto-phone').value.trim(),
-    total_demos: 0,
-  };
-  showLoading();
-  const { error } = id
-    ? await db.from('stores').update(row).eq('id', id)
-    : await db.from('stores').insert(row);
-  hideLoading();
-  if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast(id ? 'Updated' : 'Store added!', 'ok');
-  closeModal('modal-store');
-  await loadAll();
-}
-
-async function deleteStore(id) {
-  if (!confirm('Remove this store?')) return;
-  showLoading();
-  await db.from('stores').delete().eq('id', id);
-  hideLoading();
-  toast('Store removed', 'ok');
-  await loadAll();
-}
-
-/* ── TEAM ── */
-async function changeRole(userId, newRole) {
-  showLoading();
-  await db.from('profiles').update({ role: newRole }).eq('id', userId);
-  hideLoading();
-  toast('Role updated', 'ok');
-  await loadAll();
+function autofillAmbRate(prefix){
+  const nameEl=document.getElementById(prefix+'-ambassador');
+  const rateEl=document.getElementById(prefix+'-rate');
+  if(!nameEl||!rateEl)return;
+  const match=S.ambassadors.find(a=>a.name.toLowerCase()===nameEl.value.toLowerCase());
+  if(match!=null)rateEl.value=match.rate||'';
 }
 
 /* ═══════════════════════════════════════════════════════════
    NAV CONFIG
 ═══════════════════════════════════════════════════════════ */
-const MANAGER_NAV = [
-  { section:'Overview' },
-  { id:'dashboard',   label:'Dashboard',      icon:'ti-layout-dashboard' },
-  { section:'Operations' },
-  { id:'events',      label:'Events',          icon:'ti-calendar-event'  },
-  { id:'ambassadors', label:'Ambassadors',     icon:'ti-users'           },
-  { id:'stores',      label:'Store Directory', icon:'ti-building-store'  },
-  { section:'Reporting' },
-  { id:'reports',     label:'Event Reports',   icon:'ti-file-description'},
-  { id:'surveys',     label:'Shopper Surveys', icon:'ti-clipboard-list'  },
-  { section:'Finance' },
-  { id:'payments',    label:'Payments',        icon:'ti-cash'            },
-  { id:'analytics',   label:'Analytics',       icon:'ti-chart-bar'       },
-  { section:'Admin' },
-  { id:'team',        label:'Team Members',    icon:'ti-shield-check'    },
+const MANAGER_NAV=[
+  {section:'Overview'},
+  {id:'dashboard',label:'Dashboard',icon:'ti-layout-dashboard'},
+  {section:'Operations'},
+  {id:'events',label:'Events',icon:'ti-calendar-event'},
+  {id:'ambassadors',label:'Ambassadors',icon:'ti-users'},
+  {id:'stores',label:'Store Directory',icon:'ti-building-store'},
+  {section:'Reporting'},
+  {id:'reports',label:'Event Reports',icon:'ti-file-description'},
+  {id:'surveys',label:'Shopper Surveys',icon:'ti-clipboard-list'},
+  {section:'Finance'},
+  {id:'payments',label:'Payments',icon:'ti-cash'},
+  {id:'analytics',label:'Analytics',icon:'ti-chart-bar'},
+  {section:'Admin'},
+  {id:'team',label:'Team Members',icon:'ti-shield-check'},
 ];
-
-const AMBASSADOR_NAV = [
-  { section:'My Work' },
-  { id:'schedule',    label:'My Schedule',     icon:'ti-calendar-event'  },
-  { id:'request',     label:'Request Event',   icon:'ti-calendar-plus'   },
-  { section:'Records' },
-  { id:'myreports',   label:'My Reports',      icon:'ti-file-description'},
-  { id:'mypayments',  label:'My Payments',     icon:'ti-cash'            },
+const AMBASSADOR_NAV=[
+  {section:'My Work'},
+  {id:'schedule',label:'My Schedule',icon:'ti-calendar-event'},
+  {id:'request',label:'Request Event',icon:'ti-calendar-plus'},
+  {section:'Records'},
+  {id:'myreports',label:'My Reports',icon:'ti-file-description'},
+  {id:'mypayments',label:'My Payments',icon:'ti-cash'},
 ];
 
 /* ═══════════════════════════════════════════════════════════
    HELPERS
 ═══════════════════════════════════════════════════════════ */
-const AV_COLORS = [
-  ['#E1F5EE','#085041'],['#E6F1FB','#0C447C'],['#EEEDFE','#3C3489'],
-  ['#FAEEDA','#412402'],['#FBEAF0','#72243E'],['#EAF3DE','#27500A'],
-  ['#FAECE7','#712B13'],['#FCEBEB','#791F1F'],
-];
+const AV_COLORS=[['#E1F5EE','#085041'],['#E6F1FB','#0C447C'],['#EEEDFE','#3C3489'],['#FAEEDA','#412402'],['#FBEAF0','#72243E'],['#EAF3DE','#27500A'],['#FAECE7','#712B13'],['#FCEBEB','#791F1F']];
 function ini(n=''){return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);}
-function av(name='',idx=0,sz=38){
-  const c=AV_COLORS[idx%AV_COLORS.length];
-  const fs=Math.round(sz*.36);
-  return `<div class="av" style="width:${sz}px;height:${sz}px;background:${c[0]};color:${c[1]};font-size:${fs}px;">${ini(name)}</div>`;
-}
+function av(name='',idx=0,sz=38){const c=AV_COLORS[idx%AV_COLORS.length];const fs=Math.round(sz*.36);return`<div class="av" style="width:${sz}px;height:${sz}px;background:${c[0]};color:${c[1]};font-size:${fs}px;">${ini(name)}</div>`;}
 function badge(s){
   const m={
-    upcoming:         '<span class="badge badge-info">Upcoming</span>',
-    completed:        '<span class="badge badge-ok">Completed</span>',
-    cancelled:        '<span class="badge badge-danger">Cancelled</span>',
-    pending_approval: '<span class="badge badge-purple">Pending Approval</span>',
-    active:           '<span class="badge badge-ok">Active</span>',
-    available:        '<span class="badge badge-info">Available</span>',
-    inactive:         '<span class="badge badge-gray">Inactive</span>',
-    approved:         '<span class="badge badge-ok">Approved</span>',
-    pending:          '<span class="badge badge-warn">Pending</span>',
-    'needs-revision': '<span class="badge badge-danger">Needs Revision</span>',
-    paid:             '<span class="badge badge-ok">Paid</span>',
-    high:             '<span class="badge badge-danger">High</span>',
-    medium:           '<span class="badge badge-warn">Medium</span>',
-    low:              '<span class="badge badge-gray">Low</span>',
-    manager:          '<span class="badge badge-purple">Manager</span>',
-    ambassador:       '<span class="badge badge-info">Ambassador</span>',
+    upcoming:'<span class="badge badge-info">Upcoming</span>',
+    completed:'<span class="badge badge-ok">Completed</span>',
+    cancelled:'<span class="badge badge-danger">Cancelled</span>',
+    pending_approval:'<span class="badge badge-purple">Pending Approval</span>',
+    active:'<span class="badge badge-ok">Active</span>',
+    available:'<span class="badge badge-info">Available</span>',
+    inactive:'<span class="badge badge-gray">Inactive</span>',
+    approved:'<span class="badge badge-ok">Approved</span>',
+    pending:'<span class="badge badge-warn">Pending</span>',
+    'needs-revision':'<span class="badge badge-danger">Needs Revision</span>',
+    paid:'<span class="badge badge-ok">Paid</span>',
+    high:'<span class="badge badge-danger">High</span>',
+    medium:'<span class="badge badge-warn">Medium</span>',
+    low:'<span class="badge badge-gray">Low</span>',
+    manager:'<span class="badge badge-purple">Manager</span>',
+    ambassador:'<span class="badge badge-info">Ambassador</span>',
   };
   return m[s]||`<span class="badge badge-gray">${s}</span>`;
 }
-function stars(r){return `<span class="star">${'★'.repeat(Math.round(r||0))}</span> <span style="color:var(--text2);font-size:11px;">${(r||0).toFixed(1)}</span>`;}
-function fmt$(n){return '$'+(n||0).toLocaleString();}
-function empty(icon,title,msg){return `<div class="empty"><i class="ti ti-${icon}"></i><strong>${title}</strong>${msg}</div>`;}
+function stars(r){return`<span class="star">${'★'.repeat(Math.round(r||0))}</span><span style="color:var(--text2);font-size:11px;margin-left:3px;">${(r||0).toFixed(1)}</span>`;}
+function fmt$(n){return'$'+(n||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2});}
+function empty(icon,title,msg){return`<div class="empty"><i class="ti ti-${icon}"></i><strong>${title}</strong><p style="margin-top:6px;">${msg}</p></div>`;}
 function showErr(el,msg){el.textContent=msg;el.classList.add('show');}
 
 /* ═══════════════════════════════════════════════════════════
-   NAVIGATION
+   NAV RENDER
 ═══════════════════════════════════════════════════════════ */
-function navigate(v){ S.view=v; renderNav(); renderMain(); }
+function navigate(v){S.view=v;renderNav();renderMain();}
 
 function renderNav(){
-  const navItems = S.role === 'manager' ? MANAGER_NAV : AMBASSADOR_NAV;
-  const pendM = S.role === 'manager'
-    ? S.reports.filter(r=>r.status==='pending'||r.status==='needs-revision').length
-    + S.payments.filter(p=>p.status==='pending').length
-    + S.events.filter(e=>e.status==='pending_approval').length
-    : 0;
+  const navItems=S.role==='manager'?MANAGER_NAV:AMBASSADOR_NAV;
+  const pendApproval=S.events.filter(e=>e.status==='pending_approval').length;
+  const pendAct=S.reports.filter(r=>r.status==='pending'||r.status==='needs-revision').length+S.payments.filter(p=>p.status==='pending').length;
 
-  document.getElementById('nav').innerHTML = navItems.map(n => {
-    if (n.section) return `<div class="nav-section">${n.section}</div>`;
-    const nb = n.id === 'events' && S.events.filter(e=>e.status==='pending_approval').length > 0
-      ? `<span class="nav-badge">${S.events.filter(e=>e.status==='pending_approval').length}</span>` : '';
-    const nb2 = (n.id === 'reports' || n.id === 'payments') && pendM > 0 ? `<span class="nav-badge">${pendM}</span>` : '';
-    return `<a class="nav-item ${S.view===n.id?'active':''}" onclick="navigate('${n.id}')">
-      <i class="ti ${n.icon}"></i>${n.label}${nb||nb2}
-    </a>`;
+  document.getElementById('nav').innerHTML=navItems.map(n=>{
+    if(n.section)return`<div class="nav-section">${n.section}</div>`;
+    const nb1=n.id==='events'&&pendApproval>0?`<span class="nav-badge">${pendApproval}</span>`:'';
+    const nb2=(n.id==='reports'||n.id==='payments')&&pendAct>0?`<span class="nav-badge">${pendAct}</span>`:'';
+    return`<a class="nav-item ${S.view===n.id?'active':''}" onclick="navigate('${n.id}')"><i class="ti ${n.icon}"></i>${n.label}${nb1||nb2}</a>`;
   }).join('');
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ─── MANAGER VIEWS ───────────────────────────────────────
+   MANAGER VIEWS
 ═══════════════════════════════════════════════════════════ */
+function kpi(icon,color,label,value,sub){
+  return`<div class="kpi" style="--kpi-color:${color};">
+    <div class="kpi-icon" style="background:${color}22;"><i class="ti ${icon}" style="color:${color};font-size:20px;"></i></div>
+    <div class="kpi-label">${label}</div>
+    <div class="kpi-value">${value}</div>
+    <div class="kpi-sub">${sub}</div>
+  </div>`;
+}
 
 function dashboardView(){
-  const up   = S.events.filter(e=>e.status==='upcoming');
-  const done = S.events.filter(e=>e.status==='completed'&&e.sales_lift);
-  const pendApproval = S.events.filter(e=>e.status==='pending_approval');
-  const avgL = done.length ? Math.round(done.reduce((a,e)=>a+e.sales_lift,0)/done.length) : 0;
-  const units = S.events.filter(e=>e.units_sold).reduce((a,e)=>a+e.units_sold,0);
-  const pendAct = S.reports.filter(r=>r.status!=='approved').length
-                + S.payments.filter(p=>p.status==='pending').length
-                + pendApproval.length;
-  const today = new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
-
-  return `
+  const up=S.events.filter(e=>e.status==='upcoming');
+  const done=S.events.filter(e=>e.status==='completed'&&e.sales_lift);
+  const pendApproval=S.events.filter(e=>e.status==='pending_approval');
+  const avgL=done.length?Math.round(done.reduce((a,e)=>a+e.sales_lift,0)/done.length):0;
+  const units=S.events.filter(e=>e.units_sold).reduce((a,e)=>a+e.units_sold,0);
+  const pendAct=S.reports.filter(r=>r.status!=='approved').length+S.payments.filter(p=>p.status==='pending').length+pendApproval.length;
+  const today=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Dashboard</div><div class="topbar-sub">${today}</div></div>
   <div class="topbar-right">
@@ -1417,340 +1297,321 @@ function dashboardView(){
 </div>
 <div class="page">
   <div class="kpi-grid kpi-4">
-    <div class="kpi">
-      <div class="kpi-label"><i class="ti ti-calendar-event"></i> Upcoming Events</div>
-      <div class="kpi-value">${up.length}</div>
-      <div class="kpi-sub">${up[0]?'Next: '+up[0].date:'None scheduled'}</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label"><i class="ti ti-users"></i> Active Ambassadors</div>
-      <div class="kpi-value">${S.ambassadors.filter(a=>a.status==='active').length}</div>
-      <div class="kpi-sub">${S.ambassadors.filter(a=>a.status==='available').length} available</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label"><i class="ti ti-trending-up"></i> Avg Sales Lift</div>
-      <div class="kpi-value stat-up">${avgL?'+'+avgL+'%':'—'}</div>
-      <div class="kpi-sub">${units} units sold total</div>
-    </div>
-    <div class="kpi">
-      <div class="kpi-label"><i class="ti ti-clock"></i> Pending Actions</div>
-      <div class="kpi-value ${pendAct>0?'stat-warn':'stat-up'}">${pendAct}</div>
-      <div class="kpi-sub">${pendAct>0?'Need attention':'All caught up!'}</div>
-    </div>
+    ${kpi('ti-calendar-event','#3b82f6','Upcoming Events',up.length,up[0]?'Next: '+up[0].date:'None scheduled')}
+    ${kpi('ti-users','#16a37f','Active Ambassadors',S.ambassadors.filter(a=>a.status==='active').length,S.ambassadors.filter(a=>a.status==='available').length+' available')}
+    ${kpi('ti-trending-up','#10b981','Avg Sales Lift',avgL?'+'+avgL+'%':'—',units+' units sold total')}
+    ${kpi('ti-clock',pendAct>0?'#f59e0b':'#10b981','Pending Actions',pendAct,pendAct>0?'Need attention':'All caught up!')}
   </div>
 
-  ${pendApproval.length > 0 ? `
+  ${pendApproval.length>0?`
   <div class="card" style="margin-bottom:16px;border-left:3px solid var(--blue);">
     <div class="card-header">
-      <span class="card-title"><i class="ti ti-clock" style="color:var(--blue);"></i> Event Requests Awaiting Approval (${pendApproval.length})</span>
-      <button class="btn btn-sm" onclick="navigate('events')">View all events</button>
+      <span class="card-title"><i class="ti ti-clock" style="color:var(--blue);margin-right:6px;"></i>Event Requests Awaiting Approval (${pendApproval.length})</span>
+      <button class="btn btn-sm" onclick="navigate('events')">View all</button>
     </div>
     ${pendApproval.map(e=>`
-      <div class="erow">
-        <div style="width:36px;height:36px;border-radius:9px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <i class="ti ti-calendar-question" style="color:var(--blue-dk);font-size:17px;"></i>
-        </div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}</div>
-          <div style="font-size:11px;color:var(--text2);">${e.ambassador||''} requested · ${e.date||''} · ${e.store||''}</div>
-        </div>
-        <button class="btn btn-sm btn-primary" onclick="approveEvent(${e.id})"><i class="ti ti-check"></i> Approve</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteEvent(${e.id})">Decline</button>
+    <div class="erow">
+      <div style="width:38px;height:38px;border-radius:10px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-calendar-question" style="color:var(--blue-dk);font-size:18px;"></i></div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}</div>
+        <div style="font-size:11px;color:var(--text2);">${e.ambassador||''} · ${e.date||''} · ${e.store||''}</div>
       </div>
-    `).join('')}
-  </div>` : ''}
+      <button class="btn btn-sm btn-primary" onclick="approveEvent(${e.id})"><i class="ti ti-check"></i> Approve</button>
+      <button class="btn btn-sm btn-danger" onclick="deleteEvent(${e.id})">Decline</button>
+    </div>`).join('')}
+  </div>`:''}
 
   <div class="grid-2" style="margin-bottom:16px;">
     <div class="card">
       <div class="card-header"><span class="card-title">Upcoming Events</span><button class="btn btn-sm" onclick="navigate('events')">View all</button></div>
       ${up.length===0?empty('calendar','No upcoming events','Schedule one to get started.'):''}
       ${up.slice(0,5).map(e=>`
-        <div class="erow">
-          <div style="width:36px;height:36px;border-radius:9px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="ti ti-calendar" style="color:var(--blue-dk);font-size:17px;"></i>
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}</div>
-            <div style="font-size:11px;color:var(--text2);">${e.date}${e.ambassador?' · '+e.ambassador:''}</div>
-          </div>
-          ${e.accepted?'<span class="badge badge-ok">Confirmed</span>':'<span class="badge badge-warn">Unconfirmed</span>'}
+      <div class="erow">
+        <div style="width:38px;height:38px;border-radius:10px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-calendar" style="color:var(--blue-dk);font-size:17px;"></i></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${e.name}</div>
+          <div style="font-size:11px;color:var(--text2);">${e.date}${e.ambassador?' · '+e.ambassador:''}</div>
         </div>
-      `).join('')}
+        ${e.accepted?'<span class="badge badge-ok">Confirmed</span>':'<span class="badge badge-warn">Unconfirmed</span>'}
+      </div>`).join('')}
     </div>
     <div class="card">
-      <div class="card-header"><span class="card-title">Reports & Payments Pending</span><button class="btn btn-sm" onclick="navigate('reports')">View</button></div>
-      ${S.reports.filter(r=>r.status==='pending'||r.status==='needs-revision').concat(S.payments.filter(p=>p.status==='pending')).length===0
-        ? empty('circle-check','All caught up!','Nothing needs your attention right now.') : ''}
+      <div class="card-header"><span class="card-title">Pending Review</span><button class="btn btn-sm" onclick="navigate('reports')">View</button></div>
+      ${S.reports.filter(r=>r.status==='pending'||r.status==='needs-revision').concat(S.payments.filter(p=>p.status==='pending')).length===0?empty('circle-check','All caught up!','Nothing needs your attention right now.'):''}
       ${S.reports.filter(r=>r.status==='pending'||r.status==='needs-revision').map(r=>`
-        <div class="erow">
-          <div style="width:36px;height:36px;border-radius:9px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="ti ti-file-description" style="color:var(--amber-dk);font-size:17px;"></i>
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.event_name}</div>
-            <div style="font-size:11px;color:var(--text2);">${r.ambassador||''} · Report ${r.status}</div>
-          </div>
-          ${badge(r.status)}
-        </div>`).join('')}
+      <div class="erow">
+        <div style="width:38px;height:38px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-file-description" style="color:var(--amber-dk);font-size:17px;"></i></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.event_name}</div>
+          <div style="font-size:11px;color:var(--text2);">${r.ambassador||''} · Report ${r.status}</div>
+        </div>${badge(r.status)}
+      </div>`).join('')}
       ${S.payments.filter(p=>p.status==='pending').map(p=>`
-        <div class="erow">
-          <div style="width:36px;height:36px;border-radius:9px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i class="ti ti-cash" style="color:var(--amber-dk);font-size:17px;"></i>
-          </div>
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:13px;font-weight:600;">${p.ambassador}</div>
-            <div style="font-size:11px;color:var(--text2);">Payment pending · ${p.event_name||''}</div>
-          </div>
-          ${badge(p.status)}
-        </div>`).join('')}
+      <div class="erow">
+        <div style="width:38px;height:38px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="ti ti-cash" style="color:var(--amber-dk);font-size:17px;"></i></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:700;">${p.ambassador}</div>
+          <div style="font-size:11px;color:var(--text2);">Payment pending · ${p.event_name||''}</div>
+        </div>${badge(p.status)}
+      </div>`).join('')}
     </div>
   </div>
 
   <div class="tbl-wrap">
     <div class="tbl-title">Recent Event Performance
-      <button class="btn btn-sm" onclick="navigate('analytics')"><i class="ti ti-chart-bar"></i> Analytics</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-sm btn-export" onclick="exportEventsCSV()"><i class="ti ti-download"></i> Export CSV</button>
+        <button class="btn btn-sm" onclick="navigate('analytics')"><i class="ti ti-chart-bar"></i> Full Analytics</button>
+      </div>
     </div>
-    ${S.events.filter(e=>e.status==='completed').length===0
-      ? empty('calendar-stats','No completed events yet','Complete events and submit reports to see data.')
-      : `<table><thead><tr><th>Event</th><th>Ambassador</th><th>Retailer</th><th>Date</th><th>Units Sold</th><th>Sales Lift</th></tr></thead><tbody>
-        ${S.events.filter(e=>e.status==='completed').slice(0,8).map(e=>`
-          <tr>
-            <td style="font-weight:600;">${e.name}</td>
-            <td>${e.ambassador||'—'}</td>
-            <td><span class="badge badge-gray">${e.retailer||'—'}</span></td>
-            <td style="color:var(--text2);">${e.date}</td>
-            <td>${e.units_sold||'—'}</td>
-            <td>${e.sales_lift?`<span class="stat-up">+${e.sales_lift}%</span>`:'—'}</td>
-          </tr>`).join('')}
-        </tbody></table>`}
+    ${S.events.filter(e=>e.status==='completed').length===0?empty('calendar-stats','No completed events yet','Complete events and submit reports to see data here.')
+    :`<table><thead><tr><th>Event</th><th>Ambassador</th><th>Store</th><th>Date</th><th>Units Sold</th><th>Sales Lift</th></tr></thead><tbody>
+      ${S.events.filter(e=>e.status==='completed').slice(0,8).map(e=>`<tr>
+        <td style="font-weight:700;">${e.name}</td>
+        <td>${e.ambassador||'—'}</td>
+        <td style="color:var(--text2);font-size:12px;">${e.store||'—'}</td>
+        <td style="color:var(--text2);">${e.date}</td>
+        <td style="font-weight:600;">${e.units_sold||'—'}</td>
+        <td>${e.sales_lift?`<span class="stat-up">+${e.sales_lift}%</span>`:'—'}</td>
+      </tr>`).join('')}
+      </tbody></table>`}
   </div>
 </div>`;
 }
 
 function eventsView(){
-  const f = S.filters.e;
-  const filtered = f==='all' ? S.events : S.events.filter(e=>e.status===f);
-  const counts = {
-    all: S.events.length,
-    pending_approval: S.events.filter(e=>e.status==='pending_approval').length,
-    upcoming:  S.events.filter(e=>e.status==='upcoming').length,
-    completed: S.events.filter(e=>e.status==='completed').length,
-  };
-  return `
+  const f=S.filters.e;
+  const filtered=f==='all'?S.events:S.events.filter(e=>e.status===f);
+  const counts={all:S.events.length,pending_approval:S.events.filter(e=>e.status==='pending_approval').length,upcoming:S.events.filter(e=>e.status==='upcoming').length,completed:S.events.filter(e=>e.status==='completed').length};
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Events</div><div class="topbar-sub">${S.events.length} total events</div></div>
   <div class="topbar-right">
-    <button class="btn" onclick="exportEventsCSV()"><i class="ti ti-download"></i> Export CSV</button>
+    <button class="btn btn-export" onclick="exportEventsCSV()"><i class="ti ti-download"></i> Export CSV</button>
     <button class="btn btn-primary" onclick="openNewEvent()"><i class="ti ti-plus"></i> New Event</button>
   </div>
 </div>
 <div class="page">
   <div class="tabs">
     ${['all','pending_approval','upcoming','completed'].map(fv=>`
-      <button class="tab ${f===fv?'active':''}" onclick="sf('e','${fv}')">
-        ${fv==='pending_approval'?'Needs Approval':fv==='all'?'All':fv.charAt(0).toUpperCase()+fv.slice(1)} (${counts[fv]||0})
-      </button>`).join('')}
+    <button class="tab ${f===fv?'active':''}" onclick="sf('e','${fv}')">
+      ${fv==='pending_approval'?'Needs Approval':fv==='all'?'All':fv.charAt(0).toUpperCase()+fv.slice(1)} (${counts[fv]||0})
+    </button>`).join('')}
   </div>
-  ${filtered.length===0 ? empty('calendar-event','No events found','Try a different filter or schedule a new event.') : ''}
+  ${filtered.length===0?empty('calendar-event','No events found','Try a different filter or schedule a new event.'):''}
   ${filtered.map(e=>`
-    <div class="event-card">
-      <div class="event-icon" style="background:${e.status==='upcoming'?'var(--blue-bg)':e.status==='pending_approval'?'var(--amber-bg)':'var(--teal-bg)'};">
-        <i class="ti ti-calendar-event" style="color:${e.status==='upcoming'?'var(--blue-dk)':e.status==='pending_approval'?'var(--amber-dk)':'var(--teal-dk)'}"></i>
+  <div class="event-card">
+    <div class="event-icon" style="background:${e.status==='upcoming'?'var(--blue-bg)':e.status==='pending_approval'?'var(--amber-bg)':e.status==='completed'?'var(--teal-lt)':'var(--bg3)'};">
+      <i class="ti ti-calendar-event" style="color:${e.status==='upcoming'?'var(--blue-dk)':e.status==='pending_approval'?'var(--amber-dk)':e.status==='completed'?'var(--teal-dk)':'var(--text3)'}"></i>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
+        <span style="font-size:14px;font-weight:700;">${e.name}</span>
+        ${badge(e.status)}
+        ${e.status==='upcoming'&&e.accepted?'<span class="badge badge-ok">Ambassador Confirmed</span>':''}
+        ${e.status==='upcoming'&&!e.accepted?'<span class="badge badge-warn">Awaiting Confirmation</span>':''}
       </div>
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">
-          <span style="font-size:14px;font-weight:700;">${e.name}</span>
-          ${badge(e.status)}
-          ${e.status==='upcoming'&&e.accepted?'<span class="badge badge-ok">Confirmed by Ambassador</span>':''}
-          ${e.status==='upcoming'&&!e.accepted?'<span class="badge badge-warn">Awaiting Confirmation</span>':''}
-        </div>
-        <div class="event-meta">
-          <span><i class="ti ti-calendar"></i> ${e.date}</span>
-          ${e.time?`<span><i class="ti ti-clock"></i> ${e.time}</span>`:''}
-          ${e.ambassador?`<span><i class="ti ti-user"></i> ${e.ambassador}</span>`:''}
-          ${e.retailer?`<span><i class="ti ti-building-store"></i> ${e.retailer}</span>`:''}
-          ${e.product?`<span><i class="ti ti-package"></i> ${e.product}</span>`:''}
-          ${e.budget?`<span><i class="ti ti-coin"></i> ${fmt$(e.budget)}</span>`:''}
-        </div>
-        ${e.notes?`<div style="font-size:11px;color:var(--text2);margin-top:5px;font-style:italic;">${e.notes}</div>`:''}
+      <div class="event-meta">
+        <span><i class="ti ti-calendar"></i> ${e.date}</span>
+        ${e.time?`<span><i class="ti ti-clock"></i> ${e.time}</span>`:''}
+        ${e.ambassador?`<span><i class="ti ti-user"></i> ${e.ambassador}</span>`:''}
+        ${e.store?`<span><i class="ti ti-building-store"></i> ${e.store}</span>`:''}
+        ${e.product?`<span><i class="ti ti-package"></i> ${e.product}</span>`:''}
+        ${e.hourly_rate?`<span><i class="ti ti-coin"></i> ${fmt$(e.hourly_rate)}/hr</span>`:''}
       </div>
-      <div style="text-align:right;flex-shrink:0;padding-left:12px;">
-        ${e.units_sold?`<div style="font-size:20px;font-weight:800;color:var(--teal);">+${e.sales_lift||0}%</div><div style="font-size:11px;color:var(--text2);">${e.units_sold} units sold</div>`:''}
-      </div>
-      <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;">
-        ${e.status==='pending_approval'?`<button class="btn btn-sm btn-primary" onclick="approveEvent(${e.id})"><i class="ti ti-check"></i> Approve</button>`:''}
-        ${e.status==='upcoming'?`<button class="btn btn-sm btn-primary" onclick="markEventComplete(${e.id})"><i class="ti ti-check"></i> Complete</button>`:''}
-        <button class="btn btn-sm btn-icon" onclick="editEvent(${e.id})"><i class="ti ti-edit"></i></button>
-        <button class="btn btn-sm btn-icon btn-danger" onclick="deleteEvent(${e.id})"><i class="ti ti-trash"></i></button>
-      </div>
-    </div>`).join('')}
+      ${e.store_address?`<div style="font-size:11px;color:var(--text2);margin-top:4px;"><i class="ti ti-map-pin" style="font-size:11px;"></i> ${e.store_address}</div>`:''}
+      ${e.notes?`<div style="font-size:11px;color:var(--text2);margin-top:4px;font-style:italic;">${e.notes}</div>`:''}
+    </div>
+    ${e.units_sold?`<div style="text-align:right;flex-shrink:0;padding-left:8px;"><div class="stat-up" style="font-size:22px;font-weight:800;">+${e.sales_lift||0}%</div><div style="font-size:11px;color:var(--text2);">${e.units_sold} units sold</div></div>`:''}
+    <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;">
+      ${e.status==='pending_approval'?`<button class="btn btn-sm btn-primary" onclick="approveEvent(${e.id})"><i class="ti ti-check"></i> Approve</button>`:''}
+      ${e.status==='upcoming'?`<button class="btn btn-sm btn-primary" onclick="markEventComplete(${e.id})"><i class="ti ti-check"></i> Complete</button>`:''}
+      <button class="btn btn-sm btn-icon" onclick="editEvent(${e.id})"><i class="ti ti-edit"></i></button>
+      <button class="btn btn-sm btn-icon btn-danger" onclick="deleteEvent(${e.id})"><i class="ti ti-trash"></i></button>
+    </div>
+  </div>`).join('')}
 </div>`;
 }
 
 function ambassadorsView(){
-  const f = S.filters.a;
-  const filtered = f==='all' ? S.ambassadors : S.ambassadors.filter(a=>a.status===f);
-  return `
+  const f=S.filters.a;
+  const filtered=f==='all'?S.ambassadors:S.ambassadors.filter(a=>a.status===f);
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Brand Ambassadors</div><div class="topbar-sub">${S.ambassadors.length} on roster</div></div>
-  <div class="topbar-right"><button class="btn" onclick="exportAmbassadorsCSV()"><i class="ti ti-download"></i> Export CSV</button><button class="btn btn-primary" onclick="openNewAmb()"><i class="ti ti-user-plus"></i> Add Ambassador</button></div>
+  <div class="topbar-right">
+    <button class="btn btn-export" onclick="exportAmbassadorsCSV()"><i class="ti ti-download"></i> Export CSV</button>
+    <button class="btn btn-primary" onclick="openNewAmb()"><i class="ti ti-user-plus"></i> Add Ambassador</button>
+  </div>
 </div>
 <div class="page">
   <div class="tabs">
-    ${['all','active','available','inactive'].map(fv=>`
-      <button class="tab ${f===fv?'active':''}" onclick="sf('a','${fv}')">${fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
+    ${['all','active','available','inactive'].map(fv=>`<button class="tab ${f===fv?'active':''}" onclick="sf('a','${fv}')">${fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
   </div>
   ${filtered.length===0?empty('users','No ambassadors found','Add your first ambassador to get started.'):''}
   <div class="grid-2">
     ${filtered.map((a,i)=>`
-      <div class="amb-card">
-        <div style="display:flex;align-items:center;gap:12px;">
-          ${av(a.name,i,46)}
-          <div style="flex:1;">
-            <div style="font-size:14px;font-weight:700;">${a.name}</div>
-            <div style="font-size:12px;color:var(--text2);">${a.city||''} ${a.rate?'· $'+a.rate+'/hr':''}</div>
-            <div style="margin-top:3px;">${stars(a.rating)}</div>
-          </div>
-          ${badge(a.status)}
+    <div class="amb-card">
+      <div style="display:flex;align-items:center;gap:13px;">
+        ${av(a.name,i,48)}
+        <div style="flex:1;">
+          <div style="font-size:15px;font-weight:800;letter-spacing:-.01em;">${a.name}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:1px;">${a.city||''}${a.rate?' · $'+a.rate+'/hr':''}</div>
+          <div style="margin-top:4px;">${stars(a.rating)}</div>
         </div>
-        <div class="amb-stats">
-          <div class="amb-stat"><div class="amb-stat-val">${a.events_month||0}</div><div class="amb-stat-lbl">This month</div></div>
-          <div class="amb-stat"><div class="amb-stat-val">${a.total_events||0}</div><div class="amb-stat-lbl">Total events</div></div>
-          <div class="amb-stat"><div class="amb-stat-val">${(a.rating||0).toFixed(1)}</div><div class="amb-stat-lbl">Rating</div></div>
-        </div>
-        ${a.specialty?`<div style="font-size:12px;color:var(--text2);"><i class="ti ti-star" style="font-size:13px;"></i> ${a.specialty}</div>`:''}
-        <div style="font-size:11px;color:var(--text2);">
-          ${a.email?`<div><i class="ti ti-mail" style="font-size:12px;"></i> ${a.email}</div>`:''}
-          ${a.phone?`<div><i class="ti ti-phone" style="font-size:12px;"></i> ${a.phone}</div>`:''}
-        </div>
-        <div style="display:flex;gap:8px;">
-          ${a.email?`<a class="btn btn-sm" style="flex:1;justify-content:center;text-decoration:none;" href="mailto:${a.email}"><i class="ti ti-mail"></i> Email</a>`:''}
-          <button class="btn btn-sm btn-primary" style="flex:1;justify-content:center;" onclick="openNewEvent()"><i class="ti ti-calendar-plus"></i> Assign</button>
-          <button class="btn btn-sm btn-icon" onclick="editAmb(${a.id})"><i class="ti ti-edit"></i></button>
-          <button class="btn btn-sm btn-icon btn-danger" onclick="deleteAmbassador(${a.id})"><i class="ti ti-trash"></i></button>
-        </div>
-      </div>`).join('')}
+        ${badge(a.status)}
+      </div>
+      <div class="amb-stats">
+        <div class="amb-stat"><div class="amb-stat-val">${a.events_month||0}</div><div class="amb-stat-lbl">This month</div></div>
+        <div class="amb-stat"><div class="amb-stat-val">${a.total_events||0}</div><div class="amb-stat-lbl">Total events</div></div>
+        <div class="amb-stat"><div class="amb-stat-val">${(a.rating||0).toFixed(1)}</div><div class="amb-stat-lbl">Rating</div></div>
+      </div>
+      ${a.specialty?`<div style="font-size:12px;color:var(--text2);"><i class="ti ti-star" style="font-size:12px;color:var(--amber);"></i> ${a.specialty}</div>`:''}
+      <div style="font-size:11px;color:var(--text2);display:flex;flex-direction:column;gap:2px;">
+        ${a.email?`<div><i class="ti ti-mail" style="font-size:12px;"></i> ${a.email}</div>`:''}
+        ${a.phone?`<div><i class="ti ti-phone" style="font-size:12px;"></i> ${a.phone}</div>`:''}
+      </div>
+      <div style="display:flex;gap:8px;">
+        ${a.email?`<a class="btn btn-sm" style="flex:1;justify-content:center;text-decoration:none;" href="mailto:${a.email}"><i class="ti ti-mail"></i> Email</a>`:''}
+        <button class="btn btn-sm btn-primary" style="flex:1;justify-content:center;" onclick="openNewEvent()"><i class="ti ti-calendar-plus"></i> Assign</button>
+        <button class="btn btn-sm btn-icon" onclick="editAmb(${a.id})"><i class="ti ti-edit"></i></button>
+        <button class="btn btn-sm btn-icon btn-danger" onclick="deleteAmbassador(${a.id})"><i class="ti ti-trash"></i></button>
+      </div>
+    </div>`).join('')}
   </div>
 </div>`;
 }
 
 function reportsView(){
-  const f = S.filters.r;
-  const filtered = f==='all' ? S.reports : S.reports.filter(r=>r.status===f);
-  return `
+  const f=S.filters.r;
+  const filtered=f==='all'?S.reports:S.reports.filter(r=>r.status===f);
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Post-Event Reports</div><div class="topbar-sub">${S.reports.length} reports submitted</div></div>
-  <div class="topbar-right"><button class="btn" onclick="exportReportsCSV()"><i class="ti ti-download"></i> Export CSV</button><button class="btn btn-primary" onclick="openNewReport()"><i class="ti ti-file-plus"></i> Submit Report</button></div>
+  <div class="topbar-right">
+    <button class="btn btn-export" onclick="exportReportsCSV()"><i class="ti ti-download"></i> Export CSV</button>
+    <button class="btn btn-primary" onclick="openNewReport()"><i class="ti ti-file-plus"></i> Submit Report</button>
+  </div>
 </div>
 <div class="page">
   <div class="tabs">
-    ${['all','approved','pending','needs-revision'].map(fv=>`
-      <button class="tab ${f===fv?'active':''}" onclick="sf('r','${fv}')">${fv==='needs-revision'?'Needs Revision':fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
+    ${['all','approved','pending','needs-revision'].map(fv=>`<button class="tab ${f===fv?'active':''}" onclick="sf('r','${fv}')">${fv==='needs-revision'?'Needs Revision':fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
   </div>
   ${filtered.length===0?empty('file-description','No reports found','Submit a post-event report after each demo.'):''}
   ${filtered.map((r,i)=>`
-    <div class="rep-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          ${av(r.ambassador||'?',i,40)}
-          <div>
-            <div style="font-size:14px;font-weight:700;">${r.event_name}</div>
-            <div style="font-size:12px;color:var(--text2);">${r.ambassador||''} · ${r.date||''}</div>
-          </div>
+  <div class="rep-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div style="display:flex;align-items:center;gap:13px;">
+        ${av(r.ambassador||'?',i,42)}
+        <div>
+          <div style="font-size:15px;font-weight:800;letter-spacing:-.01em;">${r.event_name}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:1px;">${r.ambassador||''} · ${r.date||''}</div>
         </div>
-        ${badge(r.status)}
       </div>
-      <div class="rep-stats">
-        <div class="rep-stat"><div class="rep-stat-val">${r.units_sold||0}</div><div class="rep-stat-lbl">Units sold</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${r.samples||0}</div><div class="rep-stat-lbl">Samples</div></div>
-        <div class="rep-stat"><div class="rep-stat-val stat-up">+${r.sales_lift||0}%</div><div class="rep-stat-lbl">Sales lift</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${r.photos||0}</div><div class="rep-stat-lbl">Photos</div></div>
-      </div>
-      ${r.feedback?`<div class="quote-block">"${r.feedback}"</div>`:''}
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        ${r.status==='pending'?`<button class="btn btn-primary btn-sm" onclick="approveReport(${r.id})"><i class="ti ti-check"></i> Approve</button><button class="btn btn-sm btn-danger" onclick="flagReport(${r.id})"><i class="ti ti-flag"></i> Request Changes</button>`:''}
-        ${r.status==='needs-revision'?`<button class="btn btn-primary btn-sm" onclick="approveReport(${r.id})"><i class="ti ti-check"></i> Approve</button>`:''}
-        <button class="btn btn-sm btn-icon btn-danger" onclick="deleteReport(${r.id})"><i class="ti ti-trash"></i></button>
-      </div>
-    </div>`).join('')}
+      ${badge(r.status)}
+    </div>
+    <div class="rep-stats">
+      <div class="rep-stat"><div class="rep-stat-val">${r.units_sold||0}</div><div class="rep-stat-lbl">Units Sold</div></div>
+      <div class="rep-stat"><div class="rep-stat-val">${r.samples||0}</div><div class="rep-stat-lbl">Samples</div></div>
+      <div class="rep-stat"><div class="rep-stat-val stat-up">+${r.sales_lift||0}%</div><div class="rep-stat-lbl">Sales Lift</div></div>
+      <div class="rep-stat"><div class="rep-stat-val">${r.photos||0}</div><div class="rep-stat-lbl">Photos</div></div>
+    </div>
+    ${r.feedback?`<div class="quote-block">"${r.feedback}"</div>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      ${r.status==='pending'?`<button class="btn btn-primary btn-sm" onclick="approveReport(${r.id})"><i class="ti ti-check"></i> Approve</button><button class="btn btn-sm btn-danger" onclick="flagReport(${r.id})"><i class="ti ti-flag"></i> Request Changes</button>`:''}
+      ${r.status==='needs-revision'?`<button class="btn btn-primary btn-sm" onclick="approveReport(${r.id})"><i class="ti ti-check"></i> Approve</button>`:''}
+      <button class="btn btn-sm btn-icon btn-danger" onclick="deleteReport(${r.id})"><i class="ti ti-trash"></i></button>
+    </div>
+  </div>`).join('')}
 </div>`;
 }
 
 function paymentsView(){
-  const f = S.filters.p;
-  const filtered = f==='all' ? S.payments : S.payments.filter(p=>p.status===f);
-  const totPend  = S.payments.filter(p=>p.status==='pending').reduce((a,p)=>a+(p.total||0),0);
-  const totApprv = S.payments.filter(p=>p.status==='approved').reduce((a,p)=>a+(p.total||0),0);
-  const totPaid  = S.payments.filter(p=>p.status==='paid').reduce((a,p)=>a+(p.total||0),0);
-  return `
+  const f=S.filters.p;
+  const filtered=f==='all'?S.payments:S.payments.filter(p=>p.status===f);
+  const totPend=S.payments.filter(p=>p.status==='pending').reduce((a,p)=>a+(p.total||0),0);
+  const totApprv=S.payments.filter(p=>p.status==='approved').reduce((a,p)=>a+(p.total||0),0);
+  const totPaid=S.payments.filter(p=>p.status==='paid').reduce((a,p)=>a+(p.total||0),0);
+  return`
 <div class="topbar">
-  <div><div class="topbar-title">Payments & Approvals</div><div class="topbar-sub">${fmt$(totPend)} pending · ${fmt$(totApprv)} approved</div></div>
-  <div class="topbar-right"><button class="btn" onclick="exportPaymentsCSV()"><i class="ti ti-download"></i> Export CSV</button><button class="btn btn-primary" onclick="openNewPayment()"><i class="ti ti-plus"></i> Log Payment</button></div>
+  <div><div class="topbar-title">Payments &amp; Payroll</div><div class="topbar-sub">${fmt$(totPend)} pending · ${fmt$(totApprv)} approved</div></div>
+  <div class="topbar-right">
+    <button class="btn btn-export" onclick="exportPaymentsCSV()"><i class="ti ti-download"></i> Export Payroll CSV</button>
+    <button class="btn btn-primary" onclick="openNewPayment()"><i class="ti ti-plus"></i> Log Payment</button>
+  </div>
 </div>
 <div class="page">
   <div class="kpi-grid kpi-3">
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-clock"></i> Pending Approval</div><div class="kpi-value ${totPend>0?'stat-warn':''}">${fmt$(totPend)}</div><div class="kpi-sub">${S.payments.filter(p=>p.status==='pending').length} payment(s)</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-circle-check"></i> Approved / To Pay</div><div class="kpi-value">${fmt$(totApprv)}</div><div class="kpi-sub">${S.payments.filter(p=>p.status==='approved').length} payment(s)</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-cash"></i> Paid This Period</div><div class="kpi-value stat-up">${fmt$(totPaid)}</div><div class="kpi-sub">${[...new Set(S.payments.filter(p=>p.status==='paid').map(p=>p.ambassador))].length} ambassadors</div></div>
+    ${kpi('ti-clock','#f59e0b','Pending Approval',fmt$(totPend),S.payments.filter(p=>p.status==='pending').length+' payment(s)')}
+    ${kpi('ti-circle-check','#3b82f6','Approved / To Pay',fmt$(totApprv),S.payments.filter(p=>p.status==='approved').length+' payment(s)')}
+    ${kpi('ti-cash','#16a37f','Paid This Period',fmt$(totPaid),[...new Set(S.payments.filter(p=>p.status==='paid').map(p=>p.ambassador))].length+' ambassadors')}
   </div>
   <div class="tabs">
     ${['all','pending','approved','paid'].map(fv=>`<button class="tab ${f===fv?'active':''}" onclick="sf('p','${fv}')">${fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
   </div>
   <div class="tbl-wrap">
-    ${filtered.length===0 ? empty('cash','No payments found','Log ambassador payments after each event.')
-    : `<table><thead><tr><th>Ambassador</th><th>Event</th><th>Date</th><th>Hours</th><th>Rate</th><th>Expenses</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody>
-      ${filtered.map((p,i)=>`
-        <tr>
-          <td><div style="display:flex;align-items:center;gap:8px;">${av(p.ambassador,i,28)}<span style="font-weight:600;">${p.ambassador}</span></div></td>
-          <td style="color:var(--text2);font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.event_name||'—'}</td>
-          <td style="color:var(--text2);">${p.date||'—'}</td>
-          <td>${p.hours||0}h</td><td>${fmt$(p.rate)}/hr</td><td>${fmt$(p.expenses)}</td>
-          <td style="font-weight:700;">${fmt$(p.total)}</td>
-          <td>${badge(p.status)}</td>
-          <td><div style="display:flex;gap:4px;">
-            ${p.status==='pending'?`<button class="btn btn-primary btn-sm" onclick="approvePayment(${p.id})">Approve</button>`:''}
-            ${p.status==='approved'?`<button class="btn btn-primary btn-sm" onclick="markPaid(${p.id})">Mark Paid</button>`:''}
-            <button class="btn btn-sm btn-icon btn-danger" onclick="deletePayment(${p.id})"><i class="ti ti-trash"></i></button>
-          </div></td>
-        </tr>`).join('')}
+    ${filtered.length===0?empty('cash','No payments found','Log ambassador payments after each event.')
+    :`<table><thead><tr><th>Ambassador</th><th>Event</th><th>Date</th><th>Hours</th><th>Rate</th><th>Expenses</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+      ${filtered.map((p,i)=>`<tr>
+        <td><div style="display:flex;align-items:center;gap:9px;">${av(p.ambassador,i,30)}<span style="font-weight:700;">${p.ambassador}</span></div></td>
+        <td style="color:var(--text2);font-size:12px;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.event_name||'—'}</td>
+        <td style="color:var(--text2);">${p.date||'—'}</td>
+        <td style="font-weight:600;">${p.hours||0}h</td>
+        <td>${fmt$(p.rate)}/hr</td>
+        <td>${fmt$(p.expenses)}</td>
+        <td style="font-weight:800;font-size:14px;">${fmt$(p.total)}</td>
+        <td>${badge(p.status)}</td>
+        <td><div style="display:flex;gap:4px;">
+          ${p.status==='pending'?`<button class="btn btn-primary btn-sm" onclick="approvePayment(${p.id})">Approve</button>`:''}
+          ${p.status==='approved'?`<button class="btn btn-primary btn-sm" onclick="markPaid(${p.id})">Mark Paid</button>`:''}
+          <button class="btn btn-sm btn-icon btn-danger" onclick="deletePayment(${p.id})"><i class="ti ti-trash"></i></button>
+        </div></td>
+      </tr>`).join('')}
       </tbody></table>`}
   </div>
 </div>`;
 }
 
 function analyticsView(){
-  const done  = S.events.filter(e=>e.status==='completed'&&e.sales_lift);
-  const units = S.events.filter(e=>e.units_sold).reduce((a,e)=>a+e.units_sold,0);
-  const avgL  = done.length?Math.round(done.reduce((a,e)=>a+e.sales_lift,0)/done.length):0;
-  return `
+  const done=S.events.filter(e=>e.status==='completed'&&e.sales_lift);
+  const units=S.events.filter(e=>e.units_sold).reduce((a,e)=>a+e.units_sold,0);
+  const avgL=done.length?Math.round(done.reduce((a,e)=>a+e.sales_lift,0)/done.length):0;
+  return`
 <div class="topbar">
-  <div><div class="topbar-title">Analytics & ROI</div><div class="topbar-sub">All-time performance</div></div>
+  <div><div class="topbar-title">Analytics &amp; ROI</div><div class="topbar-sub">All-time performance</div></div>
+  <div class="topbar-right">
+    <button class="btn btn-export" onclick="exportEventsCSV()"><i class="ti ti-download"></i> Export Events CSV</button>
+  </div>
 </div>
 <div class="page">
   <div class="kpi-grid kpi-4">
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-calendar-event"></i> Total Events</div><div class="kpi-value">${S.events.length}</div><div class="kpi-sub">${S.events.filter(e=>e.status==='upcoming').length} upcoming</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-shopping-cart"></i> Units Sold</div><div class="kpi-value">${units}</div><div class="kpi-sub">Across all events</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-trending-up"></i> Avg Sales Lift</div><div class="kpi-value stat-up">${avgL?'+'+avgL+'%':'—'}</div><div class="kpi-sub">vs non-demo baseline</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-users"></i> Total Ambassadors</div><div class="kpi-value">${S.ambassadors.length}</div><div class="kpi-sub">${S.ambassadors.filter(a=>a.status==='active').length} active</div></div>
+    ${kpi('ti-calendar-event','#3b82f6','Total Events',S.events.length,S.events.filter(e=>e.status==='upcoming').length+' upcoming')}
+    ${kpi('ti-shopping-cart','#16a37f','Units Sold',units,'Across all events')}
+    ${kpi('ti-trending-up','#10b981','Avg Sales Lift',avgL?'+'+avgL+'%':'—','vs non-demo baseline')}
+    ${kpi('ti-users','#8b5cf6','Total Ambassadors',S.ambassadors.length,S.ambassadors.filter(a=>a.status==='active').length+' active')}
   </div>
   ${S.events.filter(e=>e.status==='completed').length<2
-    ? empty('chart-bar','Not enough data yet','Complete more events and submit reports to see charts.')
-    : `<div class="grid-2" style="margin-bottom:16px;">
-        <div class="card"><div class="card-header"><span class="card-title">Sales Lift by Event</span></div>
-          <div style="position:relative;height:200px;"><canvas id="liftChart"></canvas></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Events by Retailer</span></div>
-          <div style="position:relative;height:200px;"><canvas id="retChart"></canvas></div></div>
-      </div>`}
+    ?empty('chart-bar','Not enough data yet','Complete more events and submit reports to see charts.')
+    :`<div class="grid-2" style="margin-bottom:16px;">
+      <div class="card"><div class="card-header"><span class="card-title">Sales Lift by Event</span></div>
+        <div style="position:relative;height:200px;"><canvas id="liftChart"></canvas></div></div>
+      <div class="card"><div class="card-header"><span class="card-title">Events by Retailer</span></div>
+        <div style="position:relative;height:200px;"><canvas id="retChart"></canvas></div></div>
+    </div>`}
   <div class="tbl-wrap">
-    <div class="tbl-title">Ambassador Performance</div>
-    ${S.ambassadors.length===0 ? empty('users','No ambassadors yet','')
-    : `<table><thead><tr><th>Ambassador</th><th>Events/Month</th><th>Total Events</th><th>Rating</th><th>Specialty</th><th>Rate</th><th>Status</th></tr></thead><tbody>
+    <div class="tbl-title">Ambassador Performance
+      <button class="btn btn-sm btn-export" onclick="exportAmbassadorsCSV()"><i class="ti ti-download"></i> Export CSV</button>
+    </div>
+    ${S.ambassadors.length===0?empty('users','No ambassadors yet','')
+    :`<table><thead><tr><th>Ambassador</th><th>Events/Mo</th><th>Total</th><th>Rating</th><th>Specialty</th><th>Rate</th><th>Status</th></tr></thead><tbody>
       ${S.ambassadors.map((a,i)=>`<tr>
-        <td><div style="display:flex;align-items:center;gap:8px;">${av(a.name,i,28)}<span style="font-weight:600;">${a.name}</span></div></td>
-        <td style="font-weight:600;">${a.events_month||0}</td><td>${a.total_events||0}</td>
+        <td><div style="display:flex;align-items:center;gap:9px;">${av(a.name,i,30)}<span style="font-weight:700;">${a.name}</span></div></td>
+        <td style="font-weight:700;">${a.events_month||0}</td>
+        <td>${a.total_events||0}</td>
         <td>${stars(a.rating)}</td>
         <td><span class="badge badge-gray">${a.specialty||'—'}</span></td>
-        <td>${a.rate?fmt$(a.rate):'—'}</td><td>${badge(a.status)}</td>
+        <td style="font-weight:600;">${a.rate?fmt$(a.rate)+'/hr':'—'}</td>
+        <td>${badge(a.status)}</td>
       </tr>`).join('')}
       </tbody></table>`}
   </div>
@@ -1758,49 +1619,57 @@ function analyticsView(){
 }
 
 function surveysView(){
-  const total   = S.surveys.reduce((a,s)=>a+(s.responses||0),0);
-  const avgRate = S.surveys.length?(S.surveys.reduce((a,s)=>a+(s.rating||0),0)/S.surveys.length).toFixed(1):'—';
-  return `
+  const total=S.surveys.reduce((a,s)=>a+(s.responses||0),0);
+  const avgRate=S.surveys.length?(S.surveys.reduce((a,s)=>a+(s.rating||0),0)/S.surveys.length).toFixed(1):'—';
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Shopper Surveys</div><div class="topbar-sub">${total} total responses</div></div>
+  <div class="topbar-right">
+    <button class="btn btn-export" onclick="exportSurveysCSV()"><i class="ti ti-download"></i> Export CSV</button>
+  </div>
 </div>
 <div class="page">
   <div class="kpi-grid kpi-3">
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-users"></i> Total Responses</div><div class="kpi-value">${total}</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-star"></i> Avg Rating</div><div class="kpi-value">${avgRate}<span style="font-size:16px;color:var(--text2);"> /5</span></div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-clipboard-list"></i> Surveys</div><div class="kpi-value">${S.surveys.length}</div></div>
+    ${kpi('ti-users','#3b82f6','Total Responses',total,'Across all events')}
+    ${kpi('ti-star','#f59e0b','Avg Rating',avgRate+' / 5',S.surveys.length+' surveys')}
+    ${kpi('ti-clipboard-list','#16a37f','Total Surveys',S.surveys.length,'')}
   </div>
-  ${S.surveys.length===0 ? empty('clipboard-list','No surveys yet','Survey data will appear here once collected.') :
-    S.surveys.map(s=>`
-      <div class="rep-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div><div style="font-size:14px;font-weight:700;">${s.event_name}</div><div style="font-size:12px;color:var(--text2);">${s.date||''} · ${s.responses||0} responses</div></div>
-          <div style="text-align:right;"><div style="font-size:22px;font-weight:800;">${(s.rating||0).toFixed(1)}<span style="font-size:13px;font-weight:400;color:var(--text2);">/5</span></div><div class="star" style="font-size:14px;">${'★'.repeat(Math.round(s.rating||0))}</div></div>
-        </div>
-        ${s.top_feedback?`<div class="quote-block">"${s.top_feedback}"</div>`:''}
-      </div>`).join('')}
+  ${S.surveys.length===0?empty('clipboard-list','No surveys yet','Survey data will appear here once collected.')
+  :S.surveys.map(s=>`
+  <div class="rep-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <div><div style="font-size:15px;font-weight:800;">${s.event_name}</div><div style="font-size:12px;color:var(--text2);">${s.date||''} · ${s.responses||0} responses</div></div>
+      <div style="text-align:right;">
+        <div style="font-size:26px;font-weight:800;letter-spacing:-.03em;">${(s.rating||0).toFixed(1)}<span style="font-size:14px;font-weight:400;color:var(--text2);">/5</span></div>
+        <div class="star" style="font-size:14px;">${'★'.repeat(Math.round(s.rating||0))}</div>
+      </div>
+    </div>
+    ${s.top_feedback?`<div class="quote-block">"${s.top_feedback}"</div>`:''}
+  </div>`).join('')}
 </div>`;
 }
 
 function storesView(){
-  return `
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Store Directory</div><div class="topbar-sub">${S.stores.length} stores in territory</div></div>
-  <div class="topbar-right"><button class="btn btn-primary" onclick="openNewStore()"><i class="ti ti-plus"></i> Add Store</button></div>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="openNewStore()"><i class="ti ti-plus"></i> Add Store</button>
+  </div>
 </div>
 <div class="page">
   <div class="kpi-grid kpi-3">
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-building-store"></i> Total Stores</div><div class="kpi-value">${S.stores.length}</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-flag"></i> High Priority</div><div class="kpi-value">${S.stores.filter(s=>s.priority==='high').length}</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-calendar"></i> Avg Demos/Store</div><div class="kpi-value">${S.stores.length?(S.stores.reduce((a,s)=>a+(s.total_demos||0),0)/S.stores.length).toFixed(1):'—'}</div></div>
+    ${kpi('ti-building-store','#3b82f6','Total Stores',S.stores.length,'In territory')}
+    ${kpi('ti-flag','#ef4444','High Priority',S.stores.filter(s=>s.priority==='high').length,'Stores')}
+    ${kpi('ti-calendar','#16a37f','Avg Demos/Store',S.stores.length?(S.stores.reduce((a,s)=>a+(s.total_demos||0),0)/S.stores.length).toFixed(1):'—','All time')}
   </div>
   <div class="tbl-wrap">
-    ${S.stores.length===0 ? empty('building-store','No stores yet','Add retail locations to start scheduling demos.')
-    : `<table><thead><tr><th>Store Name</th><th>Retailer</th><th>Manager</th><th>Last Demo</th><th>Demos</th><th>Priority</th><th>Actions</th></tr></thead><tbody>
+    ${S.stores.length===0?empty('building-store','No stores yet','Add retail locations to start scheduling demos.')
+    :`<table><thead><tr><th>Store Name</th><th>Retailer</th><th>Manager</th><th>Last Demo</th><th>Demos</th><th>Priority</th><th>Actions</th></tr></thead><tbody>
       ${S.stores.map(s=>`<tr>
-        <td><div style="font-weight:600;">${s.name}</div><div style="font-size:11px;color:var(--text2);">${s.address||''}</div></td>
-        <td>${s.retailer||'—'}</td>
-        <td><div>${s.manager||'—'}</div><div style="font-size:11px;color:var(--text2);">${s.phone||''}</div></td>
+        <td><div style="font-weight:700;">${s.name}</div><div style="font-size:11px;color:var(--text2);">${s.address||''}</div></td>
+        <td style="color:var(--text2);">${s.retailer||'—'}</td>
+        <td><div style="font-weight:600;">${s.manager||'—'}</div><div style="font-size:11px;color:var(--text2);">${s.phone||''}</div></td>
         <td style="color:var(--text2);">${s.last_demo||'—'}</td>
         <td style="font-weight:700;">${s.total_demos||0}</td>
         <td>${badge(s.priority)}</td>
@@ -1816,31 +1685,25 @@ function storesView(){
 }
 
 function teamView(){
-  return `
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Team Members</div><div class="topbar-sub">${S.team.length} registered accounts</div></div>
 </div>
 <div class="page">
-  <div class="notice" style="margin-bottom:20px;">
-    <i class="ti ti-shield-check"></i>
+  <div class="notice" style="margin-bottom:20px;"><i class="ti ti-shield-check"></i>
     Managers have full platform access. Brand Ambassadors only see their own events, reports, and payments.
   </div>
   <div class="tbl-wrap">
-    ${S.team.length===0 ? empty('users','No team members yet','Team members appear here after they sign up and complete their profile.')
-    : `<table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Shirt Size</th><th>Address</th><th>Role</th><th>Change Role</th></tr></thead><tbody>
+    ${S.team.length===0?empty('users','No team members yet','Team members appear here after they sign up and complete their profile.')
+    :`<table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Shirt Size</th><th>Address</th><th>Role</th><th>Change Role</th></tr></thead><tbody>
       ${S.team.map((m,i)=>`<tr>
-        <td><div style="display:flex;align-items:center;gap:8px;">${av(m.name||m.email,i,28)}<span style="font-weight:600;">${m.name||'—'}</span></div></td>
+        <td><div style="display:flex;align-items:center;gap:9px;">${av(m.name||m.email,i,30)}<span style="font-weight:700;">${m.name||'—'}</span></div></td>
         <td style="color:var(--text2);font-size:12px;">${m.email||'—'}</td>
         <td style="color:var(--text2);font-size:12px;">${m.phone||'—'}</td>
         <td>${m.shirt_size?`<span class="badge badge-gray">${m.shirt_size}</span>`:'—'}</td>
         <td style="color:var(--text2);font-size:11px;max-width:160px;">${m.address||'—'}</td>
         <td>${badge(m.role||'ambassador')}</td>
-        <td>${m.id===S.currentUser.id
-          ? '<span style="font-size:12px;color:var(--text2);">That\'s you</span>'
-          : m.role==='manager'
-            ? `<button class="btn btn-sm" onclick="changeRole('${m.id}','ambassador')">Demote to Ambassador</button>`
-            : `<button class="btn btn-sm btn-primary" onclick="changeRole('${m.id}','manager')">Promote to Manager</button>`}
-        </td>
+        <td>${m.id===S.currentUser.id?'<span style="font-size:12px;color:var(--text2);">You</span>':m.role==='manager'?`<button class="btn btn-sm" onclick="changeRole('${m.id}','ambassador')">Demote to Ambassador</button>`:`<button class="btn btn-sm btn-primary" onclick="changeRole('${m.id}','manager')">Promote to Manager</button>`}</td>
       </tr>`).join('')}
       </tbody></table>`}
   </div>
@@ -1848,39 +1711,37 @@ function teamView(){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ─── AMBASSADOR VIEWS ────────────────────────────────────
+   AMBASSADOR VIEWS
 ═══════════════════════════════════════════════════════════ */
-
 function scheduleView(){
-  const myPending   = S.events.filter(e=>e.status==='pending_approval');
-  const myUpcoming  = S.events.filter(e=>e.status==='upcoming');
-  const needsConfirm = myUpcoming.filter(e=>!e.accepted);
-  const confirmed    = myUpcoming.filter(e=>e.accepted);
-  const myCompleted = S.events.filter(e=>e.status==='completed');
+  const myPending=S.events.filter(e=>e.status==='pending_approval');
+  const myUpcoming=S.events.filter(e=>e.status==='upcoming');
+  const needsConfirm=myUpcoming.filter(e=>!e.accepted);
+  const confirmed=myUpcoming.filter(e=>e.accepted);
+  const myCompleted=S.events.filter(e=>e.status==='completed');
 
-  function ambCard(e, cardClass=''){
-    const hasReport = S.reports.some(r=>r.event_name===e.name&&r.ambassador===S.currentUser.name);
-    return `
-    <div class="amb-event-card ${cardClass}">
+  function ambCard(e,cardClass=''){
+    const hasReport=S.reports.some(r=>r.event_name===e.name&&r.ambassador===S.currentUser.name);
+    return`<div class="amb-event-card ${cardClass}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-            <span style="font-size:14px;font-weight:700;">${e.name}</span>
-            ${badge(e.status)}
-            ${e.status==='upcoming'&&e.accepted?'<span class="badge badge-ok"><i class="ti ti-check" style="font-size:10px;"></i> You Confirmed</span>':''}
+            <span style="font-size:14px;font-weight:800;">${e.name}</span>${badge(e.status)}
+            ${e.status==='upcoming'&&e.accepted?'<span class="badge badge-ok">Confirmed</span>':''}
           </div>
           <div class="event-meta">
             <span><i class="ti ti-calendar"></i> ${e.date}</span>
             ${e.time?`<span><i class="ti ti-clock"></i> ${e.time}</span>`:''}
             ${e.store?`<span><i class="ti ti-building-store"></i> ${e.store}</span>`:''}
             ${e.product?`<span><i class="ti ti-package"></i> ${e.product}</span>`:''}
+            ${e.hourly_rate?`<span><i class="ti ti-coin"></i> ${fmt$(e.hourly_rate)}/hr</span>`:''}
           </div>
-          ${e.notes?`<div style="font-size:11px;color:var(--text2);margin-top:6px;font-style:italic;">${e.notes}</div>`:''}
-          ${e.status==='pending_approval'?`<div style="font-size:11px;color:var(--blue-dk);margin-top:6px;background:var(--blue-bg);padding:5px 8px;border-radius:6px;display:inline-block;">⏳ Waiting for manager approval</div>`:''}
-          ${e.status==='upcoming'&&!e.accepted?`<div style="font-size:11px;color:var(--amber-dk);margin-top:6px;background:var(--amber-bg);padding:5px 8px;border-radius:6px;display:inline-block;">⚠️ Please confirm your attendance below</div>`:''}
+          ${e.store_address?`<div style="font-size:11px;color:var(--text2);margin-top:5px;"><i class="ti ti-map-pin" style="font-size:11px;"></i> ${e.store_address}</div>`:''}
+          ${e.status==='pending_approval'?`<div style="font-size:11px;color:var(--blue-dk);margin-top:8px;background:var(--blue-bg);padding:6px 10px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;"><i class="ti ti-clock" style="font-size:12px;"></i> Waiting for manager approval</div>`:''}
+          ${e.status==='upcoming'&&!e.accepted?`<div style="font-size:11px;color:var(--amber-dk);margin-top:8px;background:var(--amber-bg);padding:6px 10px;border-radius:6px;display:inline-flex;align-items:center;gap:5px;"><i class="ti ti-alert-triangle" style="font-size:12px;"></i> Please confirm your attendance</div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-          ${e.status==='upcoming'&&!e.accepted?`<button class="btn btn-sm btn-primary" onclick="acceptEvent(${e.id})"><i class="ti ti-circle-check"></i> Accept Event</button><button class="btn btn-sm btn-danger" onclick="declineEvent(${e.id})">Decline</button>`:''}
+          ${e.status==='upcoming'&&!e.accepted?`<button class="btn btn-sm btn-primary" onclick="acceptEvent(${e.id})"><i class="ti ti-circle-check"></i> Accept</button><button class="btn btn-sm btn-danger" onclick="declineEvent(${e.id})">Decline</button>`:''}
           ${e.status==='completed'&&!hasReport?`<button class="btn btn-sm btn-primary" onclick="openReportForEvent('${e.name}')"><i class="ti ti-file-plus"></i> Submit Report</button>`:''}
           ${e.status==='completed'&&hasReport?`<span class="badge badge-ok">Report Submitted</span>`:''}
         </div>
@@ -1888,49 +1749,32 @@ function scheduleView(){
     </div>`;
   }
 
-  return `
+  return`
 <div class="topbar">
   <div><div class="topbar-title">My Schedule</div><div class="topbar-sub">${myUpcoming.length} upcoming · ${myCompleted.length} completed</div></div>
   <div class="topbar-right"><button class="btn btn-primary" onclick="openRequestModal()"><i class="ti ti-calendar-plus"></i> Request Event</button></div>
 </div>
 <div class="page">
-
-  ${needsConfirm.length>0?`
-  <div style="background:var(--amber-bg);border:1px solid rgba(239,159,39,.3);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;">
-    <div style="font-size:13px;font-weight:700;color:var(--amber-dk);margin-bottom:10px;"><i class="ti ti-alert-triangle"></i> ${needsConfirm.length} event(s) need your confirmation</div>
+  ${needsConfirm.length>0?`<div style="background:var(--amber-bg);border:1px solid rgba(245,158,11,.25);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:16px;">
+    <div style="font-size:13px;font-weight:700;color:var(--amber-dk);margin-bottom:12px;"><i class="ti ti-alert-triangle"></i> ${needsConfirm.length} event(s) need your confirmation</div>
     ${needsConfirm.map(e=>ambCard(e,'needs-confirm')).join('')}
   </div>`:''}
-
-  ${myPending.length>0?`
-  <div style="margin-bottom:16px;">
-    <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;font-size:11px;">Pending Approval</div>
-    ${myPending.map(e=>ambCard(e,'pending')).join('')}
+  ${myPending.length>0?`<div style="margin-bottom:16px;"><div class="section-label">Pending Approval</div>${myPending.map(e=>ambCard(e,'pending')).join('')}</div>`:''}
+  ${confirmed.length>0?`<div style="margin-bottom:16px;"><div class="section-label">Confirmed Upcoming</div>${confirmed.map(e=>ambCard(e,'confirmed')).join('')}</div>`:''}
+  ${myUpcoming.length===0&&myPending.length===0?`<div class="card" style="text-align:center;padding:44px 20px;margin-bottom:16px;">
+    <i class="ti ti-calendar-off" style="font-size:44px;color:var(--text3);margin-bottom:12px;display:block;"></i>
+    <strong style="font-size:16px;font-weight:800;">No upcoming events</strong>
+    <p style="font-size:13px;color:var(--text2);margin-top:6px;">Request an event or wait for your manager to assign one.</p>
+    <button class="btn btn-primary" style="margin-top:16px;" onclick="openRequestModal()"><i class="ti ti-plus"></i> Request an Event</button>
   </div>`:''}
-
-  ${confirmed.length>0?`
-  <div style="margin-bottom:16px;">
-    <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Confirmed Upcoming</div>
-    ${confirmed.map(e=>ambCard(e,'confirmed')).join('')}
-  </div>`:''}
-
-  ${myUpcoming.length===0&&myPending.length===0?`
-  <div class="card" style="text-align:center;padding:40px 20px;margin-bottom:16px;">
-    <i class="ti ti-calendar-off" style="font-size:40px;color:var(--text3);margin-bottom:10px;display:block;"></i>
-    <strong style="font-size:15px;">No upcoming events</strong>
-    <p style="font-size:13px;color:var(--text2);margin-top:4px;">Request an event or wait for your manager to assign one.</p>
-    <button class="btn btn-primary" style="margin-top:12px;" onclick="openRequestModal()"><i class="ti ti-plus"></i> Request an Event</button>
-  </div>`:''}
-
-  ${myCompleted.length>0?`
-  <div>
-    <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Past Events</div>
-    ${myCompleted.map(e=>ambCard(e,'completed-card')).join('')}
-  </div>`:''}
+  ${myCompleted.length>0?`<div><div class="section-label">Past Events</div>${myCompleted.map(e=>ambCard(e,'completed-card')).join('')}</div>`:''}
 </div>`;
 }
 
 function requestView(){
-  return `
+  const ambRecord=S.ambassadors.find(a=>a.name===S.currentUser.name);
+  const myRate=ambRecord?ambRecord.rate:0;
+  return`
 <div class="topbar">
   <div><div class="topbar-title">Request an Event</div><div class="topbar-sub">Submit a proposal — your manager will review and approve</div></div>
 </div>
@@ -1939,114 +1783,111 @@ function requestView(){
     <div class="notice"><i class="ti ti-info-circle"></i> Your manager will receive this request and approve or decline it. You'll see it in My Schedule once approved.</div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Preferred Store *</label>
-        <input id="req2-store" class="form-input" placeholder="e.g. Whole Foods Scottsdale" />
+        <label class="form-label">Store Name *</label>
+        <input id="req2-store" class="form-input" placeholder="e.g. Whole Foods Scottsdale"/>
       </div>
       <div class="form-group">
-        <label class="form-label">Retailer</label>
-        <input id="req2-retailer" class="form-input" placeholder="e.g. Whole Foods" />
+        <label class="form-label">Store Address</label>
+        <input id="req2-store-address" class="form-input" placeholder="Street, City, State ZIP"/>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Preferred Date *</label>
-        <input type="date" id="req2-date" class="form-input" />
+        <input type="date" id="req2-date" class="form-input"/>
       </div>
       <div class="form-group">
         <label class="form-label">Preferred Time</label>
-        <input id="req2-time" class="form-input" placeholder="12:00 – 4:00 PM" />
+        <input id="req2-time" class="form-input" placeholder="12:00 – 4:00 PM"/>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Product to Demo *</label>
-      <input id="req2-product" class="form-input" placeholder="Product name" />
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Product to Demo *</label>
+        <input id="req2-product" class="form-input" placeholder="Product name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hourly Rate ($)</label>
+        <input type="number" id="req2-rate" class="form-input" readonly value="${myRate}"
+          style="background:var(--bg3);cursor:not-allowed;" title="Set by your manager"/>
+      </div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Notes for Manager</label>
-      <textarea id="req2-notes" class="form-textarea" placeholder="Why this store? Any context that helps your manager decide..."></textarea>
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:12px;border-top:1px solid var(--border);">
+      <button class="btn btn-primary" onclick="submitEventRequest2()"><i class="ti ti-send"></i> Submit Request</button>
     </div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="submitInlineRequest()">
-      <i class="ti ti-send"></i> Submit Request to Manager
-    </button>
   </div>
 </div>`;
 }
 
-async function submitInlineRequest(){
-  const store   = document.getElementById('req2-store').value.trim();
-  const date    = document.getElementById('req2-date').value;
-  const product = document.getElementById('req2-product').value.trim();
-  if (!store || !date || !product) { toast('Store, date, and product are required', 'err'); return; }
-  const name = `${S.currentUser.name} – ${store} (${date})`;
-  const row = {
-    name, store,
-    retailer:      document.getElementById('req2-retailer').value.trim(),
-    date,
-    time:          document.getElementById('req2-time').value.trim(),
-    product,
-    notes:         document.getElementById('req2-notes').value.trim(),
-    status:        'pending_approval',
-    ambassador:    S.currentUser.name,
-    ambassador_id: S.currentUser.id,
-    accepted:      true,
-  };
+async function submitEventRequest2(){
+  const store=document.getElementById('req2-store').value.trim();
+  const date=document.getElementById('req2-date').value;
+  const product=document.getElementById('req2-product').value.trim();
+  if(!store||!date||!product){toast('Store, date, and product are required','err');return;}
+  const ambRecord=S.ambassadors.find(a=>a.name===S.currentUser.name);
+  const row={name:`${S.currentUser.name} – ${store} (${date})`,store,store_address:document.getElementById('req2-store-address').value.trim(),date,time:document.getElementById('req2-time').value.trim(),product,hourly_rate:ambRecord?ambRecord.rate:0,status:'pending_approval',ambassador:S.currentUser.name,ambassador_id:S.currentUser.id,accepted:true};
   showLoading();
-  const { error } = await db.from('events').insert(row);
+  const{error}=await db.from('events').insert(row);
   hideLoading();
-  if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast('Request submitted! Your manager will review it.', 'ok');
+  if(error){toast('Error: '+error.message,'err');return;}
+  toast('Request submitted! Your manager will review it.','ok');
   navigate('schedule');
 }
 
 function myReportsView(){
-  return `
+  return`
 <div class="topbar">
   <div><div class="topbar-title">My Reports</div><div class="topbar-sub">${S.reports.length} submitted</div></div>
-  <div class="topbar-right"><button class="btn btn-primary" onclick="openNewReport()"><i class="ti ti-file-plus"></i> Submit Report</button></div>
+  <div class="topbar-right">
+    <button class="btn btn-export" onclick="exportReportsCSV()"><i class="ti ti-download"></i> Export CSV</button>
+    <button class="btn btn-primary" onclick="openNewReport()"><i class="ti ti-file-plus"></i> Submit Report</button>
+  </div>
 </div>
 <div class="page">
-  ${S.reports.length===0 ? empty('file-description','No reports yet','Submit a post-event report after each demo.') : ''}
+  ${S.reports.length===0?empty('file-description','No reports yet','Submit a post-event report after each demo.'):''}
   ${S.reports.map((r,i)=>`
-    <div class="rep-card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-        <div>
-          <div style="font-size:14px;font-weight:700;">${r.event_name}</div>
-          <div style="font-size:12px;color:var(--text2);">${r.date||''}</div>
-        </div>
-        ${badge(r.status)}
-      </div>
-      <div class="rep-stats">
-        <div class="rep-stat"><div class="rep-stat-val">${r.units_sold||0}</div><div class="rep-stat-lbl">Units sold</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${r.samples||0}</div><div class="rep-stat-lbl">Samples</div></div>
-        <div class="rep-stat"><div class="rep-stat-val stat-up">+${r.sales_lift||0}%</div><div class="rep-stat-lbl">Sales lift</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${r.photos||0}</div><div class="rep-stat-lbl">Photos</div></div>
-      </div>
-      ${r.feedback?`<div class="quote-block">"${r.feedback}"</div>`:''}
-      ${r.status==='needs-revision'?`<div style="background:var(--red-bg);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--red-dk);margin-bottom:8px;"><i class="ti ti-flag"></i> Your manager requested changes to this report.</div>`:''}
-    </div>`).join('')}
+  <div class="rep-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div><div style="font-size:15px;font-weight:800;">${r.event_name}</div><div style="font-size:12px;color:var(--text2);">${r.date||''}</div></div>
+      ${badge(r.status)}
+    </div>
+    <div class="rep-stats">
+      <div class="rep-stat"><div class="rep-stat-val">${r.units_sold||0}</div><div class="rep-stat-lbl">Units Sold</div></div>
+      <div class="rep-stat"><div class="rep-stat-val">${r.samples||0}</div><div class="rep-stat-lbl">Samples</div></div>
+      <div class="rep-stat"><div class="rep-stat-val stat-up">+${r.sales_lift||0}%</div><div class="rep-stat-lbl">Sales Lift</div></div>
+      <div class="rep-stat"><div class="rep-stat-val">${r.photos||0}</div><div class="rep-stat-lbl">Photos</div></div>
+    </div>
+    ${r.feedback?`<div class="quote-block">"${r.feedback}"</div>`:''}
+    ${r.status==='needs-revision'?`<div style="background:var(--red-bg);border-radius:var(--radius);padding:9px 12px;font-size:12px;color:var(--red-dk);margin-bottom:8px;border:1px solid rgba(239,68,68,.15);"><i class="ti ti-flag"></i> Your manager requested changes to this report.</div>`:''}
+  </div>`).join('')}
 </div>`;
 }
 
 function myPaymentsView(){
-  const totPaid = S.payments.filter(p=>p.status==='paid').reduce((a,p)=>a+(p.total||0),0);
-  const totPend = S.payments.filter(p=>p.status==='pending'||p.status==='approved').reduce((a,p)=>a+(p.total||0),0);
-  return `
+  const totPaid=S.payments.filter(p=>p.status==='paid').reduce((a,p)=>a+(p.total||0),0);
+  const totPend=S.payments.filter(p=>p.status==='pending'||p.status==='approved').reduce((a,p)=>a+(p.total||0),0);
+  return`
 <div class="topbar">
   <div><div class="topbar-title">My Payments</div><div class="topbar-sub">${fmt$(totPaid)} received · ${fmt$(totPend)} pending</div></div>
+  <div class="topbar-right">
+    <button class="btn btn-export" onclick="exportPaymentsCSV()"><i class="ti ti-download"></i> Export CSV</button>
+  </div>
 </div>
 <div class="page">
   <div class="kpi-grid kpi-2">
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-cash"></i> Total Received</div><div class="kpi-value stat-up">${fmt$(totPaid)}</div><div class="kpi-sub">${S.payments.filter(p=>p.status==='paid').length} payments paid</div></div>
-    <div class="kpi"><div class="kpi-label"><i class="ti ti-clock"></i> Pending / Approved</div><div class="kpi-value">${fmt$(totPend)}</div><div class="kpi-sub">Being processed</div></div>
+    ${kpi('ti-cash','#16a37f','Total Received',fmt$(totPaid),S.payments.filter(p=>p.status==='paid').length+' payments paid')}
+    ${kpi('ti-clock','#f59e0b','Pending / Approved',fmt$(totPend),'Being processed')}
   </div>
   <div class="tbl-wrap">
-    ${S.payments.length===0 ? empty('cash','No payments yet','Your payment history will appear here.')
-    : `<table><thead><tr><th>Event</th><th>Date</th><th>Hours</th><th>Rate</th><th>Expenses</th><th>Total</th><th>Status</th></tr></thead><tbody>
+    ${S.payments.length===0?empty('cash','No payments yet','Your payment history will appear here.')
+    :`<table><thead><tr><th>Event</th><th>Date</th><th>Hours</th><th>Rate</th><th>Expenses</th><th>Total</th><th>Status</th></tr></thead><tbody>
       ${S.payments.map(p=>`<tr>
-        <td style="font-weight:600;">${p.event_name||'—'}</td>
+        <td style="font-weight:700;">${p.event_name||'—'}</td>
         <td style="color:var(--text2);">${p.date||'—'}</td>
-        <td>${p.hours||0}h</td><td>${fmt$(p.rate)}/hr</td><td>${fmt$(p.expenses)}</td>
-        <td style="font-weight:700;">${fmt$(p.total)}</td>
+        <td>${p.hours||0}h</td>
+        <td>${fmt$(p.rate)}/hr</td>
+        <td>${fmt$(p.expenses)}</td>
+        <td style="font-weight:800;">${fmt$(p.total)}</td>
         <td>${badge(p.status)}</td>
       </tr>`).join('')}
       </tbody></table>`}
@@ -2058,21 +1899,20 @@ function myPaymentsView(){
    CHARTS
 ═══════════════════════════════════════════════════════════ */
 function initCharts(){
-  Object.values(S.charts).forEach(c=>c.destroy());
-  S.charts={};
-  const dark  = matchMedia('(prefers-color-scheme:dark)').matches;
-  const grid  = dark?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.06)';
-  const ticks = dark?'#777':'#888';
-  const done  = S.events.filter(e=>e.status==='completed'&&e.sales_lift);
-  const lEl   = document.getElementById('liftChart');
+  Object.values(S.charts).forEach(c=>c.destroy());S.charts={};
+  const dark=matchMedia('(prefers-color-scheme:dark)').matches;
+  const grid=dark?'rgba(255,255,255,0.06)':'rgba(0,0,0,0.05)';
+  const ticks=dark?'#71717a':'#71717a';
+  const done=S.events.filter(e=>e.status==='completed'&&e.sales_lift);
+  const lEl=document.getElementById('liftChart');
   if(lEl&&done.length){
-    S.charts.lift=new Chart(lEl,{type:'bar',data:{labels:done.map(e=>e.retailer||e.name.split(' ')[0]),datasets:[{label:'Sales Lift %',data:done.map(e=>e.sales_lift),backgroundColor:'#1D9E75',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:ticks,font:{size:11},maxRotation:30}},y:{grid:{color:grid},ticks:{color:ticks,callback:v=>'+'+v+'%'}}}}});
+    S.charts.lift=new Chart(lEl,{type:'bar',data:{labels:done.map(e=>e.store||e.name.split(' ')[0]),datasets:[{label:'Sales Lift %',data:done.map(e=>e.sales_lift),backgroundColor:'#16a37f',borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:ticks,font:{size:11},maxRotation:30}},y:{grid:{color:grid},ticks:{color:ticks,callback:v=>'+'+v+'%'}}}}});
   }
   const rEl=document.getElementById('retChart');
   if(rEl&&S.events.length){
     const ret={};S.events.forEach(e=>{if(e.retailer)ret[e.retailer]=(ret[e.retailer]||0)+1;});
     if(Object.keys(ret).length){
-      S.charts.ret=new Chart(rEl,{type:'doughnut',data:{labels:Object.keys(ret),datasets:[{data:Object.values(ret),backgroundColor:['#1D9E75','#378ADD','#D4537E','#EF9F27','#7F77DD','#E24B4A'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'right',labels:{font:{size:11},color:ticks,padding:12}}}}});
+      S.charts.ret=new Chart(rEl,{type:'doughnut',data:{labels:Object.keys(ret),datasets:[{data:Object.values(ret),backgroundColor:['#16a37f','#3b82f6','#8b5cf6','#f59e0b','#ef4444','#ec4899'],borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{position:'right',labels:{font:{size:11},color:ticks,padding:14}}}}});
     }
   }
 }
@@ -2080,13 +1920,13 @@ function initCharts(){
 /* ═══════════════════════════════════════════════════════════
    RENDER
 ═══════════════════════════════════════════════════════════ */
-const MANAGER_VIEWS = { dashboard:dashboardView, events:eventsView, ambassadors:ambassadorsView, reports:reportsView, payments:paymentsView, analytics:analyticsView, surveys:surveysView, stores:storesView, team:teamView };
-const AMBASSADOR_VIEWS = { schedule:scheduleView, request:requestView, myreports:myReportsView, mypayments:myPaymentsView };
+const MANAGER_VIEWS={dashboard:dashboardView,events:eventsView,ambassadors:ambassadorsView,reports:reportsView,payments:paymentsView,analytics:analyticsView,surveys:surveysView,stores:storesView,team:teamView};
+const AMBASSADOR_VIEWS={schedule:scheduleView,request:requestView,myreports:myReportsView,mypayments:myPaymentsView};
 
 function renderMain(){
-  const views = S.role==='manager' ? MANAGER_VIEWS : AMBASSADOR_VIEWS;
-  document.getElementById('main').innerHTML = views[S.view] ? views[S.view]() : '<div class="page">View not found.</div>';
-  if(S.view==='analytics') setTimeout(initCharts,60);
+  const views=S.role==='manager'?MANAGER_VIEWS:AMBASSADOR_VIEWS;
+  document.getElementById('main').innerHTML=views[S.view]?views[S.view]():'<div class="page">View not found.</div>';
+  if(S.view==='analytics')setTimeout(initCharts,60);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2095,20 +1935,18 @@ function renderMain(){
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.addEventListener('click',e=>{if(e.target.classList.contains('modal-backdrop'))e.target.classList.remove('open');});
-
 function clearForm(ids){ids.forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});}
 
 function openNewEvent(){
   document.getElementById('modal-event-title').textContent='Schedule New Event';
   clearForm(['evt-id','evt-product','evt-store','evt-store-address','evt-date','evt-time','evt-ambassador','evt-rate','evt-notes']);
-  // Populate ambassador datalist
-  const dl = document.getElementById('evt-amb-list');
-  if (dl) dl.innerHTML = S.ambassadors.map(a=>`<option value="${a.name}">`).join('');
-  // Populate store datalist
-  const sl = document.getElementById('evt-store-list');
-  if (sl) sl.innerHTML = S.stores.map(s=>`<option value="${s.name}">`).join('');
+  const dl=document.getElementById('evt-amb-list');
+  if(dl)dl.innerHTML=S.ambassadors.map(a=>`<option value="${a.name}">`).join('');
+  const sl=document.getElementById('evt-store-list');
+  if(sl)sl.innerHTML=S.stores.map(s=>`<option value="${s.name}">`).join('');
   openModal('modal-event');
 }
+
 function editEvent(id){
   const e=S.events.find(ev=>ev.id===id);if(!e)return;
   document.getElementById('modal-event-title').textContent='Edit Event';
@@ -2121,13 +1959,23 @@ function editEvent(id){
   document.getElementById('evt-ambassador').value=e.ambassador||'';
   document.getElementById('evt-rate').value=e.hourly_rate||'';
   document.getElementById('evt-notes').value=e.notes||'';
-  // Populate datalists
-  const dl = document.getElementById('evt-amb-list');
-  if (dl) dl.innerHTML = S.ambassadors.map(a=>`<option value="${a.name}">`).join('');
-  const sl = document.getElementById('evt-store-list');
-  if (sl) sl.innerHTML = S.stores.map(s=>`<option value="${s.name}">`).join('');
+  const dl=document.getElementById('evt-amb-list');
+  if(dl)dl.innerHTML=S.ambassadors.map(a=>`<option value="${a.name}">`).join('');
+  const sl=document.getElementById('evt-store-list');
+  if(sl)sl.innerHTML=S.stores.map(s=>`<option value="${s.name}">`).join('');
   openModal('modal-event');
 }
+
+function openRequestModal(){
+  clearForm(['req-store','req-store-address','req-date','req-time','req-product']);
+  const ambRecord=S.ambassadors.find(a=>a.name===S.currentUser.name);
+  const rateEl=document.getElementById('req-rate');
+  if(rateEl)rateEl.value=ambRecord?(ambRecord.rate||''):'';
+  const sl=document.getElementById('req-store-list');
+  if(sl)sl.innerHTML=S.stores.map(s=>`<option value="${s.name}">`).join('');
+  openModal('modal-request');
+}
+
 function openNewAmb(){clearForm(['amb-id','amb-name','amb-email','amb-phone','amb-city','amb-rate','amb-rating']);openModal('modal-amb');}
 function editAmb(id){
   const a=S.ambassadors.find(x=>x.id===id);if(!a)return;
@@ -2142,6 +1990,7 @@ function editAmb(id){
   document.getElementById('amb-rating').value=a.rating||5.0;
   openModal('modal-amb');
 }
+
 function openNewReport(){
   clearForm(['rep-id','rep-event','rep-ambassador','rep-date','rep-units','rep-samples','rep-photos','rep-lift','rep-feedback']);
   document.getElementById('rep-ambassador').value=S.currentUser?.name||'';
@@ -2152,11 +2001,7 @@ function openReportForEvent(eventName){
   document.getElementById('rep-event').value=eventName;
   document.getElementById('rep-date').value=new Date().toISOString().slice(0,10);
 }
-function openNewStore(){
-  clearForm(['sto-id','sto-name','sto-retailer','sto-address','sto-manager','sto-phone']);
-  document.getElementById('sto-priority').value='medium';
-  openModal('modal-store');
-}
+function openNewStore(){clearForm(['sto-id','sto-name','sto-retailer','sto-address','sto-manager','sto-phone']);document.getElementById('sto-priority').value='medium';openModal('modal-store');}
 function editStore(id){
   const s=S.stores.find(x=>x.id===id);if(!s)return;
   document.getElementById('sto-id').value=s.id;
@@ -2171,111 +2016,18 @@ function editStore(id){
 function openNewPayment(){clearForm(['pay-id','pay-ambassador','pay-event','pay-date','pay-hours','pay-rate','pay-expenses']);openModal('modal-payment');}
 
 /* ═══════════════════════════════════════════════════════════
-   LOADING + TOAST
+   LOADING + TOAST + FILTER
 ═══════════════════════════════════════════════════════════ */
 function showLoading(){document.getElementById('loading').classList.add('show');}
 function hideLoading(){document.getElementById('loading').classList.remove('show');}
 let toastTimer;
 function toast(msg,type=''){
   const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.className='show '+type;
+  el.textContent=msg;el.className='show '+(type||'');
   clearTimeout(toastTimer);
   toastTimer=setTimeout(()=>{el.className='';},3500);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   AUTOFILL HELPERS
-═══════════════════════════════════════════════════════════ */
-function autofillStoreAddress(prefix) {
-  const nameEl = document.getElementById(prefix+'-store');
-  const addrEl = document.getElementById(prefix+'-store-address');
-  if (!nameEl || !addrEl) return;
-  const match = S.stores.find(s => s.name.toLowerCase() === nameEl.value.toLowerCase());
-  if (match && match.address) addrEl.value = match.address;
-}
-
-function autofillAmbRate(prefix) {
-  const nameEl = document.getElementById(prefix+'-ambassador');
-  const rateEl = document.getElementById(prefix+'-rate');
-  if (!nameEl || !rateEl) return;
-  const match = S.ambassadors.find(a => a.name.toLowerCase() === nameEl.value.toLowerCase());
-  if (match && match.rate) rateEl.value = match.rate;
-}
-
-function openRequestModal() {
-  clearForm(['req-store','req-store-address','req-date','req-time','req-product']);
-  // Auto-populate rate from ambassador's record
-  const ambRecord = S.ambassadors.find(a => a.name === S.currentUser.name);
-  const rateEl = document.getElementById('req-rate');
-  if (rateEl) rateEl.value = ambRecord ? (ambRecord.rate || '') : '';
-  // Populate store datalist
-  const sl = document.getElementById('req-store-list');
-  if (sl) sl.innerHTML = S.stores.map(s=>`<option value="${s.name}">`).join('');
-  openModal('modal-request');
-}
-
-/* ═══════════════════════════════════════════════════════════
-   CSV EXPORT
-═══════════════════════════════════════════════════════════ */
-function exportCSV(data, filename, columns) {
-  if (!data || data.length === 0) { toast('No data to export', 'err'); return; }
-  const header = columns.map(c => c.label);
-  const rows = data.map(row => columns.map(c => {
-    const val = row[c.key];
-    if (val === null || val === undefined) return '';
-    const s = String(val).replace(/"/g, '""');
-    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s}"` : s;
-  }));
-  const csv = [header, ...rows].map(r => r.join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-  toast('CSV exported!', 'ok');
-}
-
-function exportEventsCSV() {
-  exportCSV(S.events, 'fieldops-events.csv', [
-    {key:'name',label:'Event Name'},{key:'store',label:'Store Name'},
-    {key:'store_address',label:'Store Address'},{key:'date',label:'Date'},
-    {key:'time',label:'Time'},{key:'status',label:'Status'},
-    {key:'ambassador',label:'Ambassador'},{key:'product',label:'Product'},
-    {key:'hourly_rate',label:'Hourly Rate'},{key:'units_sold',label:'Units Sold'},
-    {key:'samples',label:'Samples'},{key:'sales_lift',label:'Sales Lift %'},
-  ]);
-}
-function exportReportsCSV() {
-  exportCSV(S.reports, 'fieldops-reports.csv', [
-    {key:'event_name',label:'Event'},{key:'ambassador',label:'Ambassador'},
-    {key:'date',label:'Date'},{key:'status',label:'Status'},
-    {key:'units_sold',label:'Units Sold'},{key:'samples',label:'Samples'},
-    {key:'sales_lift',label:'Sales Lift %'},{key:'feedback',label:'Feedback'},
-    {key:'photos',label:'Photos'},
-  ]);
-}
-function exportPaymentsCSV() {
-  exportCSV(S.payments, 'fieldops-payments.csv', [
-    {key:'ambassador',label:'Ambassador'},{key:'event_name',label:'Event'},
-    {key:'date',label:'Date'},{key:'hours',label:'Hours'},
-    {key:'rate',label:'Rate ($/hr)'},{key:'expenses',label:'Expenses'},
-    {key:'total',label:'Total'},{key:'status',label:'Status'},
-  ]);
-}
-function exportAmbassadorsCSV() {
-  exportCSV(S.ambassadors, 'fieldops-ambassadors.csv', [
-    {key:'name',label:'Name'},{key:'email',label:'Email'},
-    {key:'phone',label:'Phone'},{key:'city',label:'City'},
-    {key:'status',label:'Status'},{key:'rate',label:'Hourly Rate'},
-    {key:'specialty',label:'Specialty'},{key:'total_events',label:'Total Events'},
-    {key:'events_month',label:'Events This Month'},{key:'rating',label:'Rating'},
-  ]);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   FILTER
-═══════════════════════════════════════════════════════════ */
 function sf(type,val){
   if(type==='e')S.filters.e=val;
   else if(type==='a')S.filters.a=val;
