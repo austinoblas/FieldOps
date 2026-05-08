@@ -228,46 +228,10 @@ tbody tr:hover td{background:var(--bg2);}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-
-/* ── CHECK-IN ── */
-.checkin-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px 12px;border-radius:var(--radius);flex-wrap:wrap;}
-.checkin-bar.checked-in{background:var(--teal-bg);border:1px solid rgba(29,158,117,.25);}
-.checkin-bar.not-checked-in{background:var(--bg2);border:1px solid var(--border);}
-.checkin-bar.checked-out{background:var(--bg2);border:1px solid var(--border);}
-.checkin-info{font-size:11px;color:var(--text2);display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
-.checkin-info strong{color:var(--text);}
-.badge-checkin{background:var(--teal-bg);color:var(--teal-dk);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:3px;}
-.badge-checkout{background:var(--bg2);color:var(--text2);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-flex;align-items:center;gap:3px;border:1px solid var(--border);}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════
-     SCREEN 1 — SUPABASE CONFIG
-══════════════════════════════════════════════════════════ -->
-<div id="config-screen" class="fullscreen">
-  <div class="fs-card">
-    <div class="fs-logo"><i class="ti ti-map-pin"></i></div>
-    <h1 class="fs-title">FieldOps Setup</h1>
-    <p class="fs-sub">Connect your Supabase database.
-      <a href="https://supabase.com" target="_blank" style="color:var(--teal);">Get free credentials →</a>
-    </p>
-    <div class="form-group">
-      <label class="form-label">Supabase Project URL</label>
-      <input id="cfg-url" class="form-input" placeholder="https://xxxx.supabase.co" />
-      <div class="form-hint">Supabase → Settings → API → Project URL</div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Supabase Anon Public Key</label>
-      <input id="cfg-key" class="form-input" placeholder="eyJhbGci..." />
-      <div class="form-hint">The "anon public" key — safe to use in a browser</div>
-    </div>
-    <div id="cfg-err" class="form-err"></div>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px;" onclick="saveConfig()">
-      <i class="ti ti-arrow-right"></i> Continue
-    </button>
-  </div>
-</div>
 
 <!-- ══════════════════════════════════════════════════════════
      SCREEN 2 — LOGIN / SIGN UP
@@ -339,7 +303,7 @@ tbody tr:hover td{background:var(--bg2);}
     </div>
 
     <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:16px;">
-      Wrong database? <span style="color:var(--teal);cursor:pointer;" onclick="resetConfig()">Change credentials</span>
+      Having trouble? <span style="color:var(--teal);cursor:pointer;" onclick="resetConfig()">Clear session &amp; reload</span>
     </p>
   </div>
 </div>
@@ -550,7 +514,7 @@ tbody tr:hover td{background:var(--bg2);}
 
 <!-- Report -->
 <div class="modal-backdrop" id="modal-report">
-  <div class="modal" style="width:560px;">
+  <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-report')"><i class="ti ti-x"></i></button>
     <div class="modal-title">Submit Post-Event Report</div>
     <input type="hidden" id="rep-id" />
@@ -570,54 +534,27 @@ tbody tr:hover td{background:var(--bg2);}
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Store Traffic</label>
-        <select id="rep-traffic" class="form-select">
-          <option value="">Select traffic level</option>
-          <option value="slow">🐢 Slow</option>
-          <option value="medium">🚶 Medium</option>
-          <option value="heavy">🏃 Heavy</option>
-        </select>
+        <label class="form-label">Units Sold</label>
+        <input type="number" id="rep-units" class="form-input" placeholder="0" />
       </div>
       <div class="form-group">
-        <label class="form-label">Samples Given</label>
-        <input type="number" id="rep-samples" class="form-input" placeholder="0" min="0" />
+        <label class="form-label">Samples Distributed</label>
+        <input type="number" id="rep-samples" class="form-input" placeholder="0" />
       </div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Starting Inventory *</label>
-        <input type="number" id="rep-start-inv" class="form-input" placeholder="0" min="0" oninput="calcRepTotals()" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Final Inventory *</label>
-        <input type="number" id="rep-final-inv" class="form-input" placeholder="0" min="0" oninput="calcRepTotals()" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Total Sold <span style="color:var(--teal);font-size:10px;">AUTO</span></label>
-        <input type="number" id="rep-units" class="form-input" placeholder="0" readonly style="background:var(--bg2);cursor:not-allowed;" />
-        <div class="form-hint">Starting − Final Inventory</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Price Per Unit ($)</label>
-        <input type="number" id="rep-price" class="form-input" placeholder="0.00" step="0.01" min="0" oninput="calcRepTotals()" />
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Total $ Sold <span style="color:var(--teal);font-size:10px;">AUTO</span></label>
-        <input type="number" id="rep-revenue" class="form-input" placeholder="$0.00" readonly style="background:var(--bg2);cursor:not-allowed;" />
-        <div class="form-hint">Total Sold × Price Per Unit</div>
-      </div>
       <div class="form-group">
         <label class="form-label">Photos Taken</label>
-        <input type="number" id="rep-photos" class="form-input" placeholder="0" min="0" />
+        <input type="number" id="rep-photos" class="form-input" placeholder="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sales Lift (%)</label>
+        <input type="number" id="rep-lift" class="form-input" placeholder="0" />
       </div>
     </div>
     <div class="form-group">
       <label class="form-label">Shopper Feedback & Notes</label>
-      <textarea id="rep-feedback" class="form-textarea" placeholder="Shopper reactions, questions asked, product interest..."></textarea>
+      <textarea id="rep-feedback" class="form-textarea" placeholder="Shopper reactions, questions, sales performance..."></textarea>
     </div>
     <div class="modal-footer">
       <button class="btn" onclick="closeModal('modal-report')">Cancel</button>
@@ -781,58 +718,18 @@ tbody tr:hover td{background:var(--bg2);}
 
 <script>
 /* ═══════════════════════════════════════════════════════════
-   CONFIG
+   CONFIG — credentials hardcoded, single client instance
 ═══════════════════════════════════════════════════════════ */
-let db = null;
+const FO_URL = 'https://jlzgpcrrwkcutpqjntku.supabase.co';
+const FO_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpsemdwY3Jyd2tjdXRwcWpudGt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxMDQ5NjUsImV4cCI6MjA5MzY4MDk2NX0.Bw5a4pDuzTm2q6GmLheIXGvBiPwXZF6-dbnI3k8fCG8';
 
-async function saveConfig() {
-  const url   = document.getElementById('cfg-url').value.trim();
-  const key   = document.getElementById('cfg-key').value.trim();
-  const errEl = document.getElementById('cfg-err');
-  const btn   = document.querySelector('#config-screen .btn-primary');
-  errEl.classList.remove('show');
-
-  if (!url || !key) { showErr(errEl, 'Both fields are required.'); return; }
-  if (!url.startsWith('https://')) { showErr(errEl, 'URL must start with https://'); return; }
-
-  // Detect new publishable key format — not compatible with this library version
-  if (key.startsWith('sb_')) {
-    showErr(errEl,
-      'Please use the anon/public JWT key (starts with eyJ...), not the Publishable key. ' +
-      'Go to Supabase -> Settings -> API -> Project API Keys -> anon public.'
-    );
-    return;
-  }
-  if (!key.startsWith('eyJ')) {
-    showErr(errEl, 'Key format not recognised — it should start with eyJ... Find it in Supabase -> Settings -> API -> anon public.');
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerHTML = '<span style="opacity:.6">Connecting...</span>';
-
-  try {
-    const client = supabase.createClient(url, key);
-    // Race the session check against an 8-second timeout
-    const timeout = new Promise((_, rej) =>
-      setTimeout(() => rej(new Error('Connection timed out — check your Project URL.')), 8000)
-    );
-    const { error } = await Promise.race([client.auth.getSession(), timeout]);
-    if (error) throw error;
-    db = client;
-    localStorage.setItem('fo_url', url);
-    localStorage.setItem('fo_key', key);
-    await initApp();
-  } catch(e) {
-    showErr(errEl, e.message || 'Could not connect — double-check your URL and anon key.');
-    btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-arrow-right"></i> Continue';
-  }
-}
+// Create exactly one GoTrueClient for the lifetime of the page.
+// Never call supabase.createClient() again anywhere else.
+const db = supabase.createClient(FO_URL, FO_KEY);
 
 function resetConfig() {
-  if (confirm('This will clear your saved credentials and sign you out.')) {
-    if (db) db.auth.signOut();
+  if (confirm('This will sign you out and reload the app.')) {
+    db.auth.signOut();
     localStorage.clear();
     location.reload();
   }
@@ -842,18 +739,6 @@ function resetConfig() {
    INIT
 ═══════════════════════════════════════════════════════════ */
 async function initApp() {
-  const url = localStorage.getItem('fo_url');
-  const key = localStorage.getItem('fo_key');
-
-  if (!url || !key) { showScreen('config'); return; }
-
-  try {
-    if (!db) db = supabase.createClient(url, key);
-  } catch (e) {
-    showScreen('config');
-    return;
-  }
-
   // ── Auth state listener ──────────────────────────────────
   // Handles only post-init changes: sign-in from the login form
   // and sign-out. TOKEN_REFRESHED is intentionally ignored to
@@ -916,11 +801,11 @@ function startApp() {
 }
 
 function showScreen(name) {
-  ['config-screen','auth-screen','profile-screen','shell'].forEach(id => {
+  ['auth-screen','profile-screen','shell'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
-  const map = { config:'config-screen', auth:'auth-screen', profile:'profile-screen', app:'shell' };
+  const map = { auth:'auth-screen', profile:'profile-screen', app:'shell' };
   const el = document.getElementById(map[name]);
   if (el) el.style.display = 'flex';
 }
@@ -1195,60 +1080,6 @@ async function declineEvent(id) {
   await loadAll();
 }
 
-/* ── CHECK-IN / CHECK-OUT ── */
-function getLocation() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation is not supported by your browser.'));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }),
-      err => {
-        const msgs = {1:'Location permission denied — please allow location access in your browser.',2:'Location unavailable.',3:'Location request timed out.'};
-        reject(new Error(msgs[err.code] || 'Could not get location.'));
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  });
-}
-
-async function checkIn(id) {
-  toast('Getting your location…', '');
-  let loc;
-  try { loc = await getLocation(); } catch(e) { toast(e.message, 'err'); return; }
-  const now = new Date().toISOString();
-  showLoading();
-  const { error } = await db.from('events').update({
-    checkin_at:  now,
-    checkin_lat: loc.lat,
-    checkin_lng: loc.lng,
-  }).eq('id', id);
-  hideLoading();
-  if (error) { toast('Check-in failed: ' + error.message, 'err'); return; }
-  toast('✅ Checked in! Location recorded.', 'ok');
-  await loadAll();
-}
-
-async function checkOut(id) {
-  if (!confirm('Check out of this event? Make sure you\'re done for the day.')) return;
-  toast('Getting your location…', '');
-  let loc;
-  try { loc = await getLocation(); } catch(e) { toast(e.message, 'err'); return; }
-  const now = new Date().toISOString();
-  showLoading();
-  const { error } = await db.from('events').update({
-    checkout_at:  now,
-    checkout_lat: loc.lat,
-    checkout_lng: loc.lng,
-    status:       'completed',
-  }).eq('id', id);
-  hideLoading();
-  if (error) { toast('Check-out failed: ' + error.message, 'err'); return; }
-  toast('👋 Checked out! Don\'t forget to submit your report.', 'ok');
-  await loadAll();
-}
-
 async function markEventComplete(id) {
   showLoading();
   await db.from('events').update({ status: 'completed' }).eq('id', id);
@@ -1303,38 +1134,20 @@ async function deleteAmbassador(id) {
 }
 
 /* ── REPORTS ── */
-function calcRepTotals() {
-  const start = parseInt(document.getElementById('rep-start-inv').value) || 0;
-  const final = parseInt(document.getElementById('rep-final-inv').value) || 0;
-  const price = parseFloat(document.getElementById('rep-price').value) || 0;
-  const sold  = Math.max(0, start - final);
-  document.getElementById('rep-units').value   = sold;
-  document.getElementById('rep-revenue').value = (sold * price).toFixed(2);
-}
-
 async function saveReport() {
   const id = document.getElementById('rep-id').value;
   const evtName = document.getElementById('rep-event').value.trim();
   if (!evtName) { toast('Event name is required', 'err'); return; }
-  const startInv = parseInt(document.getElementById('rep-start-inv').value) || 0;
-  const finalInv = parseInt(document.getElementById('rep-final-inv').value) || 0;
-  const price    = parseFloat(document.getElementById('rep-price').value) || 0;
-  const unitsSold = Math.max(0, startInv - finalInv);
   const row = {
-    event_name:        evtName,
-    ambassador:        document.getElementById('rep-ambassador').value.trim() || S.currentUser.name,
-    date:              document.getElementById('rep-date').value,
-    store_traffic:     document.getElementById('rep-traffic').value,
-    samples:           parseInt(document.getElementById('rep-samples').value) || 0,
-    starting_inventory:startInv,
-    final_inventory:   finalInv,
-    units_sold:        unitsSold,
-    price_per_unit:    price,
-    total_revenue:     unitsSold * price,
-    photos:            parseInt(document.getElementById('rep-photos').value) || 0,
-    sales_lift:        unitsSold && startInv ? Math.round((unitsSold / startInv) * 100) : 0,
-    feedback:          document.getElementById('rep-feedback').value.trim(),
-    status:            'pending',
+    event_name: evtName,
+    ambassador: document.getElementById('rep-ambassador').value.trim() || S.currentUser.name,
+    date:       document.getElementById('rep-date').value,
+    units_sold: parseInt(document.getElementById('rep-units').value) || 0,
+    samples:    parseInt(document.getElementById('rep-samples').value) || 0,
+    photos:     parseInt(document.getElementById('rep-photos').value) || 0,
+    sales_lift: parseFloat(document.getElementById('rep-lift').value) || 0,
+    feedback:   document.getElementById('rep-feedback').value.trim(),
+    status:     'pending',
   };
   showLoading();
   const { error } = id
@@ -1342,7 +1155,7 @@ async function saveReport() {
     : await db.from('reports').insert(row);
   hideLoading();
   if (error) { toast('Error: ' + error.message, 'err'); return; }
-  toast('Report submitted! Awaiting manager review.', 'ok');
+  toast('Report submitted!', 'ok');
   closeModal('modal-report');
   await loadAll();
 }
@@ -1738,15 +1551,6 @@ function eventsView(){
           ${e.budget?`<span><i class="ti ti-coin"></i> ${fmt$(e.budget)}</span>`:''}
         </div>
         ${e.notes?`<div style="font-size:11px;color:var(--text2);margin-top:5px;font-style:italic;">${e.notes}</div>`:''}
-        ${e.checkin_at?`<div style="font-size:11px;margin-top:5px;display:flex;gap:8px;flex-wrap:wrap;">
-          <span style="background:var(--teal-bg);color:var(--teal-dk);padding:2px 8px;border-radius:10px;font-weight:700;">
-            <i class="ti ti-login" style="font-size:10px;"></i> In ${new Date(e.checkin_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
-            ${e.checkin_lat?` @ ${parseFloat(e.checkin_lat).toFixed(4)}, ${parseFloat(e.checkin_lng).toFixed(4)}`:''}
-          </span>
-          ${e.checkout_at?`<span style="background:var(--bg2);color:var(--text2);padding:2px 8px;border-radius:10px;font-weight:700;border:1px solid var(--border);">
-            <i class="ti ti-logout" style="font-size:10px;"></i> Out ${new Date(e.checkout_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}
-          </span>`:'<span style="background:var(--amber-bg);color:var(--amber-dk);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;">Still on-site</span>'}
-        </div>`:''}
       </div>
       <div style="text-align:right;flex-shrink:0;padding-left:12px;">
         ${e.units_sold?`<div style="font-size:20px;font-weight:800;color:var(--teal);">+${e.sales_lift||0}%</div><div style="font-size:11px;color:var(--text2);">${e.units_sold} units sold</div>`:''}
@@ -1811,7 +1615,6 @@ function ambassadorsView(){
 function reportsView(){
   const f = S.filters.r;
   const filtered = f==='all' ? S.reports : S.reports.filter(r=>r.status===f);
-  const trafficIcon = t => t==='slow'?'🐢':t==='medium'?'🚶':t==='heavy'?'🏃':'—';
   return `
 <div class="topbar">
   <div><div class="topbar-title">Post-Event Reports</div><div class="topbar-sub">${S.reports.length} reports submitted</div></div>
@@ -1830,18 +1633,16 @@ function reportsView(){
           ${av(r.ambassador||'?',i,40)}
           <div>
             <div style="font-size:14px;font-weight:700;">${r.event_name}</div>
-            <div style="font-size:12px;color:var(--text2);">${r.ambassador||''} · ${r.date||''}${r.store_traffic?` · ${trafficIcon(r.store_traffic)} ${r.store_traffic.charAt(0).toUpperCase()+r.store_traffic.slice(1)} traffic`:''}</div>
+            <div style="font-size:12px;color:var(--text2);">${r.ambassador||''} · ${r.date||''}</div>
           </div>
         </div>
         ${badge(r.status)}
       </div>
-      <div class="rep-stats" style="grid-template-columns:repeat(6,1fr);">
-        <div class="rep-stat"><div class="rep-stat-val">${r.starting_inventory??'—'}</div><div class="rep-stat-lbl">Start Inv.</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${r.final_inventory??'—'}</div><div class="rep-stat-lbl">Final Inv.</div></div>
-        <div class="rep-stat"><div class="rep-stat-val stat-up">${r.units_sold||0}</div><div class="rep-stat-lbl">Sold</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${r.price_per_unit?'$'+parseFloat(r.price_per_unit).toFixed(2):'—'}</div><div class="rep-stat-lbl">Price/Unit</div></div>
-        <div class="rep-stat"><div class="rep-stat-val stat-up">${r.total_revenue?'$'+parseFloat(r.total_revenue).toFixed(0):'—'}</div><div class="rep-stat-lbl">Revenue</div></div>
+      <div class="rep-stats">
+        <div class="rep-stat"><div class="rep-stat-val">${r.units_sold||0}</div><div class="rep-stat-lbl">Units sold</div></div>
         <div class="rep-stat"><div class="rep-stat-val">${r.samples||0}</div><div class="rep-stat-lbl">Samples</div></div>
+        <div class="rep-stat"><div class="rep-stat-val stat-up">+${r.sales_lift||0}%</div><div class="rep-stat-lbl">Sales lift</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${r.photos||0}</div><div class="rep-stat-lbl">Photos</div></div>
       </div>
       ${r.feedback?`<div class="quote-block">"${r.feedback}"</div>`:''}
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -2037,37 +1838,6 @@ function scheduleView(){
 
   function ambCard(e, cardClass=''){
     const hasReport = S.reports.some(r=>r.event_name===e.name&&r.ambassador===S.currentUser.name);
-    const isToday   = e.date === new Date().toISOString().slice(0,10);
-    const checkedIn  = !!e.checkin_at;
-    const checkedOut = !!e.checkout_at;
-    const canCheckin = e.status==='upcoming' && e.accepted && isToday && !checkedIn;
-    const canCheckout= e.status==='upcoming' && e.accepted && checkedIn && !checkedOut;
-
-    // Format a UTC timestamp nicely
-    function fmtTime(ts){ if(!ts) return '—'; const d=new Date(ts); return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
-    function fmtCoord(lat,lng){ if(!lat||!lng) return ''; return `${parseFloat(lat).toFixed(4)}, ${parseFloat(lng).toFixed(4)}`; }
-
-    const checkinBar = e.status==='upcoming' && e.accepted ? `
-      <div class="checkin-bar ${checkedIn && !checkedOut ? 'checked-in' : checkedOut ? 'checked-out' : 'not-checked-in'}">
-        <div class="checkin-info">
-          <i class="ti ti-map-pin" style="font-size:13px;"></i>
-          ${!checkedIn
-            ? (isToday
-                ? '<span>Ready to check in when you arrive at the store</span>'
-                : `<span>Check-in opens on event day (${e.date})</span>`)
-            : checkedOut
-              ? `<span>✅ Checked in <strong>${fmtTime(e.checkin_at)}</strong> — Checked out <strong>${fmtTime(e.checkout_at)}</strong></span>
-                 ${e.checkin_lat ? `<span style="margin-left:4px;">📍 ${fmtCoord(e.checkin_lat,e.checkin_lng)}</span>` : ''}`
-              : `<span class="badge-checkin"><i class="ti ti-circle-dot" style="font-size:10px;"></i> LIVE</span>
-                 <span>Checked in at <strong>${fmtTime(e.checkin_at)}</strong></span>
-                 ${e.checkin_lat ? `<span>📍 ${fmtCoord(e.checkin_lat,e.checkin_lng)}</span>` : ''}`}
-        </div>
-        <div style="display:flex;gap:6px;">
-          ${canCheckin  ? `<button class="btn btn-sm btn-primary" onclick="checkIn(${e.id})"><i class="ti ti-login"></i> Check In</button>` : ''}
-          ${canCheckout ? `<button class="btn btn-sm" style="background:var(--teal-bg);color:var(--teal-dk);border-color:transparent;" onclick="checkOut(${e.id})"><i class="ti ti-logout"></i> Check Out</button>` : ''}
-        </div>
-      </div>` : '';
-
     return `
     <div class="amb-event-card ${cardClass}">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
@@ -2075,7 +1845,7 @@ function scheduleView(){
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
             <span style="font-size:14px;font-weight:700;">${e.name}</span>
             ${badge(e.status)}
-            ${e.status==='upcoming'&&e.accepted?'<span class="badge badge-ok"><i class="ti ti-check" style="font-size:10px;"></i> Confirmed</span>':''}
+            ${e.status==='upcoming'&&e.accepted?'<span class="badge badge-ok"><i class="ti ti-check" style="font-size:10px;"></i> You Confirmed</span>':''}
           </div>
           <div class="event-meta">
             <span><i class="ti ti-calendar"></i> ${e.date}</span>
@@ -2086,7 +1856,6 @@ function scheduleView(){
           ${e.notes?`<div style="font-size:11px;color:var(--text2);margin-top:6px;font-style:italic;">${e.notes}</div>`:''}
           ${e.status==='pending_approval'?`<div style="font-size:11px;color:var(--blue-dk);margin-top:6px;background:var(--blue-bg);padding:5px 8px;border-radius:6px;display:inline-block;">⏳ Waiting for manager approval</div>`:''}
           ${e.status==='upcoming'&&!e.accepted?`<div style="font-size:11px;color:var(--amber-dk);margin-top:6px;background:var(--amber-bg);padding:5px 8px;border-radius:6px;display:inline-block;">⚠️ Please confirm your attendance below</div>`:''}
-          ${checkinBar}
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
           ${e.status==='upcoming'&&!e.accepted?`<button class="btn btn-sm btn-primary" onclick="acceptEvent(${e.id})"><i class="ti ti-circle-check"></i> Accept Event</button><button class="btn btn-sm btn-danger" onclick="declineEvent(${e.id})">Decline</button>`:''}
@@ -2208,7 +1977,6 @@ async function submitInlineRequest(){
 }
 
 function myReportsView(){
-  const trafficIcon = t => t==='slow'?'🐢':t==='medium'?'🚶':t==='heavy'?'🏃':'—';
   return `
 <div class="topbar">
   <div><div class="topbar-title">My Reports</div><div class="topbar-sub">${S.reports.length} submitted</div></div>
@@ -2221,16 +1989,15 @@ function myReportsView(){
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
         <div>
           <div style="font-size:14px;font-weight:700;">${r.event_name}</div>
-          <div style="font-size:12px;color:var(--text2);">${r.date||''}${r.store_traffic?` · ${trafficIcon(r.store_traffic)} ${r.store_traffic.charAt(0).toUpperCase()+r.store_traffic.slice(1)} traffic`:''}</div>
+          <div style="font-size:12px;color:var(--text2);">${r.date||''}</div>
         </div>
         ${badge(r.status)}
       </div>
-      <div class="rep-stats" style="grid-template-columns:repeat(5,1fr);">
-        <div class="rep-stat"><div class="rep-stat-val">${r.starting_inventory??'—'}</div><div class="rep-stat-lbl">Start Inv.</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${r.final_inventory??'—'}</div><div class="rep-stat-lbl">Final Inv.</div></div>
-        <div class="rep-stat"><div class="rep-stat-val stat-up">${r.units_sold||0}</div><div class="rep-stat-lbl">Sold</div></div>
-        <div class="rep-stat"><div class="rep-stat-val stat-up">${r.total_revenue?'$'+parseFloat(r.total_revenue).toFixed(0):'—'}</div><div class="rep-stat-lbl">Revenue</div></div>
+      <div class="rep-stats">
+        <div class="rep-stat"><div class="rep-stat-val">${r.units_sold||0}</div><div class="rep-stat-lbl">Units sold</div></div>
         <div class="rep-stat"><div class="rep-stat-val">${r.samples||0}</div><div class="rep-stat-lbl">Samples</div></div>
+        <div class="rep-stat"><div class="rep-stat-val stat-up">+${r.sales_lift||0}%</div><div class="rep-stat-lbl">Sales lift</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${r.photos||0}</div><div class="rep-stat-lbl">Photos</div></div>
       </div>
       ${r.feedback?`<div class="quote-block">"${r.feedback}"</div>`:''}
       ${r.status==='needs-revision'?`<div style="background:var(--red-bg);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--red-dk);margin-bottom:8px;"><i class="ti ti-flag"></i> Your manager requested changes to this report.</div>`:''}
@@ -2344,8 +2111,7 @@ function editAmb(id){
   openModal('modal-amb');
 }
 function openNewReport(){
-  clearForm(['rep-id','rep-event','rep-ambassador','rep-date','rep-samples','rep-start-inv','rep-final-inv','rep-units','rep-price','rep-revenue','rep-photos','rep-feedback']);
-  document.getElementById('rep-traffic').value = '';
+  clearForm(['rep-id','rep-event','rep-ambassador','rep-date','rep-units','rep-samples','rep-photos','rep-lift','rep-feedback']);
   document.getElementById('rep-ambassador').value=S.currentUser?.name||'';
   openModal('modal-report');
 }
