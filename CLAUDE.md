@@ -25,7 +25,7 @@
 - Commits: feat:, fix:, chore:, style:, refactor:, docs:
 
 ## Supabase Tables
-events       id, name, store, retailer, date, time, status, ambassador, product, budget, notes, units_sold, samples, sales_lift
+events       id, name, store, store_address, retailer, date, time, status, ambassador, ambassador_id, accepted, product, hourly_rate, budget, notes, units_sold, samples, sales_lift
 ambassadors  id, name, email, phone, status, events_month, total_events, rating, specialty, rate, city
 reports      id, event_name, ambassador, date, status, units_sold, samples, feedback, photos, sales_lift
 payments     id, ambassador, event_name, date, hours, rate, expenses, total, status
@@ -38,6 +38,7 @@ surveys      id, event_name, responses, rating, top_feedback, date
 ## Session Log
 | Date | What happened | Files changed |
 |------|---------------|---------------|
+| 2026-05-09 | Fixed schema mismatch (hourly_rate, store_address); added Supabase Realtime with debounced silent refresh; cleaned up rtChannel on sign-out | index.html, CLAUDE.md, schema (ALTER TABLE) |
 | -    | Project setup | CLAUDE.md     |
 
 ## Backlog
