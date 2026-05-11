@@ -460,6 +460,7 @@ tbody tr:hover td{background:var(--bg2);}
       </div>
     </div>
     <input type="hidden" id="evt-store"/>
+    <input type="hidden" id="evt-retailer"/>
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">Date *</label>
@@ -513,6 +514,7 @@ tbody tr:hover td{background:var(--bg2);}
           <option value="">Select a store...</option>
         </select>
         <input type="hidden" id="req-store"/>
+        <input type="hidden" id="req-retailer"/>
       </div>
       <div class="form-group">
         <label class="form-label">Store Address</label>
@@ -1054,6 +1056,7 @@ async function saveEvent(){
   const ambassador=document.getElementById('evt-ambassador').value.trim();
   const row={
     date,store,
+    retailer:document.getElementById('evt-retailer').value.trim()||null,
     store_id:storeIdVal?parseInt(storeIdVal):null,
     store_address:document.getElementById('evt-store-address').value.trim(),
     time:document.getElementById('evt-time').value.trim(),
@@ -1070,7 +1073,7 @@ async function saveEvent(){
   if(error){toast('Error: '+error.message,'err');return;}
   toast(id?'Event updated':'Event scheduled!','ok');
   closeModal('modal-event');
-  await loadAll();
+  await reloadEvents();
 }
 
 async function submitEventRequest(){
@@ -1095,14 +1098,14 @@ async function submitEventRequest(){
   if(error){toast('Error: '+error.message,'err');return;}
   toast('Request submitted! Your manager will review it.','ok');
   closeModal('modal-request');
-  await loadAll();
+  await reloadEvents();
 }
 
-async function approveEvent(id){showLoading();await db.from('events').update({status:'upcoming'}).eq('id',id);hideLoading();toast('Event approved!','ok');await loadAll();}
-async function acceptEvent(id){showLoading();await db.from('events').update({accepted:true}).eq('id',id);hideLoading();toast('Event confirmed!','ok');await loadAll();}
-async function declineEvent(id){if(!confirm('Decline this event?'))return;showLoading();await db.from('events').update({status:'cancelled'}).eq('id',id);hideLoading();toast('Event declined.','ok');await loadAll();}
-async function markEventComplete(id){showLoading();await db.from('events').update({status:'completed'}).eq('id',id);hideLoading();toast('Event marked complete','ok');await loadAll();}
-async function deleteEvent(id){if(!confirm('Delete this event?'))return;showLoading();await db.from('events').delete().eq('id',id);hideLoading();toast('Event deleted','ok');await loadAll();}
+async function approveEvent(id){showLoading();await db.from('events').update({status:'upcoming'}).eq('id',id);hideLoading();toast('Event approved!','ok');await reloadEvents();}
+async function acceptEvent(id){showLoading();await db.from('events').update({accepted:true}).eq('id',id);hideLoading();toast('Event confirmed!','ok');await reloadEvents();}
+async function declineEvent(id){if(!confirm('Decline this event?'))return;showLoading();await db.from('events').update({status:'cancelled'}).eq('id',id);hideLoading();toast('Event declined.','ok');await reloadEvents();}
+async function markEventComplete(id){showLoading();await db.from('events').update({status:'completed'}).eq('id',id);hideLoading();toast('Event marked complete','ok');await reloadEvents();}
+async function deleteEvent(id){if(!confirm('Delete this event?'))return;showLoading();await db.from('events').delete().eq('id',id);hideLoading();toast('Event deleted','ok');await reloadEvents();}
 
 /* ── AMBASSADORS CRUD ── */
 async function saveAmbassador(){
@@ -1114,9 +1117,9 @@ async function saveAmbassador(){
   const{error}=id?await db.from('ambassadors').update(row).eq('id',id):await db.from('ambassadors').insert({...row,events_month:0,total_events:0});
   hideLoading();
   if(error){toast('Error: '+error.message,'err');return;}
-  toast(id?'Updated':'Ambassador added!','ok');closeModal('modal-amb');await loadAll();
+  toast(id?'Updated':'Ambassador added!','ok');closeModal('modal-amb');await reloadAmbassadors();
 }
-async function deleteAmbassador(id){if(!confirm('Remove ambassador?'))return;showLoading();await db.from('ambassadors').delete().eq('id',id);hideLoading();toast('Removed','ok');await loadAll();}
+async function deleteAmbassador(id){if(!confirm('Remove ambassador?'))return;showLoading();await db.from('ambassadors').delete().eq('id',id);hideLoading();toast('Removed','ok');await reloadAmbassadors();}
 
 /* ── REPORTS CRUD ── */
 async function saveReport(){
@@ -1128,11 +1131,11 @@ async function saveReport(){
   const{error}=id?await db.from('reports').update(row).eq('id',id):await db.from('reports').insert(row);
   hideLoading();
   if(error){toast('Error: '+error.message,'err');return;}
-  toast('Report submitted!','ok');closeModal('modal-report');await loadAll();
+  toast('Report submitted!','ok');closeModal('modal-report');await reloadReports();
 }
-async function approveReport(id){showLoading();await db.from('reports').update({status:'approved'}).eq('id',id);hideLoading();toast('Report approved','ok');await loadAll();}
-async function flagReport(id){showLoading();await db.from('reports').update({status:'needs-revision'}).eq('id',id);hideLoading();toast('Flagged for revision','ok');await loadAll();}
-async function deleteReport(id){if(!confirm('Delete report?'))return;showLoading();await db.from('reports').delete().eq('id',id);hideLoading();toast('Deleted','ok');await loadAll();}
+async function approveReport(id){showLoading();await db.from('reports').update({status:'approved'}).eq('id',id);hideLoading();toast('Report approved','ok');await reloadReports();}
+async function flagReport(id){showLoading();await db.from('reports').update({status:'needs-revision'}).eq('id',id);hideLoading();toast('Flagged for revision','ok');await reloadReports();}
+async function deleteReport(id){if(!confirm('Delete report?'))return;showLoading();await db.from('reports').delete().eq('id',id);hideLoading();toast('Deleted','ok');await reloadReports();}
 
 /* ── PAYMENTS CRUD ── */
 async function savePayment(){
@@ -1147,11 +1150,11 @@ async function savePayment(){
   const{error}=id?await db.from('payments').update(row).eq('id',id):await db.from('payments').insert(row);
   hideLoading();
   if(error){toast('Error: '+error.message,'err');return;}
-  toast(id?'Updated':'Payment logged!','ok');closeModal('modal-payment');await loadAll();
+  toast(id?'Updated':'Payment logged!','ok');closeModal('modal-payment');await reloadPayments();
 }
-async function approvePayment(id){showLoading();await db.from('payments').update({status:'approved'}).eq('id',id);hideLoading();toast('Payment approved','ok');await loadAll();}
-async function markPaid(id){showLoading();await db.from('payments').update({status:'paid'}).eq('id',id);hideLoading();toast('Marked as paid','ok');await loadAll();}
-async function deletePayment(id){if(!confirm('Delete payment record?'))return;showLoading();await db.from('payments').delete().eq('id',id);hideLoading();toast('Deleted','ok');await loadAll();}
+async function approvePayment(id){showLoading();await db.from('payments').update({status:'approved'}).eq('id',id);hideLoading();toast('Payment approved','ok');await reloadPayments();}
+async function markPaid(id){showLoading();await db.from('payments').update({status:'paid'}).eq('id',id);hideLoading();toast('Marked as paid','ok');await reloadPayments();}
+async function deletePayment(id){if(!confirm('Delete payment record?'))return;showLoading();await db.from('payments').delete().eq('id',id);hideLoading();toast('Deleted','ok');await reloadPayments();}
 
 /* ── STORES CRUD ── */
 async function saveStore(){
@@ -1163,10 +1166,17 @@ async function saveStore(){
   const{error}=id?await db.from('stores').update(row).eq('id',id):await db.from('stores').insert({...row,total_demos:0});
   hideLoading();
   if(error){toast('Error: '+error.message,'err');return;}
-  toast(id?'Updated':'Store added!','ok');closeModal('modal-store');await loadAll();
+  toast(id?'Updated':'Store added!','ok');closeModal('modal-store');await reloadStores();
 }
-async function deleteStore(id){if(!confirm('Remove store?'))return;showLoading();await db.from('stores').delete().eq('id',id);hideLoading();toast('Removed','ok');await loadAll();}
+async function deleteStore(id){if(!confirm('Remove store?'))return;showLoading();await db.from('stores').delete().eq('id',id);hideLoading();toast('Removed','ok');await reloadStores();}
 async function changeRole(userId,newRole){showLoading();await db.from('profiles').update({role:newRole}).eq('id',userId);hideLoading();toast('Role updated','ok');await loadAll();}
+
+/* ── TARGETED RELOADS ── */
+async function reloadEvents(){showLoading();const{data}=await db.from('events').select('*').order('date',{ascending:false});S.events=data||[];hideLoading();renderNav();renderMain();}
+async function reloadReports(){showLoading();const{data}=await db.from('reports').select('*').order('created_at',{ascending:false});S.reports=data||[];hideLoading();renderNav();renderMain();}
+async function reloadPayments(){showLoading();const{data}=await db.from('payments').select('*').order('created_at',{ascending:false});S.payments=data||[];hideLoading();renderNav();renderMain();}
+async function reloadAmbassadors(){showLoading();const{data}=await db.from('ambassadors').select('*').order('name');S.ambassadors=data||[];hideLoading();renderNav();renderMain();}
+async function reloadStores(){showLoading();const{data}=await db.from('stores').select('*').order('name');S.stores=data||[];hideLoading();renderNav();renderMain();}
 
 /* ═══════════════════════════════════════════════════════════
    NOTIFICATIONS
@@ -2117,7 +2127,7 @@ function clearForm(ids){ids.forEach(id=>{const el=document.getElementById(id);if
 
 function openNewEvent(){
   document.getElementById('modal-event-title').textContent='Schedule New Event';
-  clearForm(['evt-id','evt-product','evt-store','evt-store-address','evt-time','evt-ambassador','evt-rate','evt-notes']);
+  clearForm(['evt-id','evt-product','evt-store','evt-retailer','evt-store-address','evt-time','evt-ambassador','evt-rate','evt-notes']);
   populateStoreSelect('evt-store-id');
   populateAmbSelect('evt-amb-id');
   openModal('modal-event');
@@ -2135,6 +2145,7 @@ function editEvent(id){
   document.getElementById('evt-ambassador').value=e.ambassador||'';
   document.getElementById('evt-rate').value=e.hourly_rate||e.budget||'';
   document.getElementById('evt-notes').value=e.notes||'';
+  document.getElementById('evt-retailer').value=e.retailer||'';
   populateStoreSelect('evt-store-id',e.store_id||'');
   populateAmbSelect('evt-amb-id',e.ambassador||'');
   openModal('modal-event');
