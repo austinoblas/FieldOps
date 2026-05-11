@@ -1011,7 +1011,7 @@ function openMyProfile(){
 /* ═══════════════════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════════════════ */
-const S={events:[],ambassadors:[],reports:[],payments:[],stores:[],surveys:[],team:[],notifications:[],view:'dashboard',currentUser:null,role:null,appStarted:false,filters:{e:'all',a:'all',r:'all',p:'all'},charts:{}};
+const S={events:[],ambassadors:[],reports:[],payments:[],stores:[],surveys:[],team:[],notifications:[],view:'dashboard',currentUser:null,role:null,appStarted:false,filters:{e:'all',a:'all',r:'all',p:'all'},search:'',charts:{}};
 
 /* ═══════════════════════════════════════════════════════════
    DATA LAYER
@@ -1425,7 +1425,7 @@ function showErr(el,msg){el.textContent=msg;el.classList.add('show');}
 /* ═══════════════════════════════════════════════════════════
    NAV RENDER
 ═══════════════════════════════════════════════════════════ */
-function navigate(v){S.view=v;renderNav();renderMain();}
+function navigate(v){S.view=v;S.search='';renderNav();renderMain();}
 
 function renderNav(){
   const navItems=S.role==='manager'?MANAGER_NAV:AMBASSADOR_NAV;
@@ -1569,12 +1569,14 @@ function dashboardView(){
 
 function eventsView(){
   const f=S.filters.e;
-  const filtered=f==='all'?S.events:S.events.filter(e=>e.status===f);
+  let filtered=f==='all'?S.events:S.events.filter(e=>e.status===f);
   const counts={all:S.events.length,pending_approval:S.events.filter(e=>e.status==='pending_approval').length,upcoming:S.events.filter(e=>e.status==='upcoming').length,completed:S.events.filter(e=>e.status==='completed').length};
+  if(S.search)filtered=filtered.filter(e=>matchSearch([e.name,e.store,e.ambassador,e.product]));
   return`
 <div class="topbar">
-  <div><div class="topbar-title">Events</div><div class="topbar-sub">${S.events.length} total events</div></div>
+  <div><div class="topbar-title">Events</div><div class="topbar-sub">${filtered.length} of ${S.events.length} events</div></div>
   <div class="topbar-right">
+    ${searchBar('Search events...')}
     <button class="btn btn-export" onclick="exportEventsCSV()"><i class="ti ti-download"></i> Export CSV</button>
     <button class="btn btn-primary" onclick="openNewEvent()"><i class="ti ti-plus"></i> New Event</button>
   </div>
@@ -1586,7 +1588,7 @@ function eventsView(){
       ${fv==='pending_approval'?'Needs Approval':fv==='all'?'All':fv.charAt(0).toUpperCase()+fv.slice(1)} (${counts[fv]||0})
     </button>`).join('')}
   </div>
-  ${filtered.length===0?empty('calendar-event','No events found','Try a different filter or schedule a new event.'):''}
+  ${filtered.length===0?empty('calendar-event',S.search?'No matching events':'No events found',S.search?`No events match "${S.search}"` :'Try a different filter or schedule a new event.'):''}
   ${filtered.map(e=>`
   <div class="event-card">
     <div class="event-icon" style="background:${e.status==='upcoming'?'var(--blue-bg)':e.status==='pending_approval'?'var(--amber-bg)':e.status==='completed'?'var(--teal-lt)':'var(--bg3)'};">
@@ -1623,11 +1625,13 @@ function eventsView(){
 
 function ambassadorsView(){
   const f=S.filters.a;
-  const filtered=f==='all'?S.ambassadors:S.ambassadors.filter(a=>a.status===f);
+  let filtered=f==='all'?S.ambassadors:S.ambassadors.filter(a=>a.status===f);
+  if(S.search)filtered=filtered.filter(a=>matchSearch([a.name,a.city,a.specialty,a.email]));
   return`
 <div class="topbar">
-  <div><div class="topbar-title">Brand Ambassadors</div><div class="topbar-sub">${S.ambassadors.length} on roster</div></div>
+  <div><div class="topbar-title">Brand Ambassadors</div><div class="topbar-sub">${filtered.length} of ${S.ambassadors.length} on roster</div></div>
   <div class="topbar-right">
+    ${searchBar('Search ambassadors...')}
     <button class="btn btn-export" onclick="exportAmbassadorsCSV()"><i class="ti ti-download"></i> Export CSV</button>
     <button class="btn btn-primary" onclick="openNewAmb()"><i class="ti ti-user-plus"></i> Add Ambassador</button>
   </div>
@@ -1636,7 +1640,7 @@ function ambassadorsView(){
   <div class="tabs">
     ${['all','active','available','inactive'].map(fv=>`<button class="tab ${f===fv?'active':''}" onclick="sf('a','${fv}')">${fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
   </div>
-  ${filtered.length===0?empty('users','No ambassadors found','Add your first ambassador to get started.'):''}
+  ${filtered.length===0?empty('users',S.search?'No matching ambassadors':'No ambassadors found',S.search?`No ambassadors match "${S.search}"`:'Add your first ambassador to get started.'):''}
   <div class="grid-2">
     ${filtered.map((a,i)=>`
     <div class="amb-card">
@@ -1672,11 +1676,13 @@ function ambassadorsView(){
 
 function reportsView(){
   const f=S.filters.r;
-  const filtered=f==='all'?S.reports:S.reports.filter(r=>r.status===f);
+  let filtered=f==='all'?S.reports:S.reports.filter(r=>r.status===f);
+  if(S.search)filtered=filtered.filter(r=>matchSearch([r.event_name,r.ambassador]));
   return`
 <div class="topbar">
-  <div><div class="topbar-title">Post-Event Reports</div><div class="topbar-sub">${S.reports.length} reports submitted</div></div>
+  <div><div class="topbar-title">Post-Event Reports</div><div class="topbar-sub">${filtered.length} of ${S.reports.length} reports</div></div>
   <div class="topbar-right">
+    ${searchBar('Search reports...')}
     <button class="btn btn-export" onclick="exportReportsCSV()"><i class="ti ti-download"></i> Export CSV</button>
     <button class="btn btn-primary" onclick="openNewReport()"><i class="ti ti-file-plus"></i> Submit Report</button>
   </div>
@@ -1685,7 +1691,7 @@ function reportsView(){
   <div class="tabs">
     ${['all','approved','pending','needs-revision'].map(fv=>`<button class="tab ${f===fv?'active':''}" onclick="sf('r','${fv}')">${fv==='needs-revision'?'Needs Revision':fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
   </div>
-  ${filtered.length===0?empty('file-description','No reports found','Submit a post-event report after each demo.'):''}
+  ${filtered.length===0?empty('file-description',S.search?'No matching reports':'No reports found',S.search?`No reports match "${S.search}"`:'Submit a post-event report after each demo.'):''}
   ${filtered.map((r,i)=>`
   <div class="rep-card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
@@ -1716,14 +1722,16 @@ function reportsView(){
 
 function paymentsView(){
   const f=S.filters.p;
-  const filtered=f==='all'?S.payments:S.payments.filter(p=>p.status===f);
+  let filtered=f==='all'?S.payments:S.payments.filter(p=>p.status===f);
   const totPend=S.payments.filter(p=>p.status==='pending').reduce((a,p)=>a+(p.total||0),0);
   const totApprv=S.payments.filter(p=>p.status==='approved').reduce((a,p)=>a+(p.total||0),0);
   const totPaid=S.payments.filter(p=>p.status==='paid').reduce((a,p)=>a+(p.total||0),0);
+  if(S.search)filtered=filtered.filter(p=>matchSearch([p.ambassador,p.event_name]));
   return`
 <div class="topbar">
   <div><div class="topbar-title">Payments &amp; Payroll</div><div class="topbar-sub">${fmt$(totPend)} pending · ${fmt$(totApprv)} approved</div></div>
   <div class="topbar-right">
+    ${searchBar('Search payments...')}
     <button class="btn btn-export" onclick="exportPaymentsCSV()"><i class="ti ti-download"></i> Export Payroll CSV</button>
     <button class="btn btn-primary" onclick="openNewPayment()"><i class="ti ti-plus"></i> Log Payment</button>
   </div>
@@ -1738,7 +1746,7 @@ function paymentsView(){
     ${['all','pending','approved','paid'].map(fv=>`<button class="tab ${f===fv?'active':''}" onclick="sf('p','${fv}')">${fv.charAt(0).toUpperCase()+fv.slice(1)}</button>`).join('')}
   </div>
   <div class="tbl-wrap">
-    ${filtered.length===0?empty('cash','No payments found','Log ambassador payments after each event.')
+    ${filtered.length===0?empty('cash',S.search?'No matching payments':'No payments found',S.search?`No payments match "${S.search}"`:'Log ambassador payments after each event.')
     :`<table><thead><tr><th>Ambassador</th><th>Event</th><th>Date</th><th>Hours</th><th>Rate</th><th>Expenses</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead><tbody>
       ${filtered.map((p,i)=>`<tr>
         <td><div style="display:flex;align-items:center;gap:9px;">${av(p.ambassador,i,30)}<span style="font-weight:700;">${p.ambassador}</span></div></td>
@@ -2218,6 +2226,28 @@ function sf(type,val){
   else if(type==='r')S.filters.r=val;
   else if(type==='p')S.filters.p=val;
   renderMain();
+}
+
+function matchSearch(fields){
+  if(!S.search)return true;
+  const q=S.search.toLowerCase();
+  return fields.some(f=>(f||'').toLowerCase().includes(q));
+}
+function searchBar(placeholder){
+  return`<div style="position:relative;flex-shrink:0;">
+    <i class="ti ti-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none;z-index:1;"></i>
+    <input class="form-input search-input" style="width:240px;padding-left:34px;" placeholder="${placeholder}" value="${S.search.replace(/"/g,'&quot;')}"
+      oninput="searchInput(this.value,this.selectionStart,this.selectionEnd)"
+      onkeydown="if(event.key==='Escape'){searchInput('');}" />
+  </div>`;
+}
+function searchInput(val,ss,se){
+  S.search=val;
+  renderMain();
+  requestAnimationFrame(()=>{
+    const el=document.querySelector('.search-input');
+    if(el){el.focus();try{el.setSelectionRange(ss??val.length,se??val.length);}catch(e){}}
+  });
 }
 </script>
 </body>
