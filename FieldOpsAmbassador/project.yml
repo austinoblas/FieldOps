@@ -20,6 +20,7 @@ targets:
       properties:
         CFBundleDisplayName: FieldOps
         ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription: FieldOps records your location when you check in and out of an event to verify on-site attendance.
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait

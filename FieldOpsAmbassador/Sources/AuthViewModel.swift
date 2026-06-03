@@ -12,6 +12,8 @@ final class AuthViewModel {
     var errorMessage: String?
     var busy = false
 
+    var isManager: Bool { profile?.isManager ?? false }
+
     private let client = Supa.shared.client
 
     /// Restore an existing session on launch (handles app relaunch / token refresh).
@@ -48,6 +50,24 @@ final class AuthViewModel {
         phase = .signedOut
     }
 
+    func updateProfile(name: String, phone: String, address: String, shirtSize: String) async {
+        guard let id = profile?.id else { return }
+        busy = true; defer { busy = false }
+        struct Update: Encodable {
+            let name: String, phone: String, address: String, shirt_size: String
+        }
+        do {
+            try await client
+                .from("profiles")
+                .update(Update(name: name, phone: phone, address: address, shirt_size: shirtSize))
+                .eq("id", value: id.uuidString)
+                .execute()
+            await loadProfile(userId: id)
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
     private func loadProfile(userId: UUID) async {
         do {
             let p: Profile = try await client
@@ -58,15 +78,8 @@ final class AuthViewModel {
                 .execute()
                 .value
 
-            // This app is the ambassador field tool. Managers use the web admin
-            // view — so we politely bounce them rather than show a broken UI.
-            if p.isManager {
-                errorMessage = "This app is for brand ambassadors. Managers, please use the web dashboard."
-                try? await client.auth.signOut()
-                phase = .signedOut
-                return
-            }
-
+            // Managers and ambassadors both use the app. Managers run their own
+            // solo demos through the same flow and get the extra Admin tab.
             profile = p
             phase = .signedIn
         } catch {

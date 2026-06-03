@@ -28,16 +28,35 @@ final class ScheduleViewModel {
         }
     }
 
-    func accept(_ event: FieldEvent) async { await callRPC("accept_event", id: event.id) }
-    func decline(_ event: FieldEvent) async { await callRPC("decline_event", id: event.id) }
+    func accept(_ event: FieldEvent) async { await callRPC("accept_event", params: EventIdParam(p_event_id: event.id)) }
+    func decline(_ event: FieldEvent) async { await callRPC("decline_event", params: EventIdParam(p_event_id: event.id)) }
 
-    private func callRPC(_ fn: String, id: Int) async {
+    func checkIn(_ event: FieldEvent, lat: Double?, lng: Double?) async {
+        await callRPC("check_in_event", params: GeoParam(p_event_id: event.id, p_lat: lat, p_lng: lng))
+    }
+
+    func checkOut(_ event: FieldEvent, lat: Double?, lng: Double?) async {
+        await callRPC("check_out_event", params: GeoParam(p_event_id: event.id, p_lat: lat, p_lng: lng))
+    }
+
+    func submitReport(_ event: FieldEvent, units: Int, samples: Int, feedback: String, photos: Int) async {
+        await callRPC("submit_report", params: ReportParam(
+            p_event_id: event.id, p_units: units, p_samples: samples, p_feedback: feedback, p_photos: photos))
+    }
+
+    private func callRPC(_ fn: String, params: some Encodable & Sendable) async {
         do {
-            try await client.rpc(fn, params: ["p_event_id": id]).execute()
+            try await client.rpc(fn, params: params).execute()
             await load()
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+
+    private struct EventIdParam: Encodable, Sendable { let p_event_id: Int }
+    private struct GeoParam: Encodable, Sendable { let p_event_id: Int; let p_lat: Double?; let p_lng: Double? }
+    private struct ReportParam: Encodable, Sendable {
+        let p_event_id: Int; let p_units: Int; let p_samples: Int; let p_feedback: String; let p_photos: Int
     }
 
     // Grouped for display

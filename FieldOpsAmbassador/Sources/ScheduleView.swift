@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ScheduleView: View {
-    @Environment(AuthViewModel.self) private var auth
     @State private var vm = ScheduleViewModel()
 
     var body: some View {
@@ -26,13 +25,6 @@ struct ScheduleView: View {
                 }
             }
             .navigationTitle("My Schedule")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { Task { await auth.signOut() } } label: {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                    }
-                }
-            }
             .task { await vm.load() }
             .refreshable { await vm.load() }
             .overlay(alignment: .bottom) {
@@ -49,10 +41,10 @@ struct ScheduleView: View {
         if !items.isEmpty {
             Section(title) {
                 ForEach(items) { event in
-                    EventRow(event: event) {
-                        await vm.accept(event)
-                    } onDecline: {
-                        await vm.decline(event)
+                    NavigationLink {
+                        EventDetailView(eventId: event.id, vm: vm)
+                    } label: {
+                        EventRow(event: event)
                     }
                 }
             }
@@ -62,41 +54,20 @@ struct ScheduleView: View {
 
 struct EventRow: View {
     let event: FieldEvent
-    let onAccept: () async -> Void
-    let onDecline: () async -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 6) {
             Text(event.name).font(.headline)
-
             HStack(spacing: 14) {
                 label("calendar", event.prettyDate)
                 if let t = event.time { label("clock", t) }
             }
             if let store = event.store { label("building.2", store) }
-            if let p = event.product { label("shippingbox", p) }
-
-            // Actions depend on event state
-            if event.needsConfirmation {
-                HStack {
-                    Button("Accept") { Task { await onAccept() } }
-                        .buttonStyle(.borderedProminent).tint(Theme.brand)
-                    Button("Decline", role: .destructive) { Task { await onDecline() } }
-                        .buttonStyle(.bordered)
-                }
-                .padding(.top, 4)
-            } else if event.isCompleted {
-                // Phase 4 hooks — wired up next session
-                HStack {
-                    Button { } label: { Label("Check in", systemImage: "mappin.and.ellipse") }
-                        .buttonStyle(.bordered).disabled(true)
-                    Button { } label: { Label("Submit report", systemImage: "doc.badge.plus") }
-                        .buttonStyle(.borderedProminent).tint(Theme.brand).disabled(true)
-                }
-                .padding(.top, 4)
-                Text("Check-in & reporting arrive in the next build.")
-                    .font(.caption2).foregroundStyle(.secondary)
-            }
+            Text(event.statusLabel)
+                .font(.caption2.weight(.semibold))
+                .padding(.horizontal, 8).padding(.vertical, 2)
+                .background(Theme.brand.opacity(0.15), in: Capsule())
+                .foregroundStyle(Theme.brand)
         }
         .padding(.vertical, 4)
     }

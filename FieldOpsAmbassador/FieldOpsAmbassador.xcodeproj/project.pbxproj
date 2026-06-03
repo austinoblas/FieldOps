@@ -7,29 +7,45 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2B911961309583CC15E144F0 /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DB9E58FC871C885B6983A6 /* EventDetailView.swift */; };
 		3667F6EF895C11C199C8CC45 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C752C1D3A2202FE9E2F7D94 /* Theme.swift */; };
 		3F94100B7A5F596B77478792 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 968A40B7F1782C16B3566375 /* Assets.xcassets */; };
 		5281105234CADEB8DD0968B3 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3156385470E256B84BDD88C7 /* Supabase */; };
+		5402AAB4EC4A0AC6CB4D72DC /* ReportFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0629F567BC5AD3BB2404FA3B /* ReportFormView.swift */; };
 		63421C5E7AB4D97C1791CAC3 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */; };
+		73AB1F2BDFB1BCF4B247C50B /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE768A85A9491940008F660 /* AdminView.swift */; };
+		8169A986177C920CB59F3EC6 /* PayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80EB106368615CFFABB0B17C /* PayView.swift */; };
 		8805BA3D5B8CE62C6141EF2E /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */; };
 		9CC7C76E291633B81419F338 /* FieldOpsAmbassadorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */; };
 		A6291F23BEB67DE6F10E9995 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0113F107017A676A230ED8CD /* LoginView.swift */; };
+		A642DC4CD0ED973CF30374C5 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ED56C35157459D741C79A44 /* LocationManager.swift */; };
 		B6E68633DCE61F1F994EA363 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = F457FDB1B140C0A7B4A6235C /* Models.swift */; };
 		B77D0614B380C1D393D3509B /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45475BE0CFD44C64CB954FB4 /* Config.swift */; };
+		BC00E78002D31A4872F22909 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02212F11F387C1A4BF6E6F3E /* MainTabView.swift */; };
 		CD841257CD15E920438177F4 /* Supa.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20A1630ADBE6A2C051AF1259 /* Supa.swift */; };
+		CDB48F38E74F34FC3D5D1BFC /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB733269185A4AAC85D25F4 /* ProfileView.swift */; };
 		E99E2A1BCA4A23FCF3612DBD /* ScheduleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F560822FFC5C1A6CC861E157 /* ScheduleView.swift */; };
+		FEBB5D488BA8DF07BFC76311 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D4B35346523033EED053F0 /* ActivityView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0113F107017A676A230ED8CD /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		02212F11F387C1A4BF6E6F3E /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		05DB9E58FC871C885B6983A6 /* EventDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailView.swift; sourceTree = "<group>"; };
+		0629F567BC5AD3BB2404FA3B /* ReportFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReportFormView.swift; sourceTree = "<group>"; };
+		1ED56C35157459D741C79A44 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		20A1630ADBE6A2C051AF1259 /* Supa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supa.swift; sourceTree = "<group>"; };
+		2FE768A85A9491940008F660 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
 		4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldOpsAmbassadorApp.swift; sourceTree = "<group>"; };
 		45475BE0CFD44C64CB954FB4 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
-		70B5FD7C1F7F0660F33E38DC /* FieldOpsAmbassador.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FieldOpsAmbassador.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		70B5FD7C1F7F0660F33E38DC /* FieldOpsAmbassador.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FieldOpsAmbassador.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		80EB106368615CFFABB0B17C /* PayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayView.swift; sourceTree = "<group>"; };
+		87D4B35346523033EED053F0 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
 		9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		968A40B7F1782C16B3566375 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C752C1D3A2202FE9E2F7D94 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
+		CEB733269185A4AAC85D25F4 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		F457FDB1B140C0A7B4A6235C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		F560822FFC5C1A6CC861E157 /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -57,11 +73,19 @@
 		A73F1973C2B3422EB914BCE9 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				87D4B35346523033EED053F0 /* ActivityView.swift */,
+				2FE768A85A9491940008F660 /* AdminView.swift */,
 				9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */,
 				45475BE0CFD44C64CB954FB4 /* Config.swift */,
+				05DB9E58FC871C885B6983A6 /* EventDetailView.swift */,
 				4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */,
+				1ED56C35157459D741C79A44 /* LocationManager.swift */,
 				0113F107017A676A230ED8CD /* LoginView.swift */,
+				02212F11F387C1A4BF6E6F3E /* MainTabView.swift */,
 				F457FDB1B140C0A7B4A6235C /* Models.swift */,
+				80EB106368615CFFABB0B17C /* PayView.swift */,
+				CEB733269185A4AAC85D25F4 /* ProfileView.swift */,
+				0629F567BC5AD3BB2404FA3B /* ReportFormView.swift */,
 				F560822FFC5C1A6CC861E157 /* ScheduleView.swift */,
 				9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */,
 				20A1630ADBE6A2C051AF1259 /* Supa.swift */,
@@ -120,6 +144,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					85AD1A116880996F67BAC241 = {
+						DevelopmentTeam = 5GAAU67LA2;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -162,11 +187,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEBB5D488BA8DF07BFC76311 /* ActivityView.swift in Sources */,
+				73AB1F2BDFB1BCF4B247C50B /* AdminView.swift in Sources */,
 				63421C5E7AB4D97C1791CAC3 /* AuthViewModel.swift in Sources */,
 				B77D0614B380C1D393D3509B /* Config.swift in Sources */,
+				2B911961309583CC15E144F0 /* EventDetailView.swift in Sources */,
 				9CC7C76E291633B81419F338 /* FieldOpsAmbassadorApp.swift in Sources */,
+				A642DC4CD0ED973CF30374C5 /* LocationManager.swift in Sources */,
 				A6291F23BEB67DE6F10E9995 /* LoginView.swift in Sources */,
+				BC00E78002D31A4872F22909 /* MainTabView.swift in Sources */,
 				B6E68633DCE61F1F994EA363 /* Models.swift in Sources */,
+				8169A986177C920CB59F3EC6 /* PayView.swift in Sources */,
+				CDB48F38E74F34FC3D5D1BFC /* ProfileView.swift in Sources */,
+				5402AAB4EC4A0AC6CB4D72DC /* ReportFormView.swift in Sources */,
 				E99E2A1BCA4A23FCF3612DBD /* ScheduleView.swift in Sources */,
 				8805BA3D5B8CE62C6141EF2E /* ScheduleViewModel.swift in Sources */,
 				CD841257CD15E920438177F4 /* Supa.swift in Sources */,

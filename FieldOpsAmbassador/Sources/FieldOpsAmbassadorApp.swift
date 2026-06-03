@@ -24,7 +24,7 @@ struct RootView: View {
         case .signedOut:
             LoginView()
         case .signedIn:
-            ScheduleView()
+            MainTabView()
         }
     }
 }

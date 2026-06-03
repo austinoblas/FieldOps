@@ -6,15 +6,37 @@ struct Profile: Codable, Identifiable, Sendable {
     var name: String?
     var email: String?
     var phone: String?
+    var address: String?
+    var shirtSize: String?
     var role: String?
 
     var isManager: Bool { role == "manager" }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, email, phone, address, role
+        case shirtSize = "shirt_size"
+    }
 }
 
-/// Mirrors a row in `events`. Only the fields the ambassador app needs are
-/// modeled; everything is optional except id/name so partial rows still decode.
-/// The Postgres `date` column comes back as an ISO date string ("2026-05-10"),
-/// which we keep as a String and format for display.
+/// Mirrors a row in `payments`.
+struct Payment: Codable, Identifiable, Sendable {
+    let id: Int
+    var eventName: String?
+    var date: String?
+    var hours: Double?
+    var rate: Double?
+    var expenses: Double?
+    var total: Double?
+    var status: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, date, hours, rate, expenses, total, status
+        case eventName = "event_name"
+    }
+}
+
+/// Mirrors a row in `events`. The Postgres `date` column comes back as an ISO
+/// date string ("2026-05-10"); check-in/out are ISO timestamps.
 struct FieldEvent: Codable, Identifiable, Sendable {
     let id: Int
     var name: String
@@ -26,27 +48,62 @@ struct FieldEvent: Codable, Identifiable, Sendable {
     var product: String?
     var hourlyRate: Double?
     var ambassador: String?
+    var ambassadorId: UUID?
     var accepted: Bool?
+    var unitsSold: Int?
+    var samples: Int?
+    var salesLift: Double?
+    var checkInAt: String?
+    var checkOutAt: String?
 
     enum CodingKeys: String, CodingKey {
         case id, name, store
         case storeAddress = "store_address"
         case date, time, status, product
         case hourlyRate = "hourly_rate"
-        case ambassador, accepted
+        case ambassador
+        case ambassadorId = "ambassador_id"
+        case accepted
+        case unitsSold = "units_sold"
+        case samples
+        case salesLift = "sales_lift"
+        case checkInAt = "check_in_at"
+        case checkOutAt = "check_out_at"
     }
 
-    // MARK: Display helpers
+    // MARK: State
     var isPending: Bool   { status == "pending_approval" }
     var isUpcoming: Bool  { status == "upcoming" }
     var isCompleted: Bool { status == "completed" }
-    var needsConfirmation: Bool { isUpcoming && (accepted ?? false) == false }
 
+    var needsConfirmation: Bool { isUpcoming && (accepted ?? false) == false }
+    var canCheckIn: Bool  { isUpcoming && (accepted ?? false) && checkInAt == nil }
+    var isCheckedIn: Bool { checkInAt != nil && checkOutAt == nil }
+    var canReport: Bool   { checkOutAt != nil && !isCompleted }
+
+    var statusLabel: String {
+        if isCompleted { return "Completed" }
+        if canReport { return "Awaiting report" }
+        if isCheckedIn { return "Checked in" }
+        if isPending { return "Pending approval" }
+        if needsConfirmation { return "Needs confirmation" }
+        return "Confirmed"
+    }
+
+    // MARK: Display helpers
     var prettyDate: String {
         guard let date else { return "—" }
         let inFmt = DateFormatter(); inFmt.dateFormat = "yyyy-MM-dd"
         guard let d = inFmt.date(from: date) else { return date }
         let outFmt = DateFormatter(); outFmt.dateFormat = "EEE, MMM d"
         return outFmt.string(from: d)
+    }
+
+    static func prettyTime(_ iso: String) -> String {
+        let cleaned = iso.replacingOccurrences(of: #"\.\d+"#, with: "", options: .regularExpression)
+        let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime]
+        guard let d = f.date(from: cleaned) else { return "" }
+        let out = DateFormatter(); out.dateFormat = "h:mm a"
+        return out.string(from: d)
     }
 }
