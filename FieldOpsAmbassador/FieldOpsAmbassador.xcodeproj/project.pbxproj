@@ -25,7 +25,7 @@
 		20A1630ADBE6A2C051AF1259 /* Supa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supa.swift; sourceTree = "<group>"; };
 		4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldOpsAmbassadorApp.swift; sourceTree = "<group>"; };
 		45475BE0CFD44C64CB954FB4 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
-		70B5FD7C1F7F0660F33E38DC /* FieldOpsAmbassador.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FieldOpsAmbassador.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		70B5FD7C1F7F0660F33E38DC /* FieldOpsAmbassador.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FieldOpsAmbassador.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		968A40B7F1782C16B3566375 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C752C1D3A2202FE9E2F7D94 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -120,7 +120,6 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					85AD1A116880996F67BAC241 = {
-						DevelopmentTeam = WM7SVC59JB;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -241,7 +240,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WM7SVC59JB;
+				DEVELOPMENT_TEAM = 5GAAU67LA2;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -263,7 +262,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = WM7SVC59JB;
+				DEVELOPMENT_TEAM = 5GAAU67LA2;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
