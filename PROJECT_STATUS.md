@@ -70,17 +70,21 @@ Status legend: ✅ done · 🟡 partial · 🔴 not started · ⏳ planned next
 |---|---|---|
 | Real Supabase Auth (email/password) | ✅ | `AuthViewModel`; managers bounced to web |
 | Session restore on launch | ✅ | `bootstrap()` |
-| My Schedule (grouped: needs confirmation / pending / confirmed / past) | ✅ | `ScheduleView` + `ScheduleViewModel`; RLS scopes rows to the user |
+| Role-aware tab shell (Schedule/Activity/Pay/Profile + Admin for managers) | ✅ | `MainTabView`; managers no longer bounced — they run solo demos here too |
+| My Schedule (grouped: needs confirmation / pending / confirmed / past) | ✅ | `ScheduleView` → `EventDetailView` |
 | Accept / Decline events | ✅ | RPC → `accept_event` / `decline_event` |
-| Check-in (location) | 🔴 | Button present but disabled — "arrives next build" |
-| Submit report (+ photo) | 🔴 | Button present but disabled |
-| My Payments | 🔴 | Not built |
-| Profile / settings screen | 🔴 | Not built |
+| GPS check-in / check-out | ✅ | `EventDetailView` + `LocationManager`; RPC `check_in_event`/`check_out_event` |
+| Submit report (units/samples/feedback/photo count) | ✅ | `ReportFormView` → `submit_report`; real photo upload still TODO |
+| Activity stats | ✅ | `ActivityView` — events, units, samples, avg lift |
+| My Pay (payroll, auto-computed hours) | ✅ | `PayView`; hours from check-in/out |
+| Profile editor (name/phone/address/shirt size) | ✅ | `ProfileView` + sign out |
+| Manager Admin (add ambassadors / retailers / events) | 🟡 | Tab present, placeholder; needs invite Edge Function |
+| Real report photo upload | 🔴 | Deferred — counts only for now |
 | Push notifications | 🔴 | Not built |
 | App icon | 🟡 | Placeholder "PS" mark — replace with real brand asset |
 | TestFlight build | ⏳ | Project fully prepped; first archive/upload not yet done |
 
-Models in app: `Profile`, `FieldEvent` (only ambassador-needed fields).
+Models in app: `Profile`, `FieldEvent`, `Payment`.
 
 ---
 
@@ -91,6 +95,7 @@ Models in app: `Profile`, `FieldEvent` (only ambassador-needed fields).
 | Schema + sample data (`schema.sql`) | ✅ | 7 tables, RLS enabled |
 | Role-based RLS + `get_my_role()` + `handle_new_user` trigger | ✅ | |
 | `alter_v4.sql` — UUID linkage cols (`ambassador_id` on reports/payments), `accept_event`/`decline_event`, self-approval gaps closed on events + reports | ✅ | Run in production 2026-06-03 |
+| `alter_v5.sql` — check-in/out columns + `check_in_event`/`check_out_event`/`submit_report` functions (auto-computes payroll hours) | ⏳ | **Run this in Supabase** to enable the new field-execution loop |
 | Backfill old rows → `ambassador_id`, flip RLS to UUID-primary | ⏳ | Future migration; name-string matching still primary today |
 
 ---
