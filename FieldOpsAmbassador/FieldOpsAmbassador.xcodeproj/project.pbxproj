@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3667F6EF895C11C199C8CC45 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C752C1D3A2202FE9E2F7D94 /* Theme.swift */; };
+		3F94100B7A5F596B77478792 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 968A40B7F1782C16B3566375 /* Assets.xcassets */; };
 		5281105234CADEB8DD0968B3 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3156385470E256B84BDD88C7 /* Supabase */; };
 		63421C5E7AB4D97C1791CAC3 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */; };
 		8805BA3D5B8CE62C6141EF2E /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */; };
@@ -26,6 +27,7 @@
 		45475BE0CFD44C64CB954FB4 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		70B5FD7C1F7F0660F33E38DC /* FieldOpsAmbassador.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FieldOpsAmbassador.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		968A40B7F1782C16B3566375 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C752C1D3A2202FE9E2F7D94 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		F457FDB1B140C0A7B4A6235C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
@@ -68,9 +70,18 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
+		C4E2DE2D7854533209153805 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				968A40B7F1782C16B3566375 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		CDBE5DC1E80FC18921D8991C = {
 			isa = PBXGroup;
 			children = (
+				C4E2DE2D7854533209153805 /* Resources */,
 				A73F1973C2B3422EB914BCE9 /* Sources */,
 				3C8583CFE44AAA4093C4431F /* Products */,
 			);
@@ -84,6 +95,7 @@
 			buildConfigurationList = 5144DC540C3AF31A179566E3 /* Build configuration list for PBXNativeTarget "FieldOpsAmbassador" */;
 			buildPhases = (
 				2FCC1384B465C1E5541BCA1B /* Sources */,
+				590F894DB9C4437AF23E34E2 /* Resources */,
 				4B25175A354A2F1C75DE8C68 /* Frameworks */,
 			);
 			buildRules = (
@@ -107,6 +119,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					85AD1A116880996F67BAC241 = {
+						DevelopmentTeam = WM7SVC59JB;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = A14385856B34298AE5EB0D75 /* Build configuration list for PBXProject "FieldOpsAmbassador" */;
@@ -130,6 +146,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		590F894DB9C4437AF23E34E2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3F94100B7A5F596B77478792 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2FCC1384B465C1E5541BCA1B /* Sources */ = {
@@ -211,13 +238,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				DEVELOPMENT_TEAM = WM7SVC59JB;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -234,13 +260,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGNING_ALLOWED = NO;
-				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				DEVELOPMENT_TEAM = WM7SVC59JB;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
