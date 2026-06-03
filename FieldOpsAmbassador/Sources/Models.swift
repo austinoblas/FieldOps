@@ -35,6 +35,29 @@ struct Payment: Codable, Identifiable, Sendable {
     }
 }
 
+/// Mirrors a row in `stores` (retailer directory).
+struct Store: Codable, Identifiable, Sendable {
+    let id: Int
+    var name: String
+    var retailer: String?
+    var address: String?
+    var manager: String?
+    var phone: String?
+    var priority: String?
+}
+
+/// Mirrors a row in `ambassadors` (roster / rates).
+struct Ambassador: Codable, Identifiable, Sendable {
+    let id: Int
+    var name: String
+    var email: String?
+    var phone: String?
+    var status: String?
+    var rate: Double?
+    var city: String?
+    var specialty: String?
+}
+
 /// Mirrors a row in `events`. The Postgres `date` column comes back as an ISO
 /// date string ("2026-05-10"); check-in/out are ISO timestamps.
 struct FieldEvent: Codable, Identifiable, Sendable {

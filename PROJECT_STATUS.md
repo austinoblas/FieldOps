@@ -78,7 +78,8 @@ Status legend: ✅ done · 🟡 partial · 🔴 not started · ⏳ planned next
 | Activity stats | ✅ | `ActivityView` — events, units, samples, avg lift |
 | My Pay (payroll, auto-computed hours) | ✅ | `PayView`; hours from check-in/out |
 | Profile editor (name/phone/address/shirt size) | ✅ | `ProfileView` + sign out |
-| Manager Admin (add ambassadors / retailers / events) | 🟡 | Tab present, placeholder; needs invite Edge Function |
+| Manager Admin — add retailers, create/assign events | ✅ | `AdminView` → Stores/Events admin (direct writes via manager RLS) |
+| Manager Admin — add ambassadors + email login invite | ✅ | `AmbassadorsAdminView` → `invite-ambassador` Edge Function (needs deploy) |
 | Real report photo upload | 🔴 | Deferred — counts only for now |
 | Push notifications | 🔴 | Not built |
 | App icon | 🟡 | Placeholder "PS" mark — replace with real brand asset |
@@ -96,6 +97,7 @@ Models in app: `Profile`, `FieldEvent`, `Payment`.
 | Role-based RLS + `get_my_role()` + `handle_new_user` trigger | ✅ | |
 | `alter_v4.sql` — UUID linkage cols (`ambassador_id` on reports/payments), `accept_event`/`decline_event`, self-approval gaps closed on events + reports | ✅ | Run in production 2026-06-03 |
 | `alter_v5.sql` — check-in/out columns + `check_in_event`/`check_out_event`/`submit_report` functions (auto-computes payroll hours) | ⏳ | **Run this in Supabase** to enable the new field-execution loop |
+| `invite-ambassador` Edge Function (service-role; manager-gated email invites) | ⏳ | **Deploy** via `supabase functions deploy` to enable manager invites |
 | Backfill old rows → `ambassador_id`, flip RLS to UUID-primary | ⏳ | Future migration; name-string matching still primary today |
 
 ---
