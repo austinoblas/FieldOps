@@ -16,6 +16,7 @@ struct ScheduleView: View {
                     )
                 } else {
                     List {
+                        section("Today", vm.todays)
                         section("Needs your confirmation", vm.needsConfirmation)
                         section("Pending approval", vm.pending)
                         section("Confirmed", vm.confirmed)
@@ -57,17 +58,17 @@ struct EventRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(event.name).font(.headline)
+            HStack {
+                Text(event.name).font(.headline)
+                Spacer()
+                if event.isToday { Text("TODAY").font(.caption2.bold()).foregroundStyle(Theme.brand) }
+            }
             HStack(spacing: 14) {
                 label("calendar", event.prettyDate)
                 if let t = event.time { label("clock", t) }
             }
             if let store = event.store { label("building.2", store) }
-            Text(event.statusLabel)
-                .font(.caption2.weight(.semibold))
-                .padding(.horizontal, 8).padding(.vertical, 2)
-                .background(Theme.brand.opacity(0.15), in: Capsule())
-                .foregroundStyle(Theme.brand)
+            StatusChip(event: event)
         }
         .padding(.vertical, 4)
     }

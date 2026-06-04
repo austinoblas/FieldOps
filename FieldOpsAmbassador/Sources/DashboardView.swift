@@ -39,6 +39,7 @@ final class DashboardViewModel {
     }
 
     var completed: [FieldEvent] { events.filter { $0.isCompleted && inPeriod($0.date) } }
+    var liveNow: [FieldEvent] { events.filter { $0.isCheckedIn } }
 
     var totalEvents: Int { completed.count }
     var totalUnits: Int { completed.compactMap(\.unitsSold).reduce(0, +) }
@@ -97,6 +98,8 @@ struct DashboardView: View {
                     stat("Payroll", vm.payrollTotal.formatted(.currency(code: "USD").precision(.fractionLength(0))), "dollarsign.circle.fill")
                 }
 
+                if !vm.liveNow.isEmpty { liveSection }
+
                 if auth.isAdmin && !vm.byRegion.isEmpty {
                     breakdown("Units by region", vm.byRegion)
                 }
@@ -121,6 +124,32 @@ struct DashboardView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
+        .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var liveSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Circle().fill(.green).frame(width: 8, height: 8)
+                Text("Live now").font(.headline)
+                Text("\(vm.liveNow.count)").font(.subheadline).foregroundStyle(.secondary)
+            }
+            ForEach(vm.liveNow) { e in
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(e.ambassador ?? "—").font(.subheadline.weight(.semibold))
+                        if let s = e.store { Text(s).font(.caption).foregroundStyle(.secondary) }
+                    }
+                    Spacer()
+                    if let ci = e.checkInAt {
+                        Text("in \(FieldEvent.prettyTime(ci))").font(.caption).foregroundStyle(.green)
+                    }
+                }
+                Divider()
+            }
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 16))
     }
 

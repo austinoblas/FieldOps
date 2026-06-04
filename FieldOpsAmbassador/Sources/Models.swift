@@ -136,6 +136,12 @@ struct FieldEvent: Codable, Identifiable, Sendable {
     var isCheckedIn: Bool { checkInAt != nil && checkOutAt == nil }
     var canReport: Bool   { checkOutAt != nil && !isCompleted }
 
+    var isToday: Bool {
+        guard let date else { return false }
+        let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"
+        return date == f.string(from: Date())
+    }
+
     var statusLabel: String {
         if isCompleted { return "Completed" }
         if canReport { return "Awaiting report" }

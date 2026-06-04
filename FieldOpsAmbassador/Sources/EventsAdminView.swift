@@ -23,15 +23,15 @@ struct EventsAdminView: View {
                     description: Text("Create and assign a demo to your team."))
             } else {
                 ForEach(filtered) { e in
-                    VStack(alignment: .leading, spacing: 2) {
+                    VStack(alignment: .leading, spacing: 4) {
                         Text(e.name).font(.headline)
                         HStack(spacing: 10) {
                             Text(e.prettyDate)
                             if let a = e.ambassador { Text(a) }
                             if auth.isAdmin { Text(vm.regionName(e.regionId)) }
-                            Text(e.statusLabel)
                         }
                         .font(.caption).foregroundStyle(.secondary)
+                        StatusChip(event: e)
                     }
                 }
             }

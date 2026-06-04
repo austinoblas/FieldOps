@@ -59,9 +59,10 @@ final class ScheduleViewModel {
         let p_event_id: Int; let p_units: Int; let p_samples: Int; let p_feedback: String; let p_photos: Int
     }
 
-    // Grouped for display
-    var needsConfirmation: [FieldEvent] { events.filter { $0.needsConfirmation } }
-    var pending: [FieldEvent]  { events.filter { $0.isPending } }
-    var confirmed: [FieldEvent] { events.filter { $0.isUpcoming && ($0.accepted ?? false) } }
+    // Grouped for display. Today's active demos surface in their own section.
+    var todays: [FieldEvent] { events.filter { $0.isToday && !$0.isCompleted } }
+    var needsConfirmation: [FieldEvent] { events.filter { $0.needsConfirmation && !$0.isToday } }
+    var pending: [FieldEvent]  { events.filter { $0.isPending && !$0.isToday } }
+    var confirmed: [FieldEvent] { events.filter { $0.isUpcoming && ($0.accepted ?? false) && !$0.isToday } }
     var past: [FieldEvent]      { events.filter { $0.isCompleted } }
 }

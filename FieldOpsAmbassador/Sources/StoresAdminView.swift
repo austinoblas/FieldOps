@@ -11,13 +11,22 @@ struct StoresAdminView: View {
                     description: Text("Add the stores your team demos at."))
             } else {
                 ForEach(vm.stores) { s in
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(s.name).font(.headline)
-                        HStack(spacing: 10) {
-                            if let r = s.retailer { Text(r) }
-                            if let a = s.address { Text(a) }
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(s.name).font(.headline)
+                            HStack(spacing: 10) {
+                                if let r = s.retailer { Text(r) }
+                                if let a = s.address { Text(a) }
+                            }
+                            .font(.caption).foregroundStyle(.secondary)
                         }
-                        .font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        if let phone = s.phone, let url = telURL(phone) {
+                            Link(destination: url) {
+                                Image(systemName: "phone.fill").foregroundStyle(Theme.brand)
+                            }
+                            .buttonStyle(.borderless)
+                        }
                     }
                 }
             }
@@ -30,6 +39,11 @@ struct StoresAdminView: View {
         }
         .task { await vm.loadStores() }
         .sheet(isPresented: $showAdd) { AddStoreSheet(vm: vm) }
+    }
+
+    private func telURL(_ phone: String) -> URL? {
+        let digits = phone.filter(\.isNumber)
+        return digits.isEmpty ? nil : URL(string: "tel:\(digits)")
     }
 }
 

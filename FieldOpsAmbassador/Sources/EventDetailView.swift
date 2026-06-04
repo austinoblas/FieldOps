@@ -54,7 +54,7 @@ struct EventDetailView: View {
     @ViewBuilder
     private func statusSection(_ e: FieldEvent) -> some View {
         Section("Status") {
-            row("flag", e.statusLabel)
+            HStack { Label("Status", systemImage: "flag"); Spacer(); StatusChip(event: e) }
             if let ci = e.checkInAt { row("arrow.right.circle", "Checked in \(FieldEvent.prettyTime(ci))") }
             if let co = e.checkOutAt { row("arrow.left.circle", "Checked out \(FieldEvent.prettyTime(co))") }
             if e.isCompleted {
