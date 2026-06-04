@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		0E0F195F85D1CD02FCCA1C36 /* AmbassadorsAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4791E54B01D92FA461B05A34 /* AmbassadorsAdminView.swift */; };
 		2B911961309583CC15E144F0 /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DB9E58FC871C885B6983A6 /* EventDetailView.swift */; };
+		2EB127E58A57257F836C16E2 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6178E45AE06C93A0327A33 /* DashboardView.swift */; };
 		3667F6EF895C11C199C8CC45 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C752C1D3A2202FE9E2F7D94 /* Theme.swift */; };
 		375172E28183A24C5E10942A /* EventsAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61CB25302F51BDD68E58CCA /* EventsAdminView.swift */; };
 		3F94100B7A5F596B77478792 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 968A40B7F1782C16B3566375 /* Assets.xcassets */; };
@@ -51,6 +52,7 @@
 		88B9B4878097F7130C084F19 /* RegionsAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionsAdminView.swift; sourceTree = "<group>"; };
 		9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		968A40B7F1782C16B3566375 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9C6178E45AE06C93A0327A33 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		9C752C1D3A2202FE9E2F7D94 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		C61CB25302F51BDD68E58CCA /* EventsAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsAdminView.swift; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				4791E54B01D92FA461B05A34 /* AmbassadorsAdminView.swift */,
 				9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */,
 				45475BE0CFD44C64CB954FB4 /* Config.swift */,
+				9C6178E45AE06C93A0327A33 /* DashboardView.swift */,
 				05DB9E58FC871C885B6983A6 /* EventDetailView.swift */,
 				C61CB25302F51BDD68E58CCA /* EventsAdminView.swift */,
 				4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */,
@@ -207,6 +210,7 @@
 				0E0F195F85D1CD02FCCA1C36 /* AmbassadorsAdminView.swift in Sources */,
 				63421C5E7AB4D97C1791CAC3 /* AuthViewModel.swift in Sources */,
 				B77D0614B380C1D393D3509B /* Config.swift in Sources */,
+				2EB127E58A57257F836C16E2 /* DashboardView.swift in Sources */,
 				2B911961309583CC15E144F0 /* EventDetailView.swift in Sources */,
 				375172E28183A24C5E10942A /* EventsAdminView.swift in Sources */,
 				9CC7C76E291633B81419F338 /* FieldOpsAmbassadorApp.swift in Sources */,

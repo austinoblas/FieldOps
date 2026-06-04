@@ -91,6 +91,7 @@ struct FieldEvent: Codable, Identifiable, Sendable {
     var name: String
     var store: String?
     var storeAddress: String?
+    var retailer: String?
     var date: String?
     var time: String?
     var status: String?
@@ -109,6 +110,7 @@ struct FieldEvent: Codable, Identifiable, Sendable {
     enum CodingKeys: String, CodingKey {
         case id, name, store
         case storeAddress = "store_address"
+        case retailer
         case date, time, status, product
         case hourlyRate = "hourly_rate"
         case ambassador

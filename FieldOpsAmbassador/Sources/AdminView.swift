@@ -136,6 +136,11 @@ struct AdminView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section {
+                    NavigationLink { DashboardView(auth: auth) } label: {
+                        Label("Dashboard", systemImage: "chart.bar.xaxis")
+                    }
+                }
                 if auth.isAdmin {
                     Section("HQ") {
                         NavigationLink { RegionsAdminView(vm: vm) } label: {
