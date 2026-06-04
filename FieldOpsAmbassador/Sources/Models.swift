@@ -38,6 +38,7 @@ struct Profile: Codable, Identifiable, Sendable {
 /// Mirrors a row in `payments`.
 struct Payment: Codable, Identifiable, Sendable {
     let id: Int
+    var ambassador: String?
     var eventName: String?
     var date: String?
     var hours: Double?
@@ -45,10 +46,12 @@ struct Payment: Codable, Identifiable, Sendable {
     var expenses: Double?
     var total: Double?
     var status: String?
+    var regionId: Int?
 
     enum CodingKeys: String, CodingKey {
-        case id, date, hours, rate, expenses, total, status
+        case id, ambassador, date, hours, rate, expenses, total, status
         case eventName = "event_name"
+        case regionId = "region_id"
     }
 }
 

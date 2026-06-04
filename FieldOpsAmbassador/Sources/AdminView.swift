@@ -9,6 +9,7 @@ final class AdminViewModel {
     var stores: [Store] = []
     var ambassadors: [Ambassador] = []
     var events: [FieldEvent] = []
+    var payments: [Payment] = []
     var message: String?
     var busy = false
 
@@ -31,6 +32,35 @@ final class AdminViewModel {
     }
     func loadEvents() async {
         events = (try? await client.from("events").select().order("date", ascending: false).execute().value) ?? []
+    }
+    func loadPayments() async {
+        payments = (try? await client.from("payments").select().order("date", ascending: false).execute().value) ?? []
+    }
+
+    func setPaymentStatus(_ p: Payment, to status: String) async {
+        struct Upd: Encodable { let status: String }
+        await run {
+            try await self.client.from("payments").update(Upd(status: status)).eq("id", value: p.id).execute()
+            await self.loadPayments()
+        }
+    }
+
+    /// Writes the given payments to a CSV in the temp dir and returns its URL for ShareLink.
+    func payrollCSV(_ rows: [Payment]) -> URL? {
+        func esc(_ s: String) -> String {
+            (s.contains(",") || s.contains("\"")) ? "\"\(s.replacingOccurrences(of: "\"", with: "\"\""))\"" : s
+        }
+        func num(_ d: Double?) -> String { d.map { String(format: "%.2f", $0) } ?? "0" }
+        var lines = ["Ambassador,Region,Event,Date,Hours,Rate,Expenses,Total,Status"]
+        for p in rows {
+            lines.append([
+                esc(p.ambassador ?? ""), esc(regionName(p.regionId)), esc(p.eventName ?? ""),
+                p.date ?? "", num(p.hours), num(p.rate), num(p.expenses), num(p.total), p.status ?? ""
+            ].joined(separator: ","))
+        }
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("payroll.csv")
+        do { try lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8); return url }
+        catch { return nil }
     }
 
     func regionName(_ id: Int?) -> String {
@@ -122,6 +152,9 @@ struct AdminView: View {
                     }
                     NavigationLink { EventsAdminView(vm: vm, auth: auth) } label: {
                         Label("Events", systemImage: "calendar.badge.plus")
+                    }
+                    NavigationLink { PayrollAdminView(vm: vm) } label: {
+                        Label("Payroll", systemImage: "dollarsign.square.fill")
                     }
                 }
             }
