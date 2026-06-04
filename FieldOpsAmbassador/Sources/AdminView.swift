@@ -106,19 +106,20 @@ final class AdminViewModel {
         }
     }
 
-    func createEvent(name: String, store: String, retailer: String, date: Date, time: String,
-                     product: String, ambassador: String, regionId: Int?) async {
+    func createEvents(name: String, store: String, retailer: String, dates: [Date], time: String,
+                      product: String, ambassador: String, regionId: Int?) async {
         struct New: Encodable {
             let name, store, retailer, date, time, product, ambassador, status: String; let region_id: Int?
         }
         let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
+        let rows = dates.map {
+            New(name: name, store: store, retailer: retailer, date: df.string(from: $0),
+                time: time, product: product, ambassador: ambassador, status: "upcoming", region_id: regionId)
+        }
         await run {
-            try await self.client.from("events")
-                .insert(New(name: name, store: store, retailer: retailer, date: df.string(from: date),
-                            time: time, product: product, ambassador: ambassador, status: "upcoming", region_id: regionId))
-                .execute()
+            try await self.client.from("events").insert(rows).execute()
             await self.loadEvents()
-            self.message = "Event created for \(ambassador)."
+            self.message = rows.count > 1 ? "Created \(rows.count) demos for \(ambassador)." : "Event created for \(ambassador)."
         }
     }
 
