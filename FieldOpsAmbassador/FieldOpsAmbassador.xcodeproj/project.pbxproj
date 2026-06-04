@@ -13,6 +13,7 @@
 		3667F6EF895C11C199C8CC45 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C752C1D3A2202FE9E2F7D94 /* Theme.swift */; };
 		375172E28183A24C5E10942A /* EventsAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61CB25302F51BDD68E58CCA /* EventsAdminView.swift */; };
 		3F94100B7A5F596B77478792 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 968A40B7F1782C16B3566375 /* Assets.xcassets */; };
+		48CE0E2B7DB280796E86D698 /* ManagersAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4BDD50E14E2A45FA35BA61 /* ManagersAdminView.swift */; };
 		5281105234CADEB8DD0968B3 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 3156385470E256B84BDD88C7 /* Supabase */; };
 		5402AAB4EC4A0AC6CB4D72DC /* ReportFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0629F567BC5AD3BB2404FA3B /* ReportFormView.swift */; };
 		617C9EBAD84B829A453CBADB /* PayrollAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDAECD3D6403C0ECE2D01E18 /* PayrollAdminView.swift */; };
@@ -58,6 +59,7 @@
 		C61CB25302F51BDD68E58CCA /* EventsAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventsAdminView.swift; sourceTree = "<group>"; };
 		CEB733269185A4AAC85D25F4 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		DDAECD3D6403C0ECE2D01E18 /* PayrollAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayrollAdminView.swift; sourceTree = "<group>"; };
+		DE4BDD50E14E2A45FA35BA61 /* ManagersAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagersAdminView.swift; sourceTree = "<group>"; };
 		F457FDB1B140C0A7B4A6235C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		F560822FFC5C1A6CC861E157 /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +99,7 @@
 				1ED56C35157459D741C79A44 /* LocationManager.swift */,
 				0113F107017A676A230ED8CD /* LoginView.swift */,
 				02212F11F387C1A4BF6E6F3E /* MainTabView.swift */,
+				DE4BDD50E14E2A45FA35BA61 /* ManagersAdminView.swift */,
 				F457FDB1B140C0A7B4A6235C /* Models.swift */,
 				DDAECD3D6403C0ECE2D01E18 /* PayrollAdminView.swift */,
 				80EB106368615CFFABB0B17C /* PayView.swift */,
@@ -217,6 +220,7 @@
 				A642DC4CD0ED973CF30374C5 /* LocationManager.swift in Sources */,
 				A6291F23BEB67DE6F10E9995 /* LoginView.swift in Sources */,
 				BC00E78002D31A4872F22909 /* MainTabView.swift in Sources */,
+				48CE0E2B7DB280796E86D698 /* ManagersAdminView.swift in Sources */,
 				B6E68633DCE61F1F994EA363 /* Models.swift in Sources */,
 				8169A986177C920CB59F3EC6 /* PayView.swift in Sources */,
 				617C9EBAD84B829A453CBADB /* PayrollAdminView.swift in Sources */,

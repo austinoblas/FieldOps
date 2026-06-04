@@ -8,6 +8,7 @@ final class AdminViewModel {
     var regions: [Region] = []
     var stores: [Store] = []
     var ambassadors: [Ambassador] = []
+    var managers: [Profile] = []
     var events: [FieldEvent] = []
     var payments: [Payment] = []
     var message: String?
@@ -89,20 +90,31 @@ final class AdminViewModel {
         }
     }
 
-    func addAmbassador(name: String, email: String, phone: String, rate: Double,
-                       city: String, specialty: String, regionId: Int?, invite: Bool) async {
-        struct New: Encodable { let name, email, phone, status, city, specialty: String; let rate: Double; let region_id: Int? }
+    func loadManagers() async {
+        managers = (try? await client.from("profiles").select()
+            .eq("role", value: "manager").order("name").execute().value) ?? []
+    }
+
+    /// Manager invites an ambassador to their region (admin may target a region).
+    /// Creation happens server-side in the Edge Function, so no RLS issue.
+    func inviteAmbassador(name: String, email: String, rate: Double, regionId: Int?) async {
+        struct Body: Encodable { let email, name: String; let rate: Double; let region_id: Int? }
         await run {
-            try await self.client.from("ambassadors")
-                .insert(New(name: name, email: email, phone: phone, status: "active",
-                            city: city, specialty: specialty, rate: rate, region_id: regionId))
-                .execute()
-            if invite, !email.isEmpty {
-                struct Body: Encodable { let email, name: String }
-                try await self.client.functions.invoke("invite-ambassador", options: .init(body: Body(email: email, name: name)))
-            }
+            try await self.client.functions.invoke("invite-ambassador",
+                options: .init(body: Body(email: email, name: name, rate: rate, region_id: regionId)))
             await self.loadAmbassadors()
-            self.message = invite ? "Added and invited \(name)." : "Added \(name)."
+            self.message = "Invited \(name)."
+        }
+    }
+
+    /// HQ admin invites a regional field manager.
+    func inviteManager(name: String, email: String, regionId: Int) async {
+        struct Body: Encodable { let email, name: String; let region_id: Int }
+        await run {
+            try await self.client.functions.invoke("invite-manager",
+                options: .init(body: Body(email: email, name: name, region_id: regionId)))
+            await self.loadManagers()
+            self.message = "Invited \(name) as manager."
         }
     }
 
@@ -146,6 +158,9 @@ struct AdminView: View {
                     Section("HQ") {
                         NavigationLink { RegionsAdminView(vm: vm) } label: {
                             Label("Regions", systemImage: "map.fill")
+                        }
+                        NavigationLink { ManagersAdminView(vm: vm) } label: {
+                            Label("Field Managers", systemImage: "person.badge.shield.checkmark")
                         }
                     }
                 }
