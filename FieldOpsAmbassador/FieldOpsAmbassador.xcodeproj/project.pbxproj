@@ -18,6 +18,7 @@
 		6CB97837A1BFC2DB4AB866B5 /* StoresAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F3F7E9FE8873FD33E7AB7EF /* StoresAdminView.swift */; };
 		73AB1F2BDFB1BCF4B247C50B /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE768A85A9491940008F660 /* AdminView.swift */; };
 		8169A986177C920CB59F3EC6 /* PayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80EB106368615CFFABB0B17C /* PayView.swift */; };
+		81BD12EEC528BE1EC6D67CAD /* RegionsAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B9B4878097F7130C084F19 /* RegionsAdminView.swift */; };
 		8805BA3D5B8CE62C6141EF2E /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */; };
 		9CC7C76E291633B81419F338 /* FieldOpsAmbassadorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */; };
 		A6291F23BEB67DE6F10E9995 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0113F107017A676A230ED8CD /* LoginView.swift */; };
@@ -46,6 +47,7 @@
 		70B5FD7C1F7F0660F33E38DC /* FieldOpsAmbassador.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FieldOpsAmbassador.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80EB106368615CFFABB0B17C /* PayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayView.swift; sourceTree = "<group>"; };
 		87D4B35346523033EED053F0 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
+		88B9B4878097F7130C084F19 /* RegionsAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionsAdminView.swift; sourceTree = "<group>"; };
 		9581C3A2CD7877C0D1D14C01 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		968A40B7F1782C16B3566375 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C752C1D3A2202FE9E2F7D94 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 				F457FDB1B140C0A7B4A6235C /* Models.swift */,
 				80EB106368615CFFABB0B17C /* PayView.swift */,
 				CEB733269185A4AAC85D25F4 /* ProfileView.swift */,
+				88B9B4878097F7130C084F19 /* RegionsAdminView.swift */,
 				0629F567BC5AD3BB2404FA3B /* ReportFormView.swift */,
 				F560822FFC5C1A6CC861E157 /* ScheduleView.swift */,
 				9FAACBD69E4121912803AAB2 /* ScheduleViewModel.swift */,
@@ -210,6 +213,7 @@
 				B6E68633DCE61F1F994EA363 /* Models.swift in Sources */,
 				8169A986177C920CB59F3EC6 /* PayView.swift in Sources */,
 				CDB48F38E74F34FC3D5D1BFC /* ProfileView.swift in Sources */,
+				81BD12EEC528BE1EC6D67CAD /* RegionsAdminView.swift in Sources */,
 				5402AAB4EC4A0AC6CB4D72DC /* ReportFormView.swift in Sources */,
 				E99E2A1BCA4A23FCF3612DBD /* ScheduleView.swift in Sources */,
 				8805BA3D5B8CE62C6141EF2E /* ScheduleViewModel.swift in Sources */,

@@ -13,7 +13,7 @@ struct MainTabView: View {
                 .tabItem { Label("Pay", systemImage: "dollarsign.circle.fill") }
             ProfileView()
                 .tabItem { Label("Profile", systemImage: "person.crop.circle.fill") }
-            if auth.isManager {
+            if auth.canAdmin {
                 AdminView()
                     .tabItem { Label("Admin", systemImage: "slider.horizontal.3") }
             }

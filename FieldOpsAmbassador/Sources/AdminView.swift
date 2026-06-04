@@ -5,6 +5,7 @@ import Observation
 @MainActor
 @Observable
 final class AdminViewModel {
+    var regions: [Region] = []
     var stores: [Store] = []
     var ambassadors: [Ambassador] = []
     var events: [FieldEvent] = []
@@ -14,23 +15,39 @@ final class AdminViewModel {
     private let client = Supa.shared.client
 
     func loadAll() async {
+        await loadRegions()
         await loadStores()
         await loadAmbassadors()
     }
 
+    func loadRegions() async {
+        regions = (try? await client.from("regions").select().order("name").execute().value) ?? []
+    }
     func loadStores() async {
         stores = (try? await client.from("stores").select().order("name").execute().value) ?? []
     }
-
     func loadAmbassadors() async {
         ambassadors = (try? await client.from("ambassadors").select().order("name").execute().value) ?? []
     }
-
     func loadEvents() async {
         events = (try? await client.from("events").select().order("date", ascending: false).execute().value) ?? []
     }
 
+    func regionName(_ id: Int?) -> String {
+        guard let id else { return "—" }
+        return regions.first { $0.id == id }?.name ?? "—"
+    }
+
     // MARK: Mutations
+
+    func createRegion(name: String) async {
+        struct New: Encodable { let name: String }
+        await run {
+            try await self.client.from("regions").insert(New(name: name)).execute()
+            await self.loadRegions()
+            self.message = "Region \(name) created."
+        }
+    }
 
     func addStore(name: String, retailer: String, address: String, manager: String, phone: String, priority: String) async {
         struct New: Encodable { let name, retailer, address, manager, phone, priority: String }
@@ -42,11 +59,13 @@ final class AdminViewModel {
         }
     }
 
-    func addAmbassador(name: String, email: String, phone: String, rate: Double, city: String, specialty: String, invite: Bool) async {
-        struct New: Encodable { let name, email, phone, status, city, specialty: String; let rate: Double }
+    func addAmbassador(name: String, email: String, phone: String, rate: Double,
+                       city: String, specialty: String, regionId: Int?, invite: Bool) async {
+        struct New: Encodable { let name, email, phone, status, city, specialty: String; let rate: Double; let region_id: Int? }
         await run {
             try await self.client.from("ambassadors")
-                .insert(New(name: name, email: email, phone: phone, status: "active", city: city, specialty: specialty, rate: rate))
+                .insert(New(name: name, email: email, phone: phone, status: "active",
+                            city: city, specialty: specialty, rate: rate, region_id: regionId))
                 .execute()
             if invite, !email.isEmpty {
                 struct Body: Encodable { let email, name: String }
@@ -57,13 +76,16 @@ final class AdminViewModel {
         }
     }
 
-    func createEvent(name: String, store: String, retailer: String, date: Date, time: String, product: String, ambassador: String) async {
-        struct New: Encodable { let name, store, retailer, date, time, product, ambassador, status: String }
+    func createEvent(name: String, store: String, retailer: String, date: Date, time: String,
+                     product: String, ambassador: String, regionId: Int?) async {
+        struct New: Encodable {
+            let name, store, retailer, date, time, product, ambassador, status: String; let region_id: Int?
+        }
         let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
         await run {
             try await self.client.from("events")
                 .insert(New(name: name, store: store, retailer: retailer, date: df.string(from: date),
-                            time: time, product: product, ambassador: ambassador, status: "upcoming"))
+                            time: time, product: product, ambassador: ambassador, status: "upcoming", region_id: regionId))
                 .execute()
             await self.loadEvents()
             self.message = "Event created for \(ambassador)."
@@ -78,19 +100,27 @@ final class AdminViewModel {
 }
 
 struct AdminView: View {
+    @Environment(AuthViewModel.self) private var auth
     @State private var vm = AdminViewModel()
 
     var body: some View {
         NavigationStack {
             List {
-                Section("Manage your team") {
-                    NavigationLink { AmbassadorsAdminView(vm: vm) } label: {
+                if auth.isAdmin {
+                    Section("HQ") {
+                        NavigationLink { RegionsAdminView(vm: vm) } label: {
+                            Label("Regions", systemImage: "map.fill")
+                        }
+                    }
+                }
+                Section(auth.isAdmin ? "All regions" : "Your region") {
+                    NavigationLink { AmbassadorsAdminView(vm: vm, auth: auth) } label: {
                         Label("Ambassadors", systemImage: "person.2.fill")
                     }
                     NavigationLink { StoresAdminView(vm: vm) } label: {
                         Label("Retailers", systemImage: "storefront.fill")
                     }
-                    NavigationLink { EventsAdminView(vm: vm) } label: {
+                    NavigationLink { EventsAdminView(vm: vm, auth: auth) } label: {
                         Label("Events", systemImage: "calendar.badge.plus")
                     }
                 }

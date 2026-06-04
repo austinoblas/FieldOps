@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AmbassadorsAdminView: View {
     let vm: AdminViewModel
+    let auth: AuthViewModel
     @State private var showAdd = false
 
     var body: some View {
@@ -16,7 +17,7 @@ struct AmbassadorsAdminView: View {
                         HStack(spacing: 10) {
                             if let c = a.city { Text(c) }
                             if let r = a.rate { Text("$\(r, specifier: "%.0f")/hr") }
-                            if let s = a.status { Text(s.capitalized) }
+                            if auth.isAdmin { Text(vm.regionName(a.regionId)) }
                         }
                         .font(.caption).foregroundStyle(.secondary)
                     }
@@ -30,12 +31,13 @@ struct AmbassadorsAdminView: View {
             }
         }
         .task { await vm.loadAmbassadors() }
-        .sheet(isPresented: $showAdd) { AddAmbassadorSheet(vm: vm) }
+        .sheet(isPresented: $showAdd) { AddAmbassadorSheet(vm: vm, auth: auth) }
     }
 }
 
 private struct AddAmbassadorSheet: View {
     let vm: AdminViewModel
+    let auth: AuthViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var name = ""
@@ -44,6 +46,7 @@ private struct AddAmbassadorSheet: View {
     @State private var city = ""
     @State private var specialty = ""
     @State private var rate = ""
+    @State private var regionId: Int?
     @State private var sendInvite = true
 
     var body: some View {
@@ -60,10 +63,18 @@ private struct AddAmbassadorSheet: View {
                         TextField("0", text: $rate).keyboardType(.decimalPad).multilineTextAlignment(.trailing).frame(maxWidth: 80)
                     }
                 }
+                if auth.isAdmin {
+                    Section("Region") {
+                        Picker("Region", selection: $regionId) {
+                            Text("Select…").tag(Int?.none)
+                            ForEach(vm.regions) { r in Text(r.name).tag(Int?.some(r.id)) }
+                        }
+                    }
+                }
                 Section {
                     Toggle("Email login invite", isOn: $sendInvite)
                 } footer: {
-                    Text("Sends a TestFlight-style invite so they can set a password and log in. Requires the invite function deployed.")
+                    Text("Sends an invite so they can set a password and log in.")
                 }
             }
             .navigationTitle("Add Ambassador")
@@ -72,9 +83,11 @@ private struct AddAmbassadorSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add") {
+                        let region = auth.isAdmin ? regionId : auth.myRegionId
                         Task {
                             await vm.addAmbassador(name: name, email: email, phone: phone,
-                                rate: Double(rate) ?? 0, city: city, specialty: specialty, invite: sendInvite)
+                                rate: Double(rate) ?? 0, city: city, specialty: specialty,
+                                regionId: region, invite: sendInvite)
                             dismiss()
                         }
                     }

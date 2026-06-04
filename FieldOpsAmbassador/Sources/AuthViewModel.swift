@@ -13,6 +13,9 @@ final class AuthViewModel {
     var busy = false
 
     var isManager: Bool { profile?.isManager ?? false }
+    var isAdmin: Bool { profile?.isAdmin ?? false }
+    var canAdmin: Bool { isManager || isAdmin }
+    var myRegionId: Int? { profile?.regionId }
 
     private let client = Supa.shared.client
 

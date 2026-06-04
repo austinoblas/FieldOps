@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EventsAdminView: View {
     let vm: AdminViewModel
+    let auth: AuthViewModel
     @State private var showAdd = false
 
     var body: some View {
@@ -16,6 +17,7 @@ struct EventsAdminView: View {
                         HStack(spacing: 10) {
                             Text(e.prettyDate)
                             if let a = e.ambassador { Text(a) }
+                            if auth.isAdmin { Text(vm.regionName(e.regionId)) }
                             Text(e.statusLabel)
                         }
                         .font(.caption).foregroundStyle(.secondary)
@@ -34,12 +36,13 @@ struct EventsAdminView: View {
             if vm.stores.isEmpty { await vm.loadStores() }
             if vm.ambassadors.isEmpty { await vm.loadAmbassadors() }
         }
-        .sheet(isPresented: $showAdd) { AddEventSheet(vm: vm) }
+        .sheet(isPresented: $showAdd) { AddEventSheet(vm: vm, auth: auth) }
     }
 }
 
 private struct AddEventSheet: View {
     let vm: AdminViewModel
+    let auth: AuthViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var name = ""
@@ -48,6 +51,7 @@ private struct AddEventSheet: View {
     @State private var product = ""
     @State private var time = ""
     @State private var date = Date()
+    @State private var regionId: Int?
 
     private var selectedStore: Store? { vm.stores.first { $0.name == storeName } }
 
@@ -72,6 +76,14 @@ private struct AddEventSheet: View {
                         ForEach(vm.ambassadors) { a in Text(a.name).tag(a.name) }
                     }
                 }
+                if auth.isAdmin {
+                    Section("Region") {
+                        Picker("Region", selection: $regionId) {
+                            Text("Select…").tag(Int?.none)
+                            ForEach(vm.regions) { r in Text(r.name).tag(Int?.some(r.id)) }
+                        }
+                    }
+                }
             }
             .navigationTitle("New Event")
             .navigationBarTitleDisplayMode(.inline)
@@ -79,10 +91,11 @@ private struct AddEventSheet: View {
                 ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() } }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Create") {
+                        let region = auth.isAdmin ? regionId : auth.myRegionId
                         Task {
                             await vm.createEvent(name: name, store: storeName,
                                 retailer: selectedStore?.retailer ?? "", date: date, time: time,
-                                product: product, ambassador: ambassador)
+                                product: product, ambassador: ambassador, regionId: region)
                             dismiss()
                         }
                     }

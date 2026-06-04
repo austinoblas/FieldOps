@@ -1,5 +1,17 @@
 import Foundation
 
+/// Mirrors a row in `regions`.
+struct Region: Codable, Identifiable, Sendable {
+    let id: Int
+    var name: String
+    var managerId: UUID?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case managerId = "manager_id"
+    }
+}
+
 /// Mirrors a row in `profiles`.
 struct Profile: Codable, Identifiable, Sendable {
     let id: UUID
@@ -9,12 +21,17 @@ struct Profile: Codable, Identifiable, Sendable {
     var address: String?
     var shirtSize: String?
     var role: String?
+    var regionId: Int?
+    var managerId: UUID?
 
     var isManager: Bool { role == "manager" }
+    var isAdmin: Bool { role == "admin" }
 
     enum CodingKeys: String, CodingKey {
         case id, name, email, phone, address, role
         case shirtSize = "shirt_size"
+        case regionId = "region_id"
+        case managerId = "manager_id"
     }
 }
 
@@ -56,6 +73,12 @@ struct Ambassador: Codable, Identifiable, Sendable {
     var rate: Double?
     var city: String?
     var specialty: String?
+    var regionId: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, email, phone, status, rate, city, specialty
+        case regionId = "region_id"
+    }
 }
 
 /// Mirrors a row in `events`. The Postgres `date` column comes back as an ISO
@@ -72,6 +95,7 @@ struct FieldEvent: Codable, Identifiable, Sendable {
     var hourlyRate: Double?
     var ambassador: String?
     var ambassadorId: UUID?
+    var regionId: Int?
     var accepted: Bool?
     var unitsSold: Int?
     var samples: Int?
@@ -86,6 +110,7 @@ struct FieldEvent: Codable, Identifiable, Sendable {
         case hourlyRate = "hourly_rate"
         case ambassador
         case ambassadorId = "ambassador_id"
+        case regionId = "region_id"
         case accepted
         case unitsSold = "units_sold"
         case samples
