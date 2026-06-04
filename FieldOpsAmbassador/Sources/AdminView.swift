@@ -81,12 +81,15 @@ final class AdminViewModel {
     }
 
     func addStore(name: String, retailer: String, address: String, manager: String, phone: String, priority: String) async {
-        struct New: Encodable { let name, retailer, address, manager, phone, priority: String }
+        struct New: Encodable { let name, retailer, address, manager, phone, priority: String; let lat, lng: Double? }
         await run {
+            let coord = await Geocoder.coordinates(for: address)
             try await self.client.from("stores")
-                .insert(New(name: name, retailer: retailer, address: address, manager: manager, phone: phone, priority: priority))
+                .insert(New(name: name, retailer: retailer, address: address, manager: manager, phone: phone,
+                            priority: priority, lat: coord?.latitude, lng: coord?.longitude))
                 .execute()
             await self.loadStores()
+            self.message = coord == nil ? "Added \(name) (address not located — no geofence)." : "Added \(name)."
         }
     }
 
@@ -119,14 +122,16 @@ final class AdminViewModel {
     }
 
     func createEvents(name: String, store: String, retailer: String, dates: [Date], time: String,
-                      product: String, ambassador: String, regionId: Int?) async {
+                      product: String, ambassador: String, regionId: Int?, storeLat: Double?, storeLng: Double?) async {
         struct New: Encodable {
-            let name, store, retailer, date, time, product, ambassador, status: String; let region_id: Int?
+            let name, store, retailer, date, time, product, ambassador, status: String
+            let region_id: Int?; let store_lat, store_lng: Double?
         }
         let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd"
         let rows = dates.map {
             New(name: name, store: store, retailer: retailer, date: df.string(from: $0),
-                time: time, product: product, ambassador: ambassador, status: "upcoming", region_id: regionId)
+                time: time, product: product, ambassador: ambassador, status: "upcoming",
+                region_id: regionId, store_lat: storeLat, store_lng: storeLng)
         }
         await run {
             try await self.client.from("events").insert(rows).execute()

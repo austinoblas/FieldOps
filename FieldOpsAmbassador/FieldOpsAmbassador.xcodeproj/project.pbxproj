@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0E0F195F85D1CD02FCCA1C36 /* AmbassadorsAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4791E54B01D92FA461B05A34 /* AmbassadorsAdminView.swift */; };
+		262A4689CD546879AE1EA4A0 /* Geocoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44717D5A33FFAC99761FEED7 /* Geocoder.swift */; };
 		2B911961309583CC15E144F0 /* EventDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05DB9E58FC871C885B6983A6 /* EventDetailView.swift */; };
 		2EB127E58A57257F836C16E2 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C6178E45AE06C93A0327A33 /* DashboardView.swift */; };
 		3667F6EF895C11C199C8CC45 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C752C1D3A2202FE9E2F7D94 /* Theme.swift */; };
@@ -44,6 +45,7 @@
 		1F3F7E9FE8873FD33E7AB7EF /* StoresAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoresAdminView.swift; sourceTree = "<group>"; };
 		20A1630ADBE6A2C051AF1259 /* Supa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Supa.swift; sourceTree = "<group>"; };
 		2FE768A85A9491940008F660 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
+		44717D5A33FFAC99761FEED7 /* Geocoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geocoder.swift; sourceTree = "<group>"; };
 		4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldOpsAmbassadorApp.swift; sourceTree = "<group>"; };
 		45475BE0CFD44C64CB954FB4 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		4791E54B01D92FA461B05A34 /* AmbassadorsAdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbassadorsAdminView.swift; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 				05DB9E58FC871C885B6983A6 /* EventDetailView.swift */,
 				C61CB25302F51BDD68E58CCA /* EventsAdminView.swift */,
 				4513F4B2EFA37F50EDCF6C86 /* FieldOpsAmbassadorApp.swift */,
+				44717D5A33FFAC99761FEED7 /* Geocoder.swift */,
 				1ED56C35157459D741C79A44 /* LocationManager.swift */,
 				0113F107017A676A230ED8CD /* LoginView.swift */,
 				02212F11F387C1A4BF6E6F3E /* MainTabView.swift */,
@@ -217,6 +220,7 @@
 				2B911961309583CC15E144F0 /* EventDetailView.swift in Sources */,
 				375172E28183A24C5E10942A /* EventsAdminView.swift in Sources */,
 				9CC7C76E291633B81419F338 /* FieldOpsAmbassadorApp.swift in Sources */,
+				262A4689CD546879AE1EA4A0 /* Geocoder.swift in Sources */,
 				A642DC4CD0ED973CF30374C5 /* LocationManager.swift in Sources */,
 				A6291F23BEB67DE6F10E9995 /* LoginView.swift in Sources */,
 				BC00E78002D31A4872F22909 /* MainTabView.swift in Sources */,

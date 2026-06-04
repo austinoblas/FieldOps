@@ -4,6 +4,7 @@ struct EventDetailView: View {
     let eventId: Int
     let vm: ScheduleViewModel
 
+    @Environment(\.openURL) private var openURL
     @State private var location = LocationManager()
     @State private var showReport = false
     @State private var busy = false
@@ -43,6 +44,10 @@ struct EventDetailView: View {
             if let s = e.store { row("building.2", s) }
             if let a = e.storeAddress { row("mappin.and.ellipse", a) }
             if let p = e.product { row("shippingbox", p) }
+            if e.store != nil || e.storeAddress != nil {
+                Button { openDirections(e) } label: { Label("Directions", systemImage: "map.fill") }
+                    .tint(Theme.brand)
+            }
         }
     }
 
@@ -100,11 +105,18 @@ struct EventDetailView: View {
 
     @ViewBuilder
     private var banner: some View {
-        if let note {
-            Text(note)
-                .font(.footnote).foregroundStyle(.white)
+        if let msg = vm.errorMessage ?? note {
+            Text(msg)
+                .font(.footnote).foregroundStyle(.white).multilineTextAlignment(.center)
                 .padding(10).background(Theme.brandDk, in: Capsule()).padding()
         }
+    }
+
+    private func openDirections(_ e: FieldEvent) {
+        let q = [e.store, e.storeAddress].compactMap { $0 }.joined(separator: ", ")
+        guard let encoded = q.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://maps.apple.com/?q=\(encoded)") else { return }
+        openURL(url)
     }
 
     // MARK: Actions
@@ -115,10 +127,9 @@ struct EventDetailView: View {
     }
 
     private func checkIn(_ e: FieldEvent) async {
+        note = nil
         let coord = await location.fetch()
-        if coord == nil && location.isDenied {
-            note = "Location is off — checking in without it."
-        } else if coord == nil {
+        if coord == nil && !location.isDenied {
             note = "Allow location, then tap Check in again."
             return
         }
@@ -126,7 +137,12 @@ struct EventDetailView: View {
     }
 
     private func checkOut(_ e: FieldEvent) async {
+        note = nil
         let coord = await location.fetch()
+        if coord == nil && !location.isDenied {
+            note = "Allow location, then tap Check out again."
+            return
+        }
         await vm.checkOut(e, lat: coord?.latitude, lng: coord?.longitude)
     }
 }

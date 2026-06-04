@@ -64,6 +64,8 @@ struct Store: Codable, Identifiable, Sendable {
     var manager: String?
     var phone: String?
     var priority: String?
+    var lat: Double?
+    var lng: Double?
 }
 
 /// Mirrors a row in `ambassadors` (roster / rates).

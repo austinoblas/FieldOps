@@ -4,14 +4,25 @@ struct EventsAdminView: View {
     let vm: AdminViewModel
     let auth: AuthViewModel
     @State private var showAdd = false
+    @State private var query = ""
+
+    private var filtered: [FieldEvent] {
+        guard !query.isEmpty else { return vm.events }
+        let q = query.lowercased()
+        return vm.events.filter {
+            $0.name.lowercased().contains(q)
+            || ($0.ambassador?.lowercased().contains(q) ?? false)
+            || ($0.store?.lowercased().contains(q) ?? false)
+        }
+    }
 
     var body: some View {
         List {
-            if vm.events.isEmpty {
+            if filtered.isEmpty {
                 ContentUnavailableView("No events", systemImage: "calendar",
                     description: Text("Create and assign a demo to your team."))
             } else {
-                ForEach(vm.events) { e in
+                ForEach(filtered) { e in
                     VStack(alignment: .leading, spacing: 2) {
                         Text(e.name).font(.headline)
                         HStack(spacing: 10) {
@@ -26,6 +37,7 @@ struct EventsAdminView: View {
             }
         }
         .navigationTitle("Events")
+        .searchable(text: $query, prompt: "Event, ambassador, or store")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { showAdd = true } label: { Image(systemName: "plus") }
@@ -137,7 +149,8 @@ private struct AddEventSheet: View {
                         Task {
                             await vm.createEvents(name: name, store: storeName,
                                 retailer: selectedStore?.retailer ?? "", dates: dates, time: timeString,
-                                product: product, ambassador: ambassador, regionId: region)
+                                product: product, ambassador: ambassador, regionId: region,
+                                storeLat: selectedStore?.lat, storeLng: selectedStore?.lng)
                             dismiss()
                         }
                     }

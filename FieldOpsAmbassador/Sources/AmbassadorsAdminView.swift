@@ -4,14 +4,23 @@ struct AmbassadorsAdminView: View {
     let vm: AdminViewModel
     let auth: AuthViewModel
     @State private var showInvite = false
+    @State private var query = ""
+
+    private var filtered: [Ambassador] {
+        guard !query.isEmpty else { return vm.ambassadors }
+        let q = query.lowercased()
+        return vm.ambassadors.filter {
+            $0.name.lowercased().contains(q) || ($0.email?.lowercased().contains(q) ?? false)
+        }
+    }
 
     var body: some View {
         List {
-            if vm.ambassadors.isEmpty {
+            if filtered.isEmpty {
                 ContentUnavailableView("No ambassadors", systemImage: "person.2",
                     description: Text("Invite your first teammate by email."))
             } else {
-                ForEach(vm.ambassadors) { a in
+                ForEach(filtered) { a in
                     VStack(alignment: .leading, spacing: 2) {
                         Text(a.name).font(.headline)
                         HStack(spacing: 10) {
@@ -25,6 +34,7 @@ struct AmbassadorsAdminView: View {
             }
         }
         .navigationTitle("Ambassadors")
+        .searchable(text: $query, prompt: "Name or email")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button { showInvite = true } label: { Image(systemName: "plus") }
